@@ -1,5 +1,9 @@
 # 🚀 Jugendklub Lieberose – Das Spiel
 
+**🌐 Live im Web:** [https://jugendklub.vercel.app/](https://jugendklub.vercel.app/)
+
+![QR Code](qr-code.png)
+
 Ein mobiles HTML5-Webspiel, das gemeinsam mit den Kindern im **Jugendklub Lieberose** live per "Vibecoding" entwickelt wird!
 
 ## 📱 Auf dem Smartphone spielen
