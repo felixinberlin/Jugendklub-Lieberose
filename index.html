@@ -15,8 +15,8 @@
     <div id="ui-overlay">
       <!-- HUD -->
       <div id="hud">
-        <div class="hud-item">PUNKTE: <span id="score">0</span></div>
-        <div class="hud-item">REKORD: <span id="highScore">0</span></div>
+        <div class="hud-item">TREFFER: <span id="score">0</span></div>
+        <div class="hud-item" hidden>REKORD: <span id="highScore">0</span></div>
       </div>
 
       <!-- Start Screen -->
@@ -25,14 +25,14 @@
         <h1>KOBOLD & MAIS</h1>
         <p class="subtitle">🧌 Der Kobold & die Maispflanze 🌽</p>
         <div class="instructions">
-          <p>📱 <b>Steuerung:</b> Links / Rechts tippen oder wischen</p>
+          <p>💣 Kobold und Mais werfen sich abwechselnd Bomben zu!</p>
         </div>
         <button id="startBtn" class="btn">SPIEL STARTEN 🚀</button>
       </div>
 
       <!-- Game Over Screen -->
       <div id="gameOverScreen" class="overlay-screen">
-        <h2>GAME OVER! 💥</h2>
+        <h2>BUMM! 💥</h2>
         <p>Deine Punkte: <span id="finalScore">0</span></p>
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
