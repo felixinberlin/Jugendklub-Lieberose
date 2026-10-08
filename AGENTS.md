@@ -174,6 +174,10 @@ btn.addEventListener('click', async () => {
 4. **iOS sensor permission:** Must be triggered by direct user click, never on window load.
 5. **Touch gestures triggering browser refresh:** Use `touch-action: manipulation; overflow: hidden;`.
 6. **Retina Canvas blur:** Scale canvas buffer by `window.devicePixelRatio` and scale 2D context.
+7. **Static bumper alignment on screen resize:** When placing side characters/bumpers (Kobold, Corn, etc.) at relative screen heights (`height * 0.55`), `resizeCanvas()` MUST reposition them via `Body.setPosition(body, { x, y })` so phone rotation or varied aspect ratios keep physics hitboxes aligned with rendered sprites.
+8. **Vendored Matter.js over CDN:** `matter.min.js` (79KB) vendored directly in repo prevents youth club Wi-Fi latency or dropouts from breaking the game on cold device loads.
+9. **Deploy build delay cushion:** Vercel takes ~10–15 seconds to rebuild and push to edge network. Presenter should lead a theatrical 5-second countdown ("3... 2... 1... Jetzt Handy aktualisieren!") so kids don't refresh prematurely.
+10. **Side bumper ricochet physics:** Giving side characters high restitution (`restitution: 1.05`) creates lively pinball bounces, while simple decaying wiggle multipliers (`wiggle *= 0.88`) give punchy hit reactions with zero external animation libraries.
 
 ---
 
