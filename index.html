@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1a1a2e">
+  <title>Jugendklub Lieberose – Das Spiel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui-overlay">
+      <!-- HUD -->
+      <div id="hud">
+        <div class="hud-item">PUNKTE: <span id="score">0</span></div>
+        <div class="hud-item">REKORD: <span id="highScore">0</span></div>
+      </div>
+
+      <!-- Start Screen -->
+      <div id="startScreen" class="overlay-screen active">
+        <div class="badge">🏰 Jugendklub Lieberose</div>
+        <h1>DAS SPIEL</h1>
+        <p class="subtitle">Live gecodet von uns!</p>
+        <div class="instructions">
+          <p>📱 <b>Steuerung:</b> Links / Rechts tippen oder wischen</p>
+        </div>
+        <button id="startBtn" class="btn">SPIEL STARTEN 🚀</button>
+      </div>
+
+      <!-- Game Over Screen -->
+      <div id="gameOverScreen" class="overlay-screen">
+        <h2>GAME OVER! 💥</h2>
+        <p>Deine Punkte: <span id="finalScore">0</span></p>
+        <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
+        <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
+      </div>
+
+      <!-- Audio unlock banner for mobile browsers -->
+      <button id="soundToggle" class="sound-btn" aria-label="Ton an/aus">🔊</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
