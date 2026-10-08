@@ -185,6 +185,8 @@ btn.addEventListener('click', async () => {
 13. **Array nicht während der Zeichen-Schleife umbauen:** `explodeBomb()` ersetzt `fallingBodies` per `filter`. Das ist im `collisionStart` (vor dem Zeichnen) okay, aber NICHT innerhalb der rückwärtigen Schleife im `gameLoop` – dort nur `splice(i, 1)` + `continue`.
 14. **Testen ohne Handy:** `./serve.sh` + Playwright (Viewport 390×760). `game.js` nutzt globale `let`/`function`, daher lassen sich `fallingBodies`, `throwBomb()`, `isPlaying` direkt per `browser_evaluate` prüfen. Nach „Game Over“ (`isPlaying=false`) laufen keine Kollisionen mehr – Tests sofort nach `startGame` machen. Das `favicon.ico`-404 in der Konsole ist bekannt und harmlos.
 15. **`.playwright-mcp/` nie committen:** `deploy.sh` macht `git add .` – Testordner stehen deshalb in `.gitignore`.
+16. **Live-Vibecoding Tempo & Niemals Nachfragen:** Bei Wünschen der Kinder auf der Bühne (z. B. „Den Hintergrund ändern“) NIEMALS interaktive Fragebögen oder Rückfragen (`ask_question`) stellen! Das unterbricht den Flow und dauert viel zu lange. Sofort eine kreative Entscheidung treffen („Bias for Action“), innerhalb von Sekunden umsetzen und deployen. Die Kinder rufen sowieso sofort die nächste Änderung rein.
+17. **Hintergrund-Presets in `GAME_CONFIG`:** Optische Themes und Hintergründe am besten über einfache Schalter oder Presets ansteuerbar halten, damit Änderungen blitzschnell sind.
 
 ---
 
