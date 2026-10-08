@@ -25,7 +25,7 @@
         <h1>KOBOLD & MAIS</h1>
         <p class="subtitle">🧌 Der Kobold & die Maispflanze 🌽</p>
         <div class="instructions">
-          <p>💣 Kobold und Mais werfen sich Bomben zu!<br>📱 Je schneller du schüttelst, desto schneller werfen sie.<br>👆 Tippen geht auch!</p>
+          <p>👆 Tippe auf den Kobold oder den Mais.<br>💣 Nur die angetippte Figur wirft eine Bombe!</p>
         </div>
         <button id="startBtn" class="btn">SPIEL STARTEN 🚀</button>
       </div>
@@ -38,10 +38,8 @@
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
       </div>
 
-      <div id="shakeControls">
-        <button id="shakeBtn" type="button">📱 Schütteln aktivieren</button>
-        <p id="shakeStatus" role="status">Schütteln freigeben oder zum Werfen tippen.</p>
-      </div>
+      <button id="koboldBtn" class="actor-btn" type="button" aria-label="Kobold wirft eine Bombe"></button>
+      <button id="cornBtn" class="actor-btn" type="button" aria-label="Mais wirft eine Bombe"></button>
 
       <!-- Audio unlock banner for mobile browsers -->
       <button id="soundToggle" class="sound-btn" aria-label="Ton an/aus">🔊</button>

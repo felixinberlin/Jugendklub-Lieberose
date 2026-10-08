@@ -19,9 +19,6 @@ const GAME_CONFIG = {
   // Die beiden werfen abwechselnd, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
-  bombCooldownMs: 1100,
-  shakeThreshold: 11,       // Beschleunigung in m/s²
-  shakeMinIntervalMs: 120, // Höchstens etwa acht Würfe pro Sekunde
   cleanBackground: true // Sauberer, ruhiger Bildschirm
 };
 
@@ -42,8 +39,6 @@ const gameOverScreen = document.getElementById('gameOverScreen');
 const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
 const soundToggle = document.getElementById('soundToggle');
-const shakeBtn = document.getElementById('shakeBtn');
-const shakeStatus = document.getElementById('shakeStatus');
 
 // Web Audio API Synthesizer
 let audioCtx = null;
@@ -122,7 +117,6 @@ let fallingBodies = [];
 let particles = [];
 let stars = [];
 
-let nextThrower = 'kobold';
 
 function initPhysics() {
   engine = Engine.create({ enableSleeping: false });
@@ -230,12 +224,11 @@ function spawnParticles(x, y, color = '#ffde59', count = 14) {
   }
 }
 
-// Beide Figuren werfen abwechselnd einen gezielten Bogen zur anderen Seite.
-let lastBombTime = 0;
-
-function throwBomb() {
-  if (!isPlaying) return;
-  const source = nextThrower === 'kobold' ? koboldBody : cornBody;
+// Eine angeklickte Figur wirft eine Bombe zur anderen Figur.
+function shootBomb(actor) {
+  if (!isPlaying || document.hidden) return;
+  const source = actor === 'kobold' ? koboldBody : actor === 'corn' ? cornBody : null;
+  if (!source) return;
   const target = source === koboldBody ? cornBody : koboldBody;
   const direction = source === koboldBody ? 1 : -1;
   const radius = GAME_CONFIG.bombSize * 0.42;
@@ -265,8 +258,6 @@ function throwBomb() {
   fallingBodies.push(body);
   if (source === koboldBody) koboldWiggle = 1;
   else cornWiggle = 1;
-  nextThrower = target.label;
-  lastBombTime = performance.now();
   playSound('throw');
 }
 
@@ -284,96 +275,13 @@ function explodeBomb(bomb) {
   });
 }
 
-// Sensorwerte bleiben ausschließlich im Speicher dieses Tabs.
-let motionEnabled = false;
-let lastShakeTime = -Infinity;
-let previousGravity = null;
-let lastImpulse = null;
-let shakeArmed = true;
-
-function resetShake() {
-  lastShakeTime = -Infinity;
-  previousGravity = null;
-  lastImpulse = null;
-  shakeArmed = true;
+// Native Buttons unterstützen Touch, Maus sowie Enter und Leertaste.
+for (const actor of ['kobold', 'corn']) {
+  document.getElementById(`${actor}Btn`).addEventListener('click', () => {
+    initAudio();
+    shootBomb(actor);
+  });
 }
-
-function shakeThrow() {
-  const now = performance.now();
-  if (!isPlaying || document.hidden || now - lastShakeTime < GAME_CONFIG.shakeMinIntervalMs) return;
-  lastShakeTime = now;
-  throwBomb();
-}
-
-function handleMotion(event) {
-  if (!isPlaying || document.hidden) return;
-  let acceleration = event.acceleration;
-  if (![acceleration?.x, acceleration?.y, acceleration?.z].every(Number.isFinite)) {
-    const gravity = event.accelerationIncludingGravity;
-    if (![gravity?.x, gravity?.y, gravity?.z].every(Number.isFinite)) return;
-    const current = { x: gravity.x, y: gravity.y, z: gravity.z };
-    if (!previousGravity) { previousGravity = current; return; }
-    acceleration = {
-      x: current.x - previousGravity.x,
-      y: current.y - previousGravity.y,
-      z: current.z - previousGravity.z
-    };
-    // Langsam veränderliche Schwerkraft herausfiltern, auch beim Drehen.
-    for (const axis of ['x', 'y', 'z']) previousGravity[axis] += (current[axis] - previousGravity[axis]) * 0.2;
-  }
-  const strength = Math.hypot(acceleration.x, acceleration.y, acceleration.z);
-  if (strength < GAME_CONFIG.shakeThreshold * 0.45) {
-    shakeArmed = true;
-    lastImpulse = null;
-    return;
-  }
-  const reversed = lastImpulse && acceleration.x * lastImpulse.x
-    + acceleration.y * lastImpulse.y + acceleration.z * lastImpulse.z < 0;
-  if (strength >= GAME_CONFIG.shakeThreshold && (shakeArmed || reversed)) {
-    shakeThrow();
-    shakeArmed = false;
-    lastImpulse = { x: acceleration.x, y: acceleration.y, z: acceleration.z };
-  }
-}
-
-shakeBtn.addEventListener('click', async () => {
-  initAudio();
-  const Motion = window.DeviceMotionEvent;
-  if (!Motion) {
-    shakeStatus.textContent = 'Keine Bewegungssensoren – tippe zum Werfen!';
-    return;
-  }
-  shakeBtn.disabled = true;
-  try {
-    // iOS: Die Anfrage erfolgt direkt innerhalb dieses Klicks.
-    if (typeof Motion.requestPermission === 'function') {
-      const permission = await Motion.requestPermission();
-      if (permission !== 'granted') {
-        shakeStatus.textContent = 'Nicht freigegeben – tippe zum Werfen!';
-        return;
-      }
-    }
-    if (!motionEnabled) window.addEventListener('devicemotion', handleMotion);
-    motionEnabled = true;
-    resetShake();
-    shakeBtn.textContent = '📱 Schütteln ist an';
-    shakeStatus.textContent = 'Schneller schütteln = schneller werfen!';
-  } catch (error) {
-    shakeStatus.textContent = 'Schütteln nicht verfügbar – tippe zum Werfen!';
-  } finally {
-    shakeBtn.disabled = motionEnabled;
-  }
-});
-
-// Tippen und Leertaste funktionieren auch ohne Sensoren.
-canvas.addEventListener('pointerdown', () => { initAudio(); shakeThrow(); });
-window.addEventListener('keydown', (event) => {
-  if (event.code !== 'Space' || event.repeat || event.target.closest('button')) return;
-  event.preventDefault();
-  initAudio();
-  shakeThrow();
-});
-document.addEventListener('visibilitychange', resetShake);
 
 // Start und Neustart
 function clearAllBodies() {
@@ -391,9 +299,6 @@ function startGame() {
 
   clearAllBodies();
   particles = [];
-  resetShake();
-  lastBombTime = 0;
-  nextThrower = 'kobold';
   koboldWiggle = 0;
   cornWiggle = 0;
 
@@ -402,7 +307,6 @@ function startGame() {
   newRecordMsgEl.style.display = 'none';
 
   createStars();
-  throwBomb();
 }
 
 startBtn.addEventListener('click', startGame);
@@ -469,7 +373,6 @@ function gameLoop(now) {
     // 2. Matter.js Physik-Schritt
     Engine.update(engine, dt);
 
-    if (now - lastBombTime >= GAME_CONFIG.bombCooldownMs) throwBomb();
 
     // 5. Physikalische Items zeichnen & aufräumen
     for (let i = fallingBodies.length - 1; i >= 0; i--) {
