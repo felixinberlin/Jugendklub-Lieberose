@@ -1,66 +1,77 @@
-# 🤖 AI Agent Guidelines – Jugendklub Lieberose Game
+# 🤖 AGENTS.md — Jugendklub Lieberose
 
-> **Audience:** AI agents (Antigravity, Cursor, Claude Code, Codex, etc.) working on this repository.
-> **Project Context:** This game is developed live via "Vibecoding" in front of kids at the Jugendklub Lieberose (Germany).
+> **Audience:** AI coding agents (Antigravity, Cursor, Claude Code, etc.) at the start of every session.
+> **Project Context:** A collection of small browser toys and games developed live via "Vibecoding" with kids at the **Jugendklub Lieberose** (Brandenburg, Germany).
 > **Production URL:** [https://jugendklub.vercel.app/](https://jugendklub.vercel.app/)
 > **GitHub Repository:** `felixinberlin/Jugendklub-Lieberose` (branch: `main`)
 
 ---
 
-## ⚡ Core Philosophy: Zero-Friction Live Coding
+## 1. 🎯 What This Project Is
 
-1. **NO BUILD STEPS**:
-   - Keep the project pure static vanilla HTML5, CSS, and modern JavaScript (`index.html`, `style.css`, `game.js`).
-   - Do **NOT** install heavy bundlers (Webpack, Vite, Rollup) or heavy game engines (Phaser, Godot Web, Unity).
-   - *Why?* During a live workshop on stage, compilation failures or missing npm dependencies break the live flow. Plain files deploy to Vercel in 10 seconds.
-
-2. **NO EXTERNAL ASSET DEPENDENCIES**:
-   - Do **NOT** rely on external image URLs or CDN links (which can fail on youth club Wi-Fi).
-   - Use **Canvas drawing, Emojis, and Procedural Particles** for sprites and animations.
-   - Use **Web Audio API** (`playTone`, synthesizer) for all sound effects.
-
-3. **MOBILE-FIRST TOUCH CONTROLS**:
-   - 90% of players are using iPhones or Android phones.
-   - Every feature MUST work seamlessly with single-finger touch or swipe.
-   - Never introduce UI elements that require keyboard-only inputs without a touch alternative.
+Interactive, zero-friction web toys and games for kids aged roughly 8–16.
+Kids open a URL on their phone or laptop (via a projected QR code), and something fun happens immediately.
+**No login, no app install, no account, no tutorial.**
+Polish matters less than: **"It works on the first try on a kid's phone."**
 
 ---
 
-## 📁 Repository Structure
+## 2. ⛔ Hard Constraints — NEVER Violate These
+
+If a user request would violate any of these, stop and clarify first:
+
+1. **NEVER introduce a build step.** No npm bundlers (Webpack, Vite, Rollup), no `package.json` scripts, no TypeScript compilation. The site must run by opening static HTML directly in any browser.
+2. **NEVER add a heavy framework.** No React, Vue, Svelte, Tailwind CLI, Phaser, or Unity WebGL. Pure Vanilla HTML5 + CSS + Modern JS only.
+3. **NEVER add a backend.** No API routes, no serverless functions, no external database. Everything runs client-side in the browser.
+4. **NEVER transmit or store personal data.** No analytics, no cookies, no tracking, no names, no photos, no telemetry. If sensors/mic/camera are used, data remains purely in memory on the device and vanishes upon tab close.
+5. **NEVER rely on flaky external CDNs.** Vendor libraries locally (like `matter.min.js`), or pin reliable CDNs (`cdn.jsdelivr.net` / `cdnjs.cloudflare.com`). Youth club Wi-Fi can drop at any moment.
+6. **NEVER write English UI text.** All user-facing strings, buttons, instructions, and error messages MUST be in **German**. Code comments may be German or English.
+7. **NEVER require authentication.** Everything is open and anonymous.
+
+---
+
+## 3. 📁 Repository & Architecture Structure
 
 ```
 /home/felix/Jugend/
-├── index.html        # Viewport, HUD overlay, start/game over screens, audio button
+├── AGENTS.md         # Master instructions for all AI agents (this file)
+├── README.md         # Human-facing overview with live link and QR code
+├── vercel.json       # Cache-Control: max-age=0 (ensures fresh code on refresh)
+├── deploy.sh         # 1-command git add/commit/push script (updates Vercel in 15s)
+├── qr-code.png       # Scannable QR code for the projector screen
+├── index.html        # Main landing page / active live game
 ├── style.css         # Arcade styling, safe-area insets, mobile touch lock
-├── matter.min.js     # Vendored Matter.js (2D rigid-body physics engine, 0 CDN deps)
-├── game.js           # Matter.js loop, touch inputs, Web Audio synthesizer, GAME_CONFIG
-├── vercel.json       # Cache-Control: max-age=0 (ensures kids see fresh code on refresh)
-├── deploy.sh         # 1-command git add/commit/push script
-├── qr-code.png       # Scannable QR code for projector screen
-└── AGENTS.md         # This agent instructions file
+├── matter.min.js     # Vendored Matter.js 2D physics engine (zero CDN deps)
+├── game.js           # Live game loop, Matter.js physics, Web Audio synthesizer
+└── [toy-name]/       # Optional future mini-games (e.g. gurken-angriff/index.html)
 ```
+
+### File Rules:
+- **Root game:** The main live-coded game lives at root (`index.html`, `style.css`, `game.js`).
+- **Additional toys:** Each additional toy lives in its own self-contained subfolder (`/gurken-angriff/index.html`).
+- **No deep nesting:** Never nest directories deeper than two levels.
 
 ---
 
-## 🎮 How `game.js` is Structured
+## 4. 🎮 The Live "Vibecoding" Architecture
 
-### 1. The `GAME_CONFIG` Object (Live Hacking Zone)
-Located at the top of `game.js`. Designed for instant modifications when kids shout ideas:
+### A. The `GAME_CONFIG` Object (Live Hacking Zone)
+Located at the top of `game.js`. Designed for instant modifications when kids shout ideas on stage:
 ```javascript
 const GAME_CONFIG = {
-  playerEmoji: '🚀',       // Change player character
+  playerEmoji: '🚀',       // Change player avatar (🐉, 🛹, 🐱, 🛸)
   playerSize: 52,
 
   // 🧪 Physics parameters (Super fun for kids!)
   gravityY: 0.9,          // 0.2 = Moon, 1.0 = Earth, 2.5 = Heavy Jupiter
   restitution: 0.85,      // Bounciness (0.0 = lead, 0.95 = super bouncy rubber ball)
-  frictionAir: 0.015,     // Air friction
+  frictionAir: 0.015,     // Air resistance
 
-  goodItems: [            // Catchable point items (with mass/density)
+  goodItems: [            // Catchable point items
     { emoji: '⭐', points: 1, size: 38, density: 0.001 },
     { emoji: '🍕', points: 2, size: 42, density: 0.0015 },
   ],
-  badItems: [             // Hazards
+  badItems: [             // Hazards & obstacles
     { emoji: '💣', damage: 1, size: 42, density: 0.002 },
   ],
   spawnRateMs: 850,
@@ -68,48 +79,120 @@ const GAME_CONFIG = {
 };
 ```
 
-### 2. Audio Engine (`initAudio` & `playTone`)
-- Uses browser Web Audio API.
-- Automatically resumed on first user touch to comply with mobile autoplay policies.
-- Synthesizes beeps, chimes, and explosions on the fly.
+### B. Procedural Audio Engine (`Web Audio API`)
+- Synthesize all beeps, chimes, bounces, and explosions on the fly.
+- **NEVER load external MP3/WAV files.**
+- Create / resume `AudioContext` only on the first user touch/click (mandatory for mobile iOS/Android autoplay policy).
+- Keep sound effects short (< 300 ms) and comfortable volume (`gain ≤ 0.3`).
 
-### 3. Rendering & DPI Scaling (`resizeCanvas`)
-- Handles `window.devicePixelRatio` for retina clarity.
-- Container constrained to `max-width: 500px` on desktop for portrait smartphone simulation.
-
-### 4. Input Handling
-- `touchstart` / `touchmove` / `touchend` with `{ passive: true }`.
-- Smooth lerp interpolation for player movement: `player.x += (player.targetX - player.x) * 0.22`.
-- Desktop mouse and `ArrowLeft` / `ArrowRight` fallback for local testing.
-
----
-
-## 🛠️ Common Vibecoding Recipes for Agents
-
-When the user asks to add features suggested by the kids, use these patterns:
-
-### Recipe A: Adding a Power-up or Special Item
-1. Add item to `GAME_CONFIG.goodItems` with a special property (e.g. `isPowerup: true`, `powerType: 'shield'`).
-2. In collision check (`dist < hitRadius`), check `item.powerType`:
-   - Shield: `player.hasShield = true;`
-   - Turbo: `GAME_CONFIG.baseSpeed *= 1.5; setTimeout(...)`
-   - Magnet: pull nearby good items towards player.
-
-### Recipe B: Adding a Boss or Giant Hazard
-1. Spawn a special hazard with larger size (e.g., `size: 80`, `emoji: '🦖'`).
-2. Add a wobble or sine-wave horizontal motion in `gameLoop`:
-   `item.x += Math.sin(now / 200) * 3;`
-
-### Recipe C: Changing Background / Themes
-- Day/Night switch or seasonal themes (snow, underwater, space).
-- Adjust the background clearing color or star drawing function.
+### C. Live Deployment Protocol
+Whenever an edit is made:
+1. Verify syntax: `node -c game.js`.
+2. Run `./deploy.sh "<descriptive commit message>"`.
+3. Pushes to `origin main` $\rightarrow$ Vercel automatically deploys within ~15 seconds.
+4. Inform the user to tell the kids: *"3... 2... 1... Handy aktualisieren!"*
 
 ---
 
-## 🚀 Deployment Protocol
+## 5. ⚙️ Matter.js 2D Physics Guidelines
 
-Whenever an edit to the game is completed:
-1. Verify syntax (no unclosed tags, valid JS).
-2. Execute `./deploy.sh "<descriptive commit message>"`
-3. Confirm deployment pushes to `origin main`.
-4. Inform user that Vercel is updating and kids can refresh their phones in ~15 seconds.
+- Destructure at top: `const { Engine, Bodies, Body, Composite, Events } = Matter;`
+- **Coordinate system:** `(0,0)` is top-left. Positive Y is **down**. Bodies are positioned at their **center**.
+- **Impulse vs Force:**
+  - Instant kicks / bounces / launches $\rightarrow$ `Body.setVelocity` or `Body.setAngularVelocity`
+  - Continuous movement $\rightarrow$ `Body.applyForce`
+- **Static vs Dynamic:** `isStatic: true` for ground/walls and kinematic player; dynamic for falling/bouncing items.
+- **Collision Detection:** Listen to `Events.on(engine, 'collisionStart', ...)` and check body labels/customData.
+- **Canvas Rendering with Retina DPI:**
+  - Always handle `window.devicePixelRatio`.
+  - Always wrap custom drawings in `ctx.save()` and `ctx.restore()`.
+- **Memory & FPS Safety:** Always remove off-screen bodies with `Composite.remove(engine.world, body)` so phone performance stays at 60 FPS.
+
+---
+
+## 6. 📱 Mobile Browser & Hardware APIs
+
+All vanilla JS, no external libraries:
+
+### Viewport & CSS Lock
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+```
+```css
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+```
+
+### Orientation
+- **Vertical dodger/catcher games:** Portrait layout (constrained to `max-width: 500px` on desktop).
+- **Horizontal slingshot/runner games:** Landscape layout with a polite *"Bitte das Handy quer halten"* overlay in portrait.
+
+### Microphone (Vanilla Web Audio)
+```js
+const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+const ctx = new AudioContext();
+const src = ctx.createMediaStreamSource(stream);
+// Safari: Call ctx.resume() after permission dialog resolves.
+```
+
+### Gyroscope & Accelerometer (Tilt Controls)
+iOS requires user gesture permission before motion events fire:
+```js
+btn.addEventListener('click', async () => {
+  if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    const perm = await DeviceOrientationEvent.requestPermission();
+    if (perm !== 'granted') return;
+  }
+  window.addEventListener('deviceorientation', (e) => {
+    // e.gamma = left/right tilt (-90 to 90)
+  });
+});
+```
+
+---
+
+## 7. 👶 UI / UX Guidelines for Kids
+
+- **Tap targets ≥ 44×44 px:** Kids' fingers are imprecise.
+- **Readable typography:** Minimum 16px, prefer 18–24px.
+- **Bright, high-contrast arcade colors:** Fun gradients, neon highlights, particles.
+- **Hilarious fail states:** Losing should be funny, never punishing.
+- **Instant Restart:** Single, prominent *"NOCHMAL SPIELEN 🔄"* button.
+- **Score Memory:** Only non-identifying game numbers (e.g. `lieberose_highscore`) in `localStorage`.
+
+---
+
+## 8. 🧠 Lessons Learned (Compound Memory)
+
+*Append new non-obvious bugs and fixes here:*
+1. **Matter.js bodies at `(0,0)` are off-screen:** Always spawn at world center or screen width/2.
+2. **iOS AudioContext is suspended by default:** Must be resumed/created inside a `touchstart` or `click` event.
+3. **Safari cache after deploys:** `vercel.json` must send `Cache-Control: public, max-age=0, must-revalidate`.
+4. **iOS sensor permission:** Must be triggered by direct user click, never on window load.
+5. **Touch gestures triggering browser refresh:** Use `touch-action: manipulation; overflow: hidden;`.
+6. **Retina Canvas blur:** Scale canvas buffer by `window.devicePixelRatio` and scale 2D context.
+
+---
+
+## 9. 🗣️ Shared Vocabulary
+
+- **Toy:** A single playable page or mini-game.
+- **Bird / Projectile:** The player's launcher in slingshot toys.
+- **Gurke:** The iconic local Spreewald cucumber target (the Lieberose "pig").
+- **Vibecoding:** Live conversational coding on stage where kids shout ideas and AI updates the code.
+
+---
+
+## 10. ✅ Verification Checklist Before Declaring "Done"
+
+- [ ] Works by opening file directly in browser (no build errors).
+- [ ] Tested with mobile viewport emulation or real phone.
+- [ ] Touch/tap controls work smoothly with one finger.
+- [ ] All user-facing UI text is in **German**.
+- [ ] No console errors.
+- [ ] Audio unlocks properly after first tap.
+- [ ] No external asset/CDN dependencies that could break offline.
+- [ ] Deployed to Vercel via `./deploy.sh`.
