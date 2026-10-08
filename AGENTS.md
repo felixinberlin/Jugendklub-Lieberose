@@ -181,6 +181,34 @@ btn.addEventListener('click', async () => {
 
 ---
 
+## 8b. 🗺️ Code-Map `game.js` (Zeilen ungefähr – per `grep -n "function name" game.js` prüfen)
+
+| Was | Wo |
+|---|---|
+| `GAME_CONFIG` (Emojis, Physik, Items, Spawnrate) | Z. 7 |
+| Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …) | Z. 42–58 |
+| Audio: `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce` | Z. 61–108 |
+| State: `isPlaying`, `score`, `highScore`, `koboldBody`, `cornBody`, `cornWiggle`, `fallingBodies`, `particles`, `player` | Z. 111–142 |
+| `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `player`, `kobold`, `corn`, `goodItem`, `badItem`) | Z. 144–224 |
+| `resizeCanvas()` (Bumper per `Body.setPosition` neu setzen!) | Z. 226 |
+| `spawnPhysicsItem()` – Vorlage für jeden neuen fallenden/fliegenden Body | Z. 269 |
+| `spawnParticles(x, y, color, count)` | Z. 300 |
+| **Eingabe**: `handleTouchMove`, `touchstart/touchmove`, Maus, Tastatur | Z. 318–361 |
+| `startGame()`, `gameOver()`, `clearAllBodies()` | Z. 364–411 |
+| `gameLoop(now)` – Zeichnen (Kobold, Mais, Items, Partikel, Spieler) + Spawn-Timer | Z. 416–548 |
+
+## 8c. 🍳 Rezepte für typische Kinder-Wünsche
+
+Immer danach: `node -c game.js` → Handy-Viewport testen (Playwright oder `python3 -m http.server`) → `./deploy.sh "…"`.
+
+- **Neues Item / neue Gefahr:** nur Eintrag in `goodItems` / `badItems` in `GAME_CONFIG` (emoji, points/damage, size, density). Kein weiterer Code nötig.
+- **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.
+- **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (Z. ~324). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
+- **Figur wirft/schießt etwas (z. B. Mais wirft Bombe):** Funktion nach Vorbild `spawnPhysicsItem()` – `Bodies.circle` an der Position von `cornBody`/`koboldBody`, `Body.setVelocity`, eigenes `label` (z. B. `'playerBomb'`), in `fallingBodies` pushen (damit es off-screen entfernt wird). Treffer im `collisionStart`-Handler per Label prüfen; `Composite.remove` + `spawnParticles` + `playSound`. Die Figur danach `…Wiggle = 1` setzen.
+- **Neue Figur am Rand:** Body wie `cornBody` (static, hohe `restitution`), Position in `resizeCanvas()` mitführen, Zeichnen im `gameLoop`, Wiggle-Variable wie `cornWiggle`.
+- **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir`, `spawnRateMs` in `GAME_CONFIG`.
+- **Neuer Text / Button:** nur Deutsch, in `index.html`; Tap-Fläche ≥ 44×44 px.
+
 ## 9. 🗣️ Shared Vocabulary
 
 - **Toy:** A single playable page or mini-game.
