@@ -28,7 +28,8 @@ const GAME_CONFIG = {
   baseSpeed: 1.0,
   speedIncrement: 0.05, // Wird mit jedem Punkt ein bisschen schneller
   spawnRateMs: 800,
-  backgroundStars: 40
+  backgroundStars: 40,
+  rainbowBackground: true // 🌈 Regenbogen-Hintergrund!
 };
 
 // Canvas Setup
@@ -297,9 +298,23 @@ function gameLoop(now) {
   const dt = Math.min((now - lastTime) / 1000, 0.1);
   lastTime = now;
 
-  ctx.clearRect(0, 0, width, height);
+  // 1. Draw Background (Regenbogen!)
+  if (GAME_CONFIG.rainbowBackground) {
+    const rainbowGrad = ctx.createLinearGradient(0, 0, 0, height);
+    const hueShift = (now / 25) % 360; // Fließende Regenbogenfarben
+    rainbowGrad.addColorStop(0.0, `hsl(${hueShift}, 85%, 22%)`);
+    rainbowGrad.addColorStop(0.2, `hsl(${(hueShift + 60) % 360}, 85%, 25%)`);
+    rainbowGrad.addColorStop(0.4, `hsl(${(hueShift + 120) % 360}, 85%, 24%)`);
+    rainbowGrad.addColorStop(0.6, `hsl(${(hueShift + 180) % 360}, 85%, 22%)`);
+    rainbowGrad.addColorStop(0.8, `hsl(${(hueShift + 240) % 360}, 85%, 20%)`);
+    rainbowGrad.addColorStop(1.0, `hsl(${(hueShift + 300) % 360}, 85%, 18%)`);
+    ctx.fillStyle = rainbowGrad;
+    ctx.fillRect(0, 0, width, height);
+  } else {
+    ctx.clearRect(0, 0, width, height);
+  }
 
-  // 1. Draw Starfield Background
+  // Draw Starfield on top
   ctx.fillStyle = '#ffffff';
   for (const s of stars) {
     s.y += s.speed;
