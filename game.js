@@ -5,33 +5,38 @@
  * Hier können wir live während des Workshops Physik und Spielwerte anpassen!
  */
 const GAME_CONFIG = {
-  // Spieler
-  playerEmoji: '🚀',
+  // Spieler (Korb / Sammler zwischen Kobold und Maispflanze)
+  playerEmoji: '🧺',
   playerSize: 52,
+
+  // Charaktere auf beiden Seiten
+  koboldEmoji: '🧌',
+  koboldSize: 70,
+  cornEmoji: '🌽',
+  cornSize: 74,
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
   restitution: 0.85,      // Flummi-Effekt! (0.0 = Blei, 0.95 = Mega-Flummi)
   frictionAir: 0.015,     // Luftwiderstand
 
-  // Gute Items (geben Punkte & bouncen!)
+  // Gute Items (Popcorn, Maiskolben, Waldpilze, Kobold-Kristalle)
   goodItems: [
-    { emoji: '⭐', points: 1, size: 38, density: 0.001 },
-    { emoji: '🍕', points: 2, size: 42, density: 0.0015 },
-    { emoji: '🥤', points: 2, size: 38, density: 0.001 },
+    { emoji: '🍿', points: 1, size: 36, density: 0.001 },
+    { emoji: '🌽', points: 2, size: 40, density: 0.0015 },
+    { emoji: '🍄', points: 3, size: 42, density: 0.0012 },
     { emoji: '💎', points: 5, size: 44, density: 0.002 }
   ],
 
-  // Gefahren (Game Over bei Berührung!)
+  // Gefahren (Steine, Feuer, Bomben)
   badItems: [
-    { emoji: '💣', damage: 1, size: 42, density: 0.002 },
-    { emoji: '👾', damage: 1, size: 44, density: 0.0015 },
-    { emoji: '⚡', damage: 1, size: 40, density: 0.001 }
+    { emoji: '🪨', damage: 1, size: 42, density: 0.002 },
+    { emoji: '🔥', damage: 1, size: 40, density: 0.001 },
+    { emoji: '💣', damage: 1, size: 42, density: 0.002 }
   ],
 
   spawnRateMs: 850,
-  backgroundStars: 40,
-  rainbowBackground: true // 🌈 Animierter Regenbogen
+  cleanBackground: true // Sauberer, ruhiger Bildschirm
 };
 
 // Matter.js Module
@@ -117,6 +122,9 @@ highScoreEl.textContent = highScore;
 let engine;
 let playerBody;
 let leftWall, rightWall;
+let koboldBody, cornBody;
+let koboldWiggle = 0;
+let cornWiggle = 0;
 let fallingBodies = [];
 let particles = [];
 let stars = [];
@@ -137,7 +145,7 @@ function initPhysics() {
   engine = Engine.create({ enableSleeping: false });
   engine.gravity.y = GAME_CONFIG.gravityY;
 
-  // Seitenwände, damit physikalische Items abprallen können!
+  // Seitenwände
   const wallThickness = 60;
   leftWall = Bodies.rectangle(-wallThickness / 2, height / 2, wallThickness, height * 2, {
     isStatic: true,
@@ -155,9 +163,23 @@ function initPhysics() {
     restitution: 0.9
   });
 
-  Composite.add(engine.world, [leftWall, rightWall, playerBody]);
+  // Kobold auf der linken Seite (Physik-Bumper)
+  koboldBody = Bodies.circle(46, height * 0.55, 34, {
+    isStatic: true,
+    label: 'kobold',
+    restitution: 1.05 // Bounct Items extra stark weg!
+  });
 
-  // Kollisions-Events (Kollision zwischen Spieler und Items / Items untereinander)
+  // Maispflanze auf der rechten Seite (Physik-Bumper)
+  cornBody = Bodies.circle(width - 46, height * 0.55, 34, {
+    isStatic: true,
+    label: 'corn',
+    restitution: 1.05 // Bounct Items extra stark weg!
+  });
+
+  Composite.add(engine.world, [leftWall, rightWall, playerBody, koboldBody, cornBody]);
+
+  // Kollisions-Events
   Events.on(engine, 'collisionStart', (event) => {
     if (!isPlaying) return;
 
@@ -178,14 +200,23 @@ function initPhysics() {
           score += targetItem.customData.points;
           scoreEl.textContent = score;
           playSound(targetItem.customData.points > 2 ? 'gem' : 'point');
-          spawnParticles(targetItem.position.x, targetItem.position.y, '#67e8f9', 16);
+          spawnParticles(targetItem.position.x, targetItem.position.y, '#fef08a', 16);
 
           // Aus Matter.js entfernen
           Composite.remove(engine.world, targetItem);
           fallingBodies = fallingBodies.filter(b => b !== targetItem);
         }
+      } else if (bodyA.label === 'kobold' || bodyB.label === 'kobold') {
+        // Kobold getroffen!
+        playSound('bounce');
+        koboldWiggle = 1.0;
+        spawnParticles(46, height * 0.55, '#a7f3d0', 6);
+      } else if (bodyA.label === 'corn' || bodyB.label === 'corn') {
+        // Maispflanze getroffen!
+        playSound('bounce');
+        cornWiggle = 1.0;
+        spawnParticles(width - 46, height * 0.55, '#fef08a', 6);
       } else if (bodyA.customData && bodyB.customData) {
-        // Items prallen aufeinander ab! Leises Plopp-Geräusch
         playSound('bounce');
       }
     }
@@ -207,6 +238,12 @@ function resizeCanvas() {
 
   if (playerBody) {
     Body.setPosition(playerBody, { x: player.x, y: player.y });
+  }
+  if (koboldBody) {
+    Body.setPosition(koboldBody, { x: 46, y: height * 0.55 });
+  }
+  if (cornBody) {
+    Body.setPosition(cornBody, { x: width - 46, y: height * 0.55 });
   }
   if (leftWall && rightWall) {
     Body.setPosition(leftWall, { x: -30, y: height / 2 });
@@ -380,31 +417,55 @@ function gameLoop(now) {
   const dt = Math.min((now - lastTime), 100);
   lastTime = now;
 
-  // 1. Hintergrund zeichnen (Regenbogen & Sterne)
-  if (GAME_CONFIG.rainbowBackground) {
-    const rainbowGrad = ctx.createLinearGradient(0, 0, 0, height);
-    const hueShift = (now / 25) % 360;
-    rainbowGrad.addColorStop(0.0, `hsl(${hueShift}, 85%, 22%)`);
-    rainbowGrad.addColorStop(0.2, `hsl(${(hueShift + 60) % 360}, 85%, 25%)`);
-    rainbowGrad.addColorStop(0.4, `hsl(${(hueShift + 120) % 360}, 85%, 24%)`);
-    rainbowGrad.addColorStop(0.6, `hsl(${(hueShift + 180) % 360}, 85%, 22%)`);
-    rainbowGrad.addColorStop(0.8, `hsl(${(hueShift + 240) % 360}, 85%, 20%)`);
-    rainbowGrad.addColorStop(1.0, `hsl(${(hueShift + 300) % 360}, 85%, 18%)`);
-    ctx.fillStyle = rainbowGrad;
-    ctx.fillRect(0, 0, width, height);
-  } else {
-    ctx.clearRect(0, 0, width, height);
-  }
+  // 1. Sauberer, ruhiger Hintergrund (Lieberoser Zauberwald)
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+  bgGrad.addColorStop(0.0, '#0b132b');  // Klares Nachtblau
+  bgGrad.addColorStop(0.65, '#1c2541'); // Sanftes Schieferblau
+  bgGrad.addColorStop(1.0, '#064e3b');  // Grüner Waldboden
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, width, height);
 
-  // Sterne
+  // Sanfte Sterne am Nachthimmel
   ctx.fillStyle = '#ffffff';
   for (const s of stars) {
-    s.y += s.speed;
-    if (s.y > height) s.y = 0;
-    ctx.globalAlpha = s.alpha;
+    s.y += s.speed * 0.3;
+    if (s.y > height * 0.7) s.y = 0;
+    ctx.globalAlpha = s.alpha * 0.5;
     ctx.fillRect(s.x, s.y, s.size, s.size);
   }
   ctx.globalAlpha = 1.0;
+
+  // 🧌 Kobold auf der linken Seite zeichnen
+  ctx.save();
+  const kY = height * 0.55 + Math.sin(now / 350) * 4;
+  ctx.translate(46, kY);
+  ctx.rotate(Math.sin(now / 420) * 0.06 + (koboldWiggle * 0.25));
+  ctx.font = `${GAME_CONFIG.koboldSize}px -apple-system, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(GAME_CONFIG.koboldEmoji, 0, 0);
+  ctx.font = 'bold 10px -apple-system, sans-serif';
+  ctx.fillStyle = '#6ee7b7';
+  ctx.fillText('KOBOLD', 0, 42);
+  ctx.restore();
+
+  // 🌽 Maispflanze auf der rechten Seite zeichnen
+  ctx.save();
+  const cY = height * 0.55 + Math.cos(now / 380) * 4;
+  ctx.translate(width - 46, cY);
+  ctx.rotate(Math.sin(now / 480) * 0.08 + (cornWiggle * 0.25));
+  ctx.font = `${GAME_CONFIG.cornSize}px -apple-system, sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(GAME_CONFIG.cornEmoji, 0, 0);
+  ctx.font = 'bold 10px -apple-system, sans-serif';
+  ctx.fillStyle = '#fef08a';
+  ctx.fillText('MAIS', 0, 42);
+  ctx.restore();
+
+  // Wiggle-Dämpfung
+  koboldWiggle *= 0.88;
+  cornWiggle *= 0.88;
 
   if (isPlaying) {
     // 2. Matter.js Physik-Schritt
