@@ -35,6 +35,13 @@ const GAME_CONFIG = {
     { emoji: '💣', damage: 1, size: 42, density: 0.002 }
   ],
 
+  // 💣 Mais-Bombe (Doppeltippen / Doppelklick / Leertaste)
+  bombEmoji: '💣',
+  bombSize: 44,
+  bombCooldownMs: 1000,   // Wartezeit zwischen zwei Bomben
+  bombRadius: 110,        // Explosions-Größe: alle Gefahren darin verschwinden
+  doubleTapMs: 320,       // Max. Zeit zwischen zwei Taps
+
   spawnRateMs: 850,
   cleanBackground: true // Sauberer, ruhiger Bildschirm
 };
@@ -99,6 +106,12 @@ function playSound(type) {
     setTimeout(() => playTone(90, 'sawtooth', 0.3, 0.25), 50);
   } else if (type === 'bounce') {
     playTone(320, 'sine', 0.05, 0.08);
+  } else if (type === 'throw') {
+    playTone(300, 'triangle', 0.1, 0.15);
+    setTimeout(() => playTone(500, 'triangle', 0.1, 0.15), 60);
+  } else if (type === 'boom') {
+    playTone(120, 'sawtooth', 0.28, 0.28);
+    playTone(70, 'square', 0.28, 0.2);
   }
 }
 
@@ -186,6 +199,15 @@ function initPhysics() {
     for (const pair of event.pairs) {
       const { bodyA, bodyB } = pair;
       let targetItem = null;
+
+      // 💣 Mais-Bombe: explodiert an Gefahren, sonst prallt sie ab
+      const bomb = (bodyA.customData && bodyA.customData.isPlayerBomb) ? bodyA
+                 : (bodyB.customData && bodyB.customData.isPlayerBomb) ? bodyB : null;
+      if (bomb) {
+        const other = bomb === bodyA ? bodyB : bodyA;
+        if (other.customData && other.customData.isBad && !bomb.exploded) explodeBomb(bomb);
+        continue;
+      }
 
       if (bodyA.label === 'player' && bodyB.customData) targetItem = bodyB;
       else if (bodyB.label === 'player' && bodyA.customData) targetItem = bodyA;
@@ -314,6 +336,75 @@ function spawnParticles(x, y, color = '#ffde59', count = 14) {
   }
 }
 
+// 💣 Mais wirft eine Bombe
+let lastBombTime = 0;
+
+function throwBomb() {
+  if (!isPlaying) return;
+  const now = performance.now();
+  if (now - lastBombTime < GAME_CONFIG.bombCooldownMs) return;
+  lastBombTime = now;
+
+  const radius = GAME_CONFIG.bombSize * 0.42;
+  const body = Bodies.circle(width - 46 - 34 - radius - 4, height * 0.55 - 20, radius, {
+    restitution: 0.5,
+    frictionAir: GAME_CONFIG.frictionAir,
+    density: 0.002,
+    label: 'playerBomb',
+    customData: {
+      emoji: GAME_CONFIG.bombEmoji,
+      size: GAME_CONFIG.bombSize,
+      points: 0,
+      isBad: false,
+      isPlayerBomb: true,
+      born: now
+    }
+  });
+  Body.setVelocity(body, { x: -6, y: -8 });
+  Body.setAngularVelocity(body, -0.25);
+
+  Composite.add(engine.world, body);
+  fallingBodies.push(body);
+
+  cornWiggle = 1.0;
+  playSound('throw');
+}
+
+function explodeBomb(bomb) {
+  bomb.exploded = true;
+  const { x, y } = bomb.position;
+  playSound('boom');
+  spawnParticles(x, y, '#ff9f1c', 30);
+  spawnParticles(x, y, '#ffde59', 16);
+
+  for (const b of fallingBodies) {
+    if (b === bomb) continue;
+    if (b.customData.isBad && Math.hypot(b.position.x - x, b.position.y - y) < GAME_CONFIG.bombRadius) {
+      b.exploded = true;
+      spawnParticles(b.position.x, b.position.y, '#ff6b6b', 10);
+    }
+  }
+  // Entfernen (nach der Schleife, damit das Array stabil bleibt)
+  fallingBodies = fallingBodies.filter(b => {
+    if (b.exploded) { Composite.remove(engine.world, b); return false; }
+    return true;
+  });
+}
+
+// Doppeltippen / Doppelklick erkennen (dblclick ist auf iOS unzuverlässig)
+let lastTapTime = 0;
+let lastTouchTime = 0;
+
+function registerTap() {
+  const now = performance.now();
+  if (now - lastTapTime < GAME_CONFIG.doubleTapMs) {
+    lastTapTime = 0;
+    throwBomb();
+  } else {
+    lastTapTime = now;
+  }
+}
+
 // Touch & Steuerung
 function handleTouchMove(clientX) {
   const rect = container.getBoundingClientRect();
@@ -324,6 +415,8 @@ function handleTouchMove(clientX) {
 container.addEventListener('touchstart', (e) => {
   initAudio();
   if (!isPlaying) return;
+  lastTouchTime = performance.now();
+  registerTap();
   handleTouchMove(e.touches[0].clientX);
 }, { passive: true });
 
@@ -338,6 +431,8 @@ container.addEventListener('mousedown', (e) => {
   initAudio();
   if (!isPlaying) return;
   isMouseDown = true;
+  // Handys schicken nach dem Touch noch ein Maus-Event – das nicht doppelt zählen
+  if (performance.now() - lastTouchTime > 800) registerTap();
   handleTouchMove(e.clientX);
 });
 
@@ -351,6 +446,7 @@ window.addEventListener('mouseup', () => { isMouseDown = false; });
 // Tastatur (Pfeile / A & D)
 window.addEventListener('keydown', (e) => {
   initAudio();
+  if (e.key === ' ') { e.preventDefault(); throwBomb(); }
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') player.movingLeft = true;
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') player.movingRight = true;
 });
@@ -376,6 +472,8 @@ function startGame() {
 
   clearAllBodies();
   particles = [];
+  lastBombTime = 0;
+  lastTapTime = 0;
 
   player.x = width / 2;
   player.targetX = width / 2;
@@ -497,6 +595,14 @@ function gameLoop(now) {
 
       // Aus dem Bildschirm gefallen?
       if (pos.y > height + 80) {
+        Composite.remove(engine.world, b);
+        fallingBodies.splice(i, 1);
+        continue;
+      }
+
+      // Bombe nach 4 s ohne Treffer: leise verpuffen
+      if (data.isPlayerBomb && now - data.born > 4000) {
+        spawnParticles(pos.x, pos.y, '#9ca3af', 8);
         Composite.remove(engine.world, b);
         fallingBodies.splice(i, 1);
         continue;

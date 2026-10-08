@@ -38,6 +38,7 @@ If a user request would violate any of these, stop and clarify first:
 ├── README.md         # Human-facing overview with live link and QR code
 ├── vercel.json       # Cache-Control: max-age=0 (ensures fresh code on refresh)
 ├── deploy.sh         # 1-command git add/commit/push script (updates Vercel in 15s)
+├── serve.sh          # Lokale Vorschau ohne Cache: ./serve.sh → http://localhost:8000
 ├── qr-code.png       # Scannable QR code for the projector screen
 ├── index.html        # Main landing page / active live game
 ├── style.css         # Arcade styling, safe-area insets, mobile touch lock
@@ -179,32 +180,41 @@ btn.addEventListener('click', async () => {
 9. **Deploy build delay cushion:** Vercel takes ~10–15 seconds to rebuild and push to edge network. Presenter should lead a theatrical 5-second countdown ("3... 2... 1... Jetzt Handy aktualisieren!") so kids don't refresh prematurely.
 10. **Side bumper ricochet physics:** Giving side characters high restitution (`restitution: 1.05`) creates lively pinball bounces, while simple decaying wiggle multipliers (`wiggle *= 0.88`) give punchy hit reactions with zero external animation libraries.
 
+11. **Doppeltippen:** `dblclick` ist auf iOS unzuverlässig. `registerTap()` vergleicht Zeitstempel (`doubleTapMs`). Handys feuern nach `touchstart` noch ein emuliertes `mousedown` – das zählt sonst als 2. Tap (= jeder Einzeltipp würde werfen). Lösung: `lastTouchTime` merken und `mousedown` innerhalb von 800 ms ignorieren. Maus-Doppelklick und Leertaste laufen über denselben Weg (`throwBomb()`).
+12. **Eigene Projektile im `collisionStart`-Handler:** Der Handler behandelt jeden Body mit `customData` + Spieler-Kontakt als „Item einsammeln“. Neue Projektile (`isPlayerBomb`) deshalb ganz oben im Pair-Loop abfangen und mit `continue` verlassen, sonst werden sie wie gute Items eingesammelt.
+13. **Array nicht während der Zeichen-Schleife umbauen:** `explodeBomb()` ersetzt `fallingBodies` per `filter`. Das ist im `collisionStart` (vor dem Zeichnen) okay, aber NICHT innerhalb der rückwärtigen Schleife im `gameLoop` – dort nur `splice(i, 1)` + `continue`.
+14. **Testen ohne Handy:** `./serve.sh` + Playwright (Viewport 390×760). `game.js` nutzt globale `let`/`function`, daher lassen sich `fallingBodies`, `throwBomb()`, `isPlaying` direkt per `browser_evaluate` prüfen. Nach „Game Over“ (`isPlaying=false`) laufen keine Kollisionen mehr – Tests sofort nach `startGame` machen. Das `favicon.ico`-404 in der Konsole ist bekannt und harmlos.
+15. **`.playwright-mcp/` nie committen:** `deploy.sh` macht `git add .` – Testordner stehen deshalb in `.gitignore`.
+
 ---
 
 ## 8b. 🗺️ Code-Map `game.js` (Zeilen ungefähr – per `grep -n "function name" game.js` prüfen)
 
 | Was | Wo |
 |---|---|
-| `GAME_CONFIG` (Emojis, Physik, Items, Spawnrate) | Z. 7 |
+| `GAME_CONFIG` (Emojis, Physik, Items, Bombe, Spawnrate) | Z. 7 |
 | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …) | Z. 42–58 |
-| Audio: `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce` | Z. 61–108 |
-| State: `isPlaying`, `score`, `highScore`, `koboldBody`, `cornBody`, `cornWiggle`, `fallingBodies`, `particles`, `player` | Z. 111–142 |
-| `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `player`, `kobold`, `corn`, `goodItem`, `badItem`) | Z. 144–224 |
-| `resizeCanvas()` (Bumper per `Body.setPosition` neu setzen!) | Z. 226 |
-| `spawnPhysicsItem()` – Vorlage für jeden neuen fallenden/fliegenden Body | Z. 269 |
-| `spawnParticles(x, y, color, count)` | Z. 300 |
-| **Eingabe**: `handleTouchMove`, `touchstart/touchmove`, Maus, Tastatur | Z. 318–361 |
-| `startGame()`, `gameOver()`, `clearAllBodies()` | Z. 364–411 |
-| `gameLoop(now)` – Zeichnen (Kobold, Mais, Items, Partikel, Spieler) + Spawn-Timer | Z. 416–548 |
+| Audio: `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom` | Z. 68–118 |
+| State: `isPlaying`, `score`, `highScore`, `koboldBody`, `cornBody`, `cornWiggle`, `fallingBodies`, `particles`, `player` | Z. 124–155 |
+| `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `player`, `kobold`, `corn`, `goodItem`, `badItem`, `playerBomb`) | Z. 157–246 |
+| `resizeCanvas()` (Bumper per `Body.setPosition` neu setzen!) | Z. 248 |
+| `spawnPhysicsItem()` – Vorlage für jeden neuen fallenden/fliegenden Body | Z. 291 |
+| `spawnParticles(x, y, color, count)` | Z. 322 |
+| **Mais-Bombe:** `throwBomb()`, `explodeBomb()`, `registerTap()` (Doppeltipp-Erkennung) – Muster für „Figur wirft etwas“ | Z. 340–406 |
+| **Eingabe**: `handleTouchMove`, `touchstart/touchmove`, Maus, Tastatur (Leertaste = Bombe) | Z. 409–458 |
+| `startGame()`, `gameOver()`, `clearAllBodies()` | Z. 460–510 |
+| `gameLoop(now)` – Zeichnen (Kobold, Mais, Items, Partikel, Spieler) + Spawn-Timer | Z. 514–655 |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 
-Immer danach: `node -c game.js` → Handy-Viewport testen (Playwright oder `python3 -m http.server`) → `./deploy.sh "…"`.
+Immer danach: `node -c game.js` → lokal testen mit `./serve.sh` (http://localhost:8000, kein Cache) bzw. Playwright im Handy-Viewport (390×760) → `./deploy.sh "…"`.
+
+**Vorbild für alles Neue:** die Mais-Bombe (`throwBomb` / `explodeBomb` / `registerTap`). Die Rezepte unten verweisen darauf.
 
 - **Neues Item / neue Gefahr:** nur Eintrag in `goodItems` / `badItems` in `GAME_CONFIG` (emoji, points/damage, size, density). Kein weiterer Code nötig.
 - **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.
 - **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (Z. ~324). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
-- **Figur wirft/schießt etwas (z. B. Mais wirft Bombe):** Funktion nach Vorbild `spawnPhysicsItem()` – `Bodies.circle` an der Position von `cornBody`/`koboldBody`, `Body.setVelocity`, eigenes `label` (z. B. `'playerBomb'`), in `fallingBodies` pushen (damit es off-screen entfernt wird). Treffer im `collisionStart`-Handler per Label prüfen; `Composite.remove` + `spawnParticles` + `playSound`. Die Figur danach `…Wiggle = 1` setzen.
+- **Figur wirft/schießt etwas:** existiert schon als `throwBomb()` – kopieren und anpassen. Prinzip: Funktion nach Vorbild `spawnPhysicsItem()` – `Bodies.circle` an der Position von `cornBody`/`koboldBody`, `Body.setVelocity`, eigenes `label` (z. B. `'playerBomb'`), in `fallingBodies` pushen (damit es off-screen entfernt wird). Treffer im `collisionStart`-Handler per Label prüfen; `Composite.remove` + `spawnParticles` + `playSound`. Die Figur danach `…Wiggle = 1` setzen.
 - **Neue Figur am Rand:** Body wie `cornBody` (static, hohe `restitution`), Position in `resizeCanvas()` mitführen, Zeichnen im `gameLoop`, Wiggle-Variable wie `cornWiggle`.
 - **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir`, `spawnRateMs` in `GAME_CONFIG`.
 - **Neuer Text / Button:** nur Deutsch, in `index.html`; Tap-Fläche ≥ 44×44 px.
