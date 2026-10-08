@@ -16,9 +16,10 @@ const GAME_CONFIG = {
   restitution: 0.85,      // Flummi-Effekt! (0.0 = Blei, 0.95 = Mega-Flummi)
   frictionAir: 0.015,     // Luftwiderstand
 
-  // Die beiden werfen abwechselnd, ganz ohne Gegenstände vom Himmel.
+  // Die angeklickte Figur wirft, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
+  dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
   cleanBackground: true // Sauberer, ruhiger Bildschirm
 };
 
@@ -137,6 +138,7 @@ function initPhysics() {
   koboldBody = Bodies.circle(46, height * 0.55, 34, {
     isStatic: true,
     label: 'kobold',
+    collisionFilter: { category: 4 },
     restitution: 1.05 // Bounct Items extra stark weg!
   });
 
@@ -144,6 +146,7 @@ function initPhysics() {
   cornBody = Bodies.circle(width - 46, height * 0.55, 34, {
     isStatic: true,
     label: 'corn',
+    collisionFilter: { category: 8 },
     restitution: 1.05 // Bounct Items extra stark weg!
   });
 
@@ -173,6 +176,8 @@ function initPhysics() {
 function resizeCanvas() {
   const rect = container.getBoundingClientRect();
   const dpr = window.devicePixelRatio || 1;
+  const oldWidth = width;
+  const oldHeight = height;
   width = rect.width;
   height = rect.height;
 
@@ -180,11 +185,9 @@ function resizeCanvas() {
   canvas.height = height * dpr;
   ctx.scale(dpr, dpr);
 
-  if (koboldBody) {
-    Body.setPosition(koboldBody, { x: 46, y: height * 0.55 });
-  }
-  if (cornBody) {
-    Body.setPosition(cornBody, { x: width - 46, y: height * 0.55 });
+  for (const actor of ['kobold', 'corn']) {
+    const body = actor === 'kobold' ? koboldBody : cornBody;
+    if (body) moveActor(actor, body.position.x * width / oldWidth, body.position.y * height / oldHeight);
   }
   if (leftWall && rightWall) {
     Body.setPosition(leftWall, { x: -30, y: height / 2 });
@@ -230,17 +233,20 @@ function shootBomb(actor) {
   const source = actor === 'kobold' ? koboldBody : actor === 'corn' ? cornBody : null;
   if (!source) return;
   const target = source === koboldBody ? cornBody : koboldBody;
-  const direction = source === koboldBody ? 1 : -1;
+  const dx = target.position.x - source.position.x;
+  const dy = target.position.y - source.position.y;
+  const distance = Math.hypot(dx, dy);
+  const direction = distance ? dx / distance : 1;
   const radius = GAME_CONFIG.bombSize * 0.42;
   const x = source.position.x + direction * (34 + radius + 4);
-  const y = source.position.y - 12;
+  const y = source.position.y + (distance ? dy / distance : 0) * (34 + radius + 4);
   const flightFrames = 42;
   const gravityPerFrame = engine.gravity.y * engine.gravity.scale * (1000 / 60) ** 2;
   const body = Bodies.circle(x, y, radius, {
     restitution: 0,
     frictionAir: 0,
     label: 'characterBomb',
-    collisionFilter: { category: 2, mask: 1 }, // Bomben treffen Figuren, nicht einander.
+    collisionFilter: { category: 2, mask: 1 | target.collisionFilter.category },
     customData: {
       emoji: GAME_CONFIG.bombEmoji,
       size: GAME_CONFIG.bombSize,
@@ -275,9 +281,59 @@ function explodeBomb(bomb) {
   });
 }
 
-// Native Buttons unterstützen Touch, Maus sowie Enter und Leertaste.
+// Physikkörper, sichtbare Figur und Trefferfläche bleiben an derselben Position.
+function moveActor(actor, x, y) {
+  const body = actor === 'kobold' ? koboldBody : actor === 'corn' ? cornBody : null;
+  if (!body) return;
+  const marginX = Math.min(46, width / 2);
+  const marginY = Math.min(65, height / 2);
+  const position = {
+    x: Math.max(marginX, Math.min(width - marginX, x)),
+    y: Math.max(marginY, Math.min(height - marginY, y))
+  };
+  Body.setPosition(body, position);
+  const button = document.getElementById(`${actor}Btn`);
+  button.style.left = `${position.x}px`;
+  button.style.top = `${position.y}px`;
+}
+
+// Jede Figur hat ihren eigenen Pointer: auch zwei Finger gleichzeitig gehen.
 for (const actor of ['kobold', 'corn']) {
-  document.getElementById(`${actor}Btn`).addEventListener('click', () => {
+  const button = document.getElementById(`${actor}Btn`);
+  let drag = null;
+  let suppressClick = false;
+  button.addEventListener('pointerdown', (event) => {
+    if (!isPlaying || drag || event.button !== 0) return;
+    initAudio();
+    const body = actor === 'kobold' ? koboldBody : cornBody;
+    drag = {
+      id: event.pointerId, startX: event.clientX, startY: event.clientY,
+      x: body.position.x, y: body.position.y, moved: false
+    };
+    suppressClick = false;
+    button.setPointerCapture(event.pointerId);
+  });
+  button.addEventListener('pointermove', (event) => {
+    if (!drag || drag.id !== event.pointerId) return;
+    const dx = event.clientX - drag.startX;
+    const dy = event.clientY - drag.startY;
+    if (Math.hypot(dx, dy) >= GAME_CONFIG.dragThreshold) drag.moved = true;
+    if (drag.moved) {
+      suppressClick = true;
+      moveActor(actor, drag.x + dx, drag.y + dy);
+    }
+  });
+  function finishDrag(event) {
+    if (!drag || drag.id !== event.pointerId) return;
+    suppressClick = drag.moved || event.type !== 'pointerup';
+    drag = null;
+    if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId);
+  }
+  button.addEventListener('pointerup', finishDrag);
+  button.addEventListener('pointercancel', finishDrag);
+  button.addEventListener('lostpointercapture', finishDrag);
+  button.addEventListener('click', (event) => {
+    if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
     initAudio();
     shootBomb(actor);
   });
@@ -299,6 +355,8 @@ function startGame() {
 
   clearAllBodies();
   particles = [];
+  moveActor('kobold', 46, height * 0.55);
+  moveActor('corn', width - 46, height * 0.55);
   koboldWiggle = 0;
   cornWiggle = 0;
 
@@ -339,8 +397,8 @@ function gameLoop(now) {
 
   // 🧌 Kobold auf der linken Seite zeichnen
   ctx.save();
-  const kY = height * 0.55 + Math.sin(now / 350) * 4;
-  ctx.translate(46, kY);
+  const kY = koboldBody.position.y;
+  ctx.translate(koboldBody.position.x, kY);
   ctx.rotate(Math.sin(now / 420) * 0.06 + (koboldWiggle * 0.25));
   ctx.font = `${GAME_CONFIG.koboldSize}px -apple-system, sans-serif`;
   ctx.textAlign = 'center';
@@ -353,8 +411,8 @@ function gameLoop(now) {
 
   // 🌽 Maispflanze auf der rechten Seite zeichnen
   ctx.save();
-  const cY = height * 0.55 + Math.cos(now / 380) * 4;
-  ctx.translate(width - 46, cY);
+  const cY = cornBody.position.y;
+  ctx.translate(cornBody.position.x, cY);
   ctx.rotate(Math.sin(now / 480) * 0.08 + (cornWiggle * 0.25));
   ctx.font = `${GAME_CONFIG.cornSize}px -apple-system, sans-serif`;
   ctx.textAlign = 'center';
