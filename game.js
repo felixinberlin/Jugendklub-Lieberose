@@ -1,43 +1,47 @@
 /**
- * Jugendklub Lieberose – Das Spiel
+ * Jugendklub Lieberose – Das Spiel (Matter.js 2D Physik-Edition)
  * 
  * 🎮 VIBECODING KONFIGURATION:
- * Hier können wir live während des Workshops die Ideen der Kinder eintragen!
+ * Hier können wir live während des Workshops Physik und Spielwerte anpassen!
  */
 const GAME_CONFIG = {
-  // Was ist der Spieler? (Emoji oder Form)
+  // Spieler
   playerEmoji: '🚀',
-  playerSize: 46,
+  playerSize: 52,
 
-  // Gute Items, die Punkte geben
+  // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
+  gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
+  restitution: 0.85,      // Flummi-Effekt! (0.0 = Blei, 0.95 = Mega-Flummi)
+  frictionAir: 0.015,     // Luftwiderstand
+
+  // Gute Items (geben Punkte & bouncen!)
   goodItems: [
-    { emoji: '⭐', points: 1, speed: 3 },
-    { emoji: '🍕', points: 2, speed: 3.5 },
-    { emoji: '🥤', points: 2, speed: 3.5 },
-    { emoji: '💎', points: 5, speed: 4.5 }
+    { emoji: '⭐', points: 1, size: 38, density: 0.001 },
+    { emoji: '🍕', points: 2, size: 42, density: 0.0015 },
+    { emoji: '🥤', points: 2, size: 38, density: 0.001 },
+    { emoji: '💎', points: 5, size: 44, density: 0.002 }
   ],
 
-  // Gefahren, denen man ausweichen muss
+  // Gefahren (Game Over bei Berührung!)
   badItems: [
-    { emoji: '💣', damage: 1, speed: 3.5 },
-    { emoji: '👾', damage: 1, speed: 4 },
-    { emoji: '⚡', damage: 1, speed: 4.5 }
+    { emoji: '💣', damage: 1, size: 42, density: 0.002 },
+    { emoji: '👾', damage: 1, size: 44, density: 0.0015 },
+    { emoji: '⚡', damage: 1, size: 40, density: 0.001 }
   ],
 
-  // Spieltempo & Hintergrund
-  baseSpeed: 1.0,
-  speedIncrement: 0.05, // Wird mit jedem Punkt ein bisschen schneller
-  spawnRateMs: 800,
+  spawnRateMs: 850,
   backgroundStars: 40,
-  rainbowBackground: true // 🌈 Regenbogen-Hintergrund!
+  rainbowBackground: true // 🌈 Animierter Regenbogen
 };
 
-// Canvas Setup
+// Matter.js Module
+const { Engine, Bodies, Body, Composite, Events } = Matter;
+
+// Canvas & DOM Setup
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const container = document.getElementById('game-container');
 
-// UI Elements
 const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
 const finalScoreEl = document.getElementById('finalScore');
@@ -48,16 +52,14 @@ const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
 const soundToggle = document.getElementById('soundToggle');
 
-// Web Audio API Synthesizer (Zero asset loading friction!)
+// Web Audio API Synthesizer
 let audioCtx = null;
 let soundEnabled = true;
 
 function initAudio() {
   if (!audioCtx) {
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (AudioContextClass) {
-      audioCtx = new AudioContextClass();
-    }
+    if (AudioContextClass) audioCtx = new AudioContextClass();
   }
   if (audioCtx && audioCtx.state === 'suspended') {
     audioCtx.resume();
@@ -77,9 +79,7 @@ function playTone(freq, type = 'sine', duration = 0.1, gainVal = 0.15) {
     gain.connect(audioCtx.destination);
     osc.start();
     osc.stop(audioCtx.currentTime + duration);
-  } catch (e) {
-    // Silently handle any browser audio block
-  }
+  } catch (e) {}
 }
 
 function playSound(type) {
@@ -92,19 +92,105 @@ function playSound(type) {
   } else if (type === 'hit') {
     playTone(180, 'sawtooth', 0.3, 0.25);
     setTimeout(() => playTone(90, 'sawtooth', 0.3, 0.25), 50);
+  } else if (type === 'bounce') {
+    playTone(320, 'sine', 0.05, 0.08);
   }
 }
 
-// Sound toggle
 soundToggle.addEventListener('click', (e) => {
   e.stopPropagation();
   soundEnabled = !soundEnabled;
   soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
 });
 
-// Canvas Auto-Resizing (Retina/High-DPI sharp rendering)
+// Dimensions & DPR Handling
 let width = 360;
 let height = 640;
+
+// Game State
+let isPlaying = false;
+let score = 0;
+let highScore = parseInt(localStorage.getItem('lieberose_highscore') || '0', 10);
+highScoreEl.textContent = highScore;
+
+// Matter.js Physik Welt
+let engine;
+let playerBody;
+let leftWall, rightWall;
+let fallingBodies = [];
+let particles = [];
+let stars = [];
+let lastSpawn = 0;
+
+const player = {
+  x: 180,
+  y: 550,
+  size: GAME_CONFIG.playerSize,
+  speed: 8,
+  targetX: 180,
+  movingLeft: false,
+  movingRight: false,
+  tilt: 0
+};
+
+function initPhysics() {
+  engine = Engine.create({ enableSleeping: false });
+  engine.gravity.y = GAME_CONFIG.gravityY;
+
+  // Seitenwände, damit physikalische Items abprallen können!
+  const wallThickness = 60;
+  leftWall = Bodies.rectangle(-wallThickness / 2, height / 2, wallThickness, height * 2, {
+    isStatic: true,
+    restitution: 0.8
+  });
+  rightWall = Bodies.rectangle(width + wallThickness / 2, height / 2, wallThickness, height * 2, {
+    isStatic: true,
+    restitution: 0.8
+  });
+
+  // Spieler-Physikkörper
+  playerBody = Bodies.circle(player.x, player.y, player.size * 0.42, {
+    isStatic: true,
+    label: 'player',
+    restitution: 0.9
+  });
+
+  Composite.add(engine.world, [leftWall, rightWall, playerBody]);
+
+  // Kollisions-Events (Kollision zwischen Spieler und Items / Items untereinander)
+  Events.on(engine, 'collisionStart', (event) => {
+    if (!isPlaying) return;
+
+    for (const pair of event.pairs) {
+      const { bodyA, bodyB } = pair;
+      let targetItem = null;
+
+      if (bodyA.label === 'player' && bodyB.customData) targetItem = bodyB;
+      else if (bodyB.label === 'player' && bodyA.customData) targetItem = bodyA;
+
+      if (targetItem && !targetItem.collected) {
+        if (targetItem.customData.isBad) {
+          gameOver();
+          return;
+        } else {
+          // Gutes Item gefangen!
+          targetItem.collected = true;
+          score += targetItem.customData.points;
+          scoreEl.textContent = score;
+          playSound(targetItem.customData.points > 2 ? 'gem' : 'point');
+          spawnParticles(targetItem.position.x, targetItem.position.y, '#67e8f9', 16);
+
+          // Aus Matter.js entfernen
+          Composite.remove(engine.world, targetItem);
+          fallingBodies = fallingBodies.filter(b => b !== targetItem);
+        }
+      } else if (bodyA.customData && bodyB.customData) {
+        // Items prallen aufeinander ab! Leises Plopp-Geräusch
+        playSound('bounce');
+      }
+    }
+  });
+}
 
 function resizeCanvas() {
   const rect = container.getBoundingClientRect();
@@ -116,36 +202,19 @@ function resizeCanvas() {
   canvas.height = height * dpr;
   ctx.scale(dpr, dpr);
 
-  if (player) {
-    player.y = height - 90;
-    player.x = Math.min(Math.max(player.x, player.size / 2), width - player.size / 2);
+  player.y = height - 90;
+  player.x = Math.min(Math.max(player.x, player.size / 2), width - player.size / 2);
+
+  if (playerBody) {
+    Body.setPosition(playerBody, { x: player.x, y: player.y });
+  }
+  if (leftWall && rightWall) {
+    Body.setPosition(leftWall, { x: -30, y: height / 2 });
+    Body.setPosition(rightWall, { x: width + 30, y: height / 2 });
   }
 }
 
 window.addEventListener('resize', resizeCanvas);
-
-// Game State
-let isPlaying = false;
-let score = 0;
-let highScore = parseInt(localStorage.getItem('lieberose_highscore') || '0', 10);
-highScoreEl.textContent = highScore;
-
-// Player Object
-const player = {
-  x: 180,
-  y: 550,
-  size: GAME_CONFIG.playerSize,
-  speed: 7,
-  targetX: 180,
-  movingLeft: false,
-  movingRight: false
-};
-
-// Falling Items & Particles & Stars
-let fallingItems = [];
-let particles = [];
-let stars = [];
-let lastSpawn = 0;
 
 function createStars() {
   stars = [];
@@ -160,28 +229,41 @@ function createStars() {
   }
 }
 
-function spawnItem() {
-  const isBad = Math.random() < 0.38; // 38% Chance Gefahren
+function spawnPhysicsItem() {
+  const isBad = Math.random() < 0.36;
   const pool = isBad ? GAME_CONFIG.badItems : GAME_CONFIG.goodItems;
   const template = pool[Math.floor(Math.random() * pool.length)];
 
-  const speedFactor = 1 + (score * GAME_CONFIG.speedIncrement);
-  fallingItems.push({
-    x: Math.random() * (width - 60) + 30,
-    y: -40,
-    size: 38,
-    speed: template.speed * speedFactor,
-    emoji: template.emoji,
-    isBad: isBad,
-    points: template.points || 0,
-    rot: Math.random() * 0.4 - 0.2
+  const startX = Math.random() * (width - 80) + 40;
+  const startY = -40;
+  const radius = template.size * 0.42;
+
+  // Erstelle Matter.js Kreis-Körper mit echtem Gewicht und Bounciness
+  const body = Bodies.circle(startX, startY, radius, {
+    restitution: GAME_CONFIG.restitution,
+    frictionAir: GAME_CONFIG.frictionAir,
+    density: template.density || 0.001,
+    label: isBad ? 'badItem' : 'goodItem',
+    customData: {
+      emoji: template.emoji,
+      size: template.size,
+      points: template.points || 0,
+      isBad: isBad
+    }
   });
+
+  // Ein leichter zufälliger Dreh- und Seitwärtsimpuls für mehr Chaos & Spaß
+  Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.15);
+  Body.setVelocity(body, { x: (Math.random() - 0.5) * 3, y: Math.random() * 2 + 1 });
+
+  Composite.add(engine.world, body);
+  fallingBodies.push(body);
 }
 
-function spawnParticles(x, y, color = '#ffde59', count = 12) {
+function spawnParticles(x, y, color = '#ffde59', count = 14) {
   for (let i = 0; i < count; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 5 + 2;
+    const speed = Math.random() * 6 + 2;
     particles.push({
       x: x,
       y: y,
@@ -195,22 +277,17 @@ function spawnParticles(x, y, color = '#ffde59', count = 12) {
   }
 }
 
-// Touch & Controls Input Handling
-let touchStartX = null;
-
+// Touch & Steuerung
 function handleTouchMove(clientX) {
   const rect = container.getBoundingClientRect();
   const relativeX = clientX - rect.left;
   player.targetX = Math.min(Math.max(relativeX, player.size / 2), width - player.size / 2);
 }
 
-// Touch listeners on container
 container.addEventListener('touchstart', (e) => {
   initAudio();
   if (!isPlaying) return;
-  const touch = e.touches[0];
-  touchStartX = touch.clientX;
-  handleTouchMove(touch.clientX);
+  handleTouchMove(e.touches[0].clientX);
 }, { passive: true });
 
 container.addEventListener('touchmove', (e) => {
@@ -218,11 +295,7 @@ container.addEventListener('touchmove', (e) => {
   handleTouchMove(e.touches[0].clientX);
 }, { passive: true });
 
-container.addEventListener('touchend', () => {
-  touchStartX = null;
-});
-
-// Mouse support for desktop testing
+// Maus für Desktop
 let isMouseDown = false;
 container.addEventListener('mousedown', (e) => {
   initAudio();
@@ -236,11 +309,9 @@ window.addEventListener('mousemove', (e) => {
   handleTouchMove(e.clientX);
 });
 
-window.addEventListener('mouseup', () => {
-  isMouseDown = false;
-});
+window.addEventListener('mouseup', () => { isMouseDown = false; });
 
-// Keyboard Controls (Arrow keys / A & D)
+// Tastatur (Pfeile / A & D)
 window.addEventListener('keydown', (e) => {
   initAudio();
   if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') player.movingLeft = true;
@@ -252,17 +323,28 @@ window.addEventListener('keyup', (e) => {
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') player.movingRight = false;
 });
 
-// Start & Restart Game
+// Start & Game Over
+function clearAllBodies() {
+  for (const b of fallingBodies) {
+    Composite.remove(engine.world, b);
+  }
+  fallingBodies = [];
+}
+
 function startGame() {
   initAudio();
   isPlaying = true;
   score = 0;
   scoreEl.textContent = score;
-  fallingItems = [];
+
+  clearAllBodies();
   particles = [];
+
   player.x = width / 2;
   player.targetX = width / 2;
   player.y = height - 90;
+  Body.setPosition(playerBody, { x: player.x, y: player.y });
+
   lastSpawn = performance.now();
 
   startScreen.classList.remove('active');
@@ -275,7 +357,7 @@ function startGame() {
 function gameOver() {
   isPlaying = false;
   playSound('hit');
-  spawnParticles(player.x, player.y, '#ff4757', 30);
+  spawnParticles(player.x, player.y, '#ff4757', 35);
 
   finalScoreEl.textContent = score;
   if (score > highScore) {
@@ -291,17 +373,17 @@ function gameOver() {
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', startGame);
 
-// Main Game Loop
+// Haupt-GameLoop
 let lastTime = performance.now();
 
 function gameLoop(now) {
-  const dt = Math.min((now - lastTime) / 1000, 0.1);
+  const dt = Math.min((now - lastTime), 100);
   lastTime = now;
 
-  // 1. Draw Background (Regenbogen!)
+  // 1. Hintergrund zeichnen (Regenbogen & Sterne)
   if (GAME_CONFIG.rainbowBackground) {
     const rainbowGrad = ctx.createLinearGradient(0, 0, 0, height);
-    const hueShift = (now / 25) % 360; // Fließende Regenbogenfarben
+    const hueShift = (now / 25) % 360;
     rainbowGrad.addColorStop(0.0, `hsl(${hueShift}, 85%, 22%)`);
     rainbowGrad.addColorStop(0.2, `hsl(${(hueShift + 60) % 360}, 85%, 25%)`);
     rainbowGrad.addColorStop(0.4, `hsl(${(hueShift + 120) % 360}, 85%, 24%)`);
@@ -314,7 +396,7 @@ function gameLoop(now) {
     ctx.clearRect(0, 0, width, height);
   }
 
-  // Draw Starfield on top
+  // Sterne
   ctx.fillStyle = '#ffffff';
   for (const s of stars) {
     s.y += s.speed;
@@ -325,64 +407,63 @@ function gameLoop(now) {
   ctx.globalAlpha = 1.0;
 
   if (isPlaying) {
-    // 2. Update Player
-    if (player.movingLeft) player.targetX -= player.speed * 60 * dt;
-    if (player.movingRight) player.targetX += player.speed * 60 * dt;
-    
-    // Smooth interpolation towards targetX
-    player.x += (player.targetX - player.x) * 0.22;
-    player.x = Math.min(Math.max(player.x, player.size / 2), width - player.size / 2);
+    // 2. Matter.js Physik-Schritt
+    Engine.update(engine, dt);
 
-    // 3. Spawn Items
+    // 3. Spieler bewegen & synchronisieren
+    if (player.movingLeft) player.targetX -= player.speed * 4;
+    if (player.movingRight) player.targetX += player.speed * 4;
+
+    const diff = (player.targetX - player.x);
+    player.x += diff * 0.22;
+    player.x = Math.min(Math.max(player.x, player.size / 2), width - player.size / 2);
+    player.tilt = (diff * 0.04); // Neigung beim Bewegen
+
+    Body.setPosition(playerBody, { x: player.x, y: player.y });
+
+    // 4. Neue Items spawnen
     if (now - lastSpawn > GAME_CONFIG.spawnRateMs) {
-      spawnItem();
+      spawnPhysicsItem();
       lastSpawn = now;
     }
 
-    // 4. Update & Draw Falling Items
-    for (let i = fallingItems.length - 1; i >= 0; i--) {
-      const item = fallingItems[i];
-      item.y += item.speed * 60 * dt;
+    // 5. Physikalische Items zeichnen & aufräumen
+    for (let i = fallingBodies.length - 1; i >= 0; i--) {
+      const b = fallingBodies[i];
+      const pos = b.position;
+      const angle = b.angle;
+      const data = b.customData;
 
-      // Draw Item
-      ctx.font = `${item.size}px -apple-system, sans-serif`;
+      // Aus dem Bildschirm gefallen?
+      if (pos.y > height + 80) {
+        Composite.remove(engine.world, b);
+        fallingBodies.splice(i, 1);
+        continue;
+      }
+
+      // Mit Drehung zeichnen
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      ctx.rotate(angle);
+      ctx.font = `${data.size}px -apple-system, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(item.emoji, item.x, item.y);
-
-      // Collision Detection with Player
-      const dist = Math.hypot(item.x - player.x, item.y - player.y);
-      const hitRadius = (item.size + player.size) * 0.38;
-
-      if (dist < hitRadius) {
-        if (item.isBad) {
-          gameOver();
-          break;
-        } else {
-          // Point collected!
-          score += item.points;
-          scoreEl.textContent = score;
-          playSound(item.points > 2 ? 'gem' : 'point');
-          spawnParticles(item.x, item.y, item.points > 2 ? '#67e8f9' : '#ffde59', 14);
-          fallingItems.splice(i, 1);
-          continue;
-        }
-      }
-
-      // Remove items off-screen
-      if (item.y > height + 50) {
-        fallingItems.splice(i, 1);
-      }
+      ctx.fillText(data.emoji, 0, 0);
+      ctx.restore();
     }
   }
 
-  // 5. Draw Player
+  // 6. Spieler zeichnen
+  ctx.save();
+  ctx.translate(player.x, player.y);
+  ctx.rotate(player.tilt);
   ctx.font = `${player.size}px -apple-system, sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(GAME_CONFIG.playerEmoji, player.x, player.y);
+  ctx.fillText(GAME_CONFIG.playerEmoji, 0, 0);
+  ctx.restore();
 
-  // 6. Update & Draw Particles
+  // 7. Partikel zeichnen
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.x += p.vx;
@@ -405,7 +486,8 @@ function gameLoop(now) {
   requestAnimationFrame(gameLoop);
 }
 
-// Initial setup
+// Initialisierung
+initPhysics();
 resizeCanvas();
 createStars();
 requestAnimationFrame(gameLoop);
