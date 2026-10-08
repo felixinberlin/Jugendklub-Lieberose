@@ -32,7 +32,8 @@
 /home/felix/Jugend/
 ├── index.html        # Viewport, HUD overlay, start/game over screens, audio button
 ├── style.css         # Arcade styling, safe-area insets, mobile touch lock
-├── game.js           # Core loop, touch inputs, Web Audio synthesizer, GAME_CONFIG
+├── matter.min.js     # Vendored Matter.js (2D rigid-body physics engine, 0 CDN deps)
+├── game.js           # Matter.js loop, touch inputs, Web Audio synthesizer, GAME_CONFIG
 ├── vercel.json       # Cache-Control: max-age=0 (ensures kids see fresh code on refresh)
 ├── deploy.sh         # 1-command git add/commit/push script
 ├── qr-code.png       # Scannable QR code for projector screen
@@ -48,18 +49,22 @@ Located at the top of `game.js`. Designed for instant modifications when kids sh
 ```javascript
 const GAME_CONFIG = {
   playerEmoji: '🚀',       // Change player character
-  playerSize: 46,
-  goodItems: [            // Catchable point items
-    { emoji: '⭐', points: 1, speed: 3 },
-    { emoji: '🍕', points: 2, speed: 3.5 },
+  playerSize: 52,
+
+  // 🧪 Physics parameters (Super fun for kids!)
+  gravityY: 0.9,          // 0.2 = Moon, 1.0 = Earth, 2.5 = Heavy Jupiter
+  restitution: 0.85,      // Bounciness (0.0 = lead, 0.95 = super bouncy rubber ball)
+  frictionAir: 0.015,     // Air friction
+
+  goodItems: [            // Catchable point items (with mass/density)
+    { emoji: '⭐', points: 1, size: 38, density: 0.001 },
+    { emoji: '🍕', points: 2, size: 42, density: 0.0015 },
   ],
   badItems: [             // Hazards
-    { emoji: '💣', damage: 1, speed: 3.5 },
+    { emoji: '💣', damage: 1, size: 42, density: 0.002 },
   ],
-  baseSpeed: 1.0,
-  speedIncrement: 0.05,
-  spawnRateMs: 800,
-  backgroundStars: 40
+  spawnRateMs: 850,
+  rainbowBackground: true
 };
 ```
 
