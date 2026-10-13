@@ -25,7 +25,7 @@
         <h1>KOBOLD, MAIS, KATZE, MAUS, GOBLIN & MUSIALA</h1>
         <p class="subtitle">🧌 Kobold, Mais 🌽, Katze 🐱, Maus 🐭, Goblin 👺 & Musiala ⚽</p>
         <div class="instructions">
-          <p>👆 Antippen: Die Figur wirft eine Bombe!<br>↔️ Ziehen: Figuren bewegen und ausweichen!<br>🔁 Kobold → Mais → Katze → Maus → Goblin → Musiala → Kobold<br>☁️ Wolke antippen: Regen! ☀️ Sonne antippen: Nacht!</p>
+          <p>👆 Antippen: Die Figur wirft eine Bombe!<br>↔️ Ziehen: Figuren bewegen und ausweichen!<br>🔁 Kobold → Mais → Katze → Maus → Goblin → Musiala → Kobold<br>☁️ Wolke antippen: Regen! ☀️ Sonne antippen: Nacht!<br>💀 Wer 100-mal getroffen wird, ist raus!</p>
         </div>
         <button id="startBtn" class="btn">SPIEL STARTEN 🚀</button>
       </div>
@@ -33,7 +33,8 @@
       <!-- Game Over Screen -->
       <div id="gameOverScreen" class="overlay-screen">
         <h2>BUMM! 💥</h2>
-        <p>Deine Punkte: <span id="finalScore">0</span></p>
+        <p id="winnerMsg" class="winner-msg"></p>
+        <p>Treffer insgesamt: <span id="finalScore">0</span></p>
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
       </div>
@@ -59,6 +60,7 @@
   <script src="js/particles.js"></script>
   <script src="js/weather.js"></script>
   <script src="js/footballer.js"></script>
+  <script src="js/knockout.js"></script>
   <script src="js/actors.js"></script>
   <script src="js/bombs.js"></script>
   <script src="js/physics.js"></script>

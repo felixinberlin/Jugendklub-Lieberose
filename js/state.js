@@ -17,6 +17,7 @@ const scoreEl = document.getElementById('score');
 const highScoreEl = document.getElementById('highScore');
 const finalScoreEl = document.getElementById('finalScore');
 const newRecordMsgEl = document.getElementById('newRecordMsg');
+const winnerMsgEl = document.getElementById('winnerMsg');
 const startScreen = document.getElementById('startScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
 const startBtn = document.getElementById('startBtn');

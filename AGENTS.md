@@ -50,6 +50,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── forest.js     #   🌲 Hintergrund (Zauberwald)
 │   ├── particles.js  #   ✨ Partikel
 │   ├── weather.js    #   🌧️ Regen & wachsende Bäume
+│   ├── knockout.js   #   💀 Lebensleiste, K.o. bei `maxHits`, Gewinner
 │   ├── footballer.js #   ⚽ Selbstgemalte Figur im Trikot (`<name>Shirt`)
 │   ├── actors.js     #   🧌🌽🐱🐭👺⚽ Figuren-Liste `actors`: Bodies, Bewegen, Eingabe, Zeichnen
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
@@ -76,6 +77,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
+- `maxHits` – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -206,6 +208,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
 | `js/footballer.js` | `updateFootballers()` (Figuren mit `<name>Runs` dribbeln hin und her, außer `actor.dragging`), `drawFootballer(shirt, size, now, dir, kick)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, schwingende Arme, hochgehaltenen Ball, Schuss-Bein (`kick` = `wiggle`), `isSixSeven(actor)` – nach Treffer (`sixSevenUntil`, gesetzt in `physics.js`, nur wenn Shirt `sixSeven: true`) 6-7-Handgeste + „6 7!“ über dem Kopf, steht dabei still. `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
+| `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`, Highscore), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
@@ -215,7 +218,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 
 Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./serve.sh` (http://localhost:8000, kein Cache) bzw. Playwright im Handy-Viewport (390×760) → `./deploy.sh "…"`.
 
-**Vorbild für alles Neue:** die Bombe (`shootBomb` / `explodeBomb` in `js/bombs.js`) und die Figuren-Liste `actors` (`js/actors.js`). Neues Spielkonzept = neue Datei in `js/` + `<script>` vor `js/game.js`. Es gibt (noch) keine fallenden Items, kein Game Over durch Treffer und keine Lebenspunkte – wer das will, baut es als neue Datei.
+**Vorbild für alles Neue:** die Bombe (`shootBomb` / `explodeBomb` in `js/bombs.js`) und die Figuren-Liste `actors` (`js/actors.js`). Neues Spielkonzept = neue Datei in `js/` + `<script>` vor `js/game.js`. Es gibt (noch) keine fallenden Items. Game Over gibt es: wer `maxHits` Treffer hat, ist raus; die letzte Figur gewinnt (`js/knockout.js`). Neue Wurf-Funktionen IMMER `targetOf(name)` statt `actors[name].target` benutzen und `isAlive()` prüfen.
 
 - **Andere Wurfsachen:** `bombEmoji` (alle) oder `<name>Bomb` (eine Figur, z. B. `katzeBomb: '🐟'`) in `GAME_CONFIG`. Kein weiterer Code nötig.
 - **Anderes Ziel:** `target` der Figur in `actors` (`js/actors.js`) ändern.

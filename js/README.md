@@ -12,6 +12,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | ⚙️ [`config.js`](config.js) | Die **Stellschrauben**: Emojis, Größen, Schwerkraft | ⭐ Fang hier an! |
 | 🔊 [`audio.js`](audio.js) | Alle **Töne** – ohne eine einzige Sounddatei | ⭐⭐ |
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
+| 💀 [`knockout.js`](knockout.js) | **Lebensleiste** ❤️ – wer 100-mal getroffen wird, ist **raus**. Die letzte Figur **gewinnt** 🏆 | ⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
@@ -125,6 +126,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `musialaShirt` → `sixSeven: false` | Kein 6-7-Jubel mehr nach Treffern 🤲 |
 | `musialaRunSpeed: 1.5` → `4` | Turbo-Sprint! 🏃💨 |
 | `musialaRuns: true` → `false` | Musiala bleibt stehen |
+| `maxHits: 100` → `5` | Schnelles Spiel – nach 5 Treffern ist eine Figur raus 💀 |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
 | `rain: false` → `true` | Alle Wolken regnen immer 🌧️ |
 | `rainSeconds: 8` → `30` | Eine angetippte Wolke regnet lange |

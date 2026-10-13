@@ -8,9 +8,11 @@ let fallingBodies = [];
 // Eine angeklickte Figur wirft eine Bombe zu ihrem Ziel (siehe `target` in actors.js).
 function shootBomb(actor) {
   if (!isPlaying || document.hidden) return;
-  if (!actors[actor]) return;
+  if (!isAlive(actor)) return;
+  const targetName = targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
+  if (!targetName) return;
   const source = actors[actor].body;
-  const target = actors[actors[actor].target].body;
+  const target = actors[targetName].body;
   const dx = target.position.x - source.position.x;
   const dy = target.position.y - source.position.y;
   const distance = Math.hypot(dx, dy);

@@ -17,7 +17,7 @@ function updateFootballers() {
   for (const name in actors) {
     const actor = actors[name];
     if (!GAME_CONFIG[`${name}Shirt`] || !GAME_CONFIG[`${name}Runs`]) continue;
-    if (actor.dragging) continue; // Wer gerade gezogen wird, rennt nicht weg
+    if (!isAlive(name) || actor.dragging) continue; // Wer gerade gezogen wird, rennt nicht weg
     if (isSixSeven(actor)) continue; // Beim Jubeln bleibt er stehen
     if (!actor.runDir) actor.runDir = 1;
 

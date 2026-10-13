@@ -84,6 +84,7 @@ function resetActors() {
     actors[name].hitsGiven = 0;
     actors[name].hitsTaken = 0;
   }
+  reviveActors(); // Alle wieder im Spiel (knockout.js)
 }
 
 // Jede Figur hat ihren eigenen Pointer: auch mehrere Finger gleichzeitig gehen.
@@ -134,6 +135,7 @@ for (const name in actors) {
 function drawActors(now) {
   for (const name in actors) {
     const actor = actors[name];
+    if (!isAlive(name)) continue; // Raus ist raus
     ctx.save();
     ctx.translate(actor.body.position.x, actor.body.position.y);
     ctx.rotate(Math.sin(now / actor.sway) * 0.07 + (actor.wiggle * 0.25));
@@ -162,6 +164,7 @@ function drawActors(now) {
     ctx.strokeText(statsText, 0, 56);
     ctx.fillStyle = '#ffffff';
     ctx.fillText(statsText, 0, 56);
+    drawLifeBar(actor); // ❤️ (knockout.js)
     ctx.restore();
 
     // Wiggle-Dämpfung

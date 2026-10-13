@@ -51,6 +51,7 @@ function initPhysics() {
         score++;
         scoreEl.textContent = score;
         explodeBomb(bomb);
+        checkKnockout(other.label); // 💀 100 Treffer? Dann ist die Figur raus (knockout.js)
       }
     }
   });
