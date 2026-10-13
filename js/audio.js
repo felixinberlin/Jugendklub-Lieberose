@@ -65,6 +65,11 @@ function playSound(type) {
   } else if (type === 'ready') {
     playTone(660, 'triangle', 0.1, 0.15);  // 🔔 Spezialkraft bereit!
     setTimeout(() => playTone(990, 'triangle', 0.15, 0.15), 90);
+  } else if (type === 'popcorn') {
+    for (let i = 0; i < 5; i++) setTimeout(() => playTone(700 + Math.random() * 600, 'square', 0.04, 0.1), i * 45); // Pop-pop-pop!
+  } else if (type === 'spear') {
+    playTone(200, 'sawtooth', 0.15, 0.15);  // Wusch!
+    setTimeout(() => playTone(500, 'sawtooth', 0.12, 0.12), 60);
   } else if (type === 'bigball') {
     playTone(150, 'square', 0.2, 0.25);  // Wumms!
     setTimeout(() => playTone(300, 'square', 0.15, 0.2), 80);

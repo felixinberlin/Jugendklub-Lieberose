@@ -16,7 +16,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
-| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️ | ⭐⭐⭐ |
+| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥 | ⭐⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
@@ -127,7 +127,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `musialaBomb: '⚽'` → `'🏀'` | Musiala wechselt zum Basketball |
 | `musialaShirt` → `color: '#dc2626'` | Rotes Trikot statt weißem |
 | `musialaShirt` → `number: '42'` | Andere Rückennummer |
-| `musialaShirt` → `sixSeven: false` | Kein 6-7-Jubel mehr nach Treffern 🤲 |
+| `musialaShirt` → `sixSeven: true` | Musiala jubelt wieder mit 6-7 🤲 |
 | `musialaRunSpeed: 1.5` → `4` | Turbo-Sprint! 🏃💨 |
 | `musialaRuns: true` → `false` | Musiala bleibt stehen |
 | `levels` → bei Level 5 `throwMs: 1700` → `500` | Level 5 wird zur Hölle 🔥 |
@@ -137,6 +137,8 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `bigBall` → `damage: 3` → `10` | Musialas Riesenball haut alles um ⚽💥 |
 | `miniKobolds` → `count: 3` → `8` | Eine ganze Mini-Kobold-Armee 🧌🧌🧌 |
 | `catStunSeconds: 4` → `10` | Die Wirbelwolke hält 10 Sekunden 🌪️ |
+| `popcorn` → `count: 10` → `40` | Popcorn-Sturm 🍿🍿🍿 |
+| `fireSpear` → `burnSeconds: 3` → `10` | Feuer brennt 10 Sekunden 🔥 |
 | `specialChargeHits: 20` → `3` | Spezialkraft schon nach 3 Treffern ⚡ |
 | `maxHits: 20` → `5` | Schnelles Spiel – nach 5 Treffern ist eine Figur raus 💀 |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |

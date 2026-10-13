@@ -21,7 +21,7 @@ const GAME_CONFIG = {
   goblinBomb: '🔥', // Der Goblin wirft Feuer!
   musialaEmoji: '🏃', // Wird nur benutzt, wenn musialaShirt fehlt
   // 👕 Trikot! Farbe, Nummer, Schwarz-Rot-Gold-Streifen. Löschen = wieder Emoji.
-  musialaShirt: { color: '#ffffff', number: '67', stripe: true, sixSeven: true }, // 🤲 6-7!
+  musialaShirt: { color: '#ffffff', number: '67', stripe: true, sixSeven: false }, // 🤲 true = 6-7-Jubel nach Treffern
   musialaRuns: true,     // 🏃 Musiala dribbelt von allein hin und her
   musialaRunSpeed: 1.5,  // 0.5 = gemütlich, 4 = Turbo-Sprint!
   musialaSize: 64,
@@ -64,9 +64,12 @@ const GAME_CONFIG = {
   // ⚡ Spezialkräfte (Knopf unten links) – specials.js
   specialChargeHits: 20,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
   cpuSpecialChance: 0.5,     // Wenn aufgeladen: wie oft Computer statt zu werfen ihre Kraft nutzen
-  bigBall: { size: 80, damage: 3, speed: 7, seconds: 5 }, // ⚽ Musialas Riesenball
+  bigBall: { size: 80, damage: 6, speed: 7, seconds: 5 }, // ⚽ Musialas Riesenball
   miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
   catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen
+  catDamage: 4,                                             // 🐱 Schaden beim Draufspringen
+  popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
+  fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
   hitChoices: [5, 10, 20, 50], // Zum Auswählen auf dem Startbildschirm
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.

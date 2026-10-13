@@ -31,17 +31,28 @@ function shootBomb(actor, forcedTarget) {
     ? forcedTarget
     : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
+  launchArc(actor, targetName, {
+    emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
+    size: GAME_CONFIG.bombSize
+  });
+  actors[actor].wiggle = 1;
+  playSound('throw');
+}
+
+// 🎯 Ein Geschoss im Bogen von `actor` zu `targetName` werfen.
+// opts: emoji, size, damage (Standard 1), special (Spezialattacke?), flightFrames (Standard 42)
+function launchArc(actor, targetName, opts) {
   const source = actors[actor].body;
+  const flightFrames = opts.flightFrames || 42;
   // 🧌 Hat das Ziel Mini-Kobolde? Dann fliegt die Bombe zum Lockvogel (specials.js)
-  const target = decoyFor(targetName, source.position, 42) || actors[targetName].body; // 42 = Flugzeit in Bildern
+  const target = decoyFor(targetName, source.position, flightFrames) || actors[targetName].body;
   const dx = target.position.x - source.position.x;
   const dy = target.position.y - source.position.y;
   const distance = Math.hypot(dx, dy);
   const direction = distance ? dx / distance : 1;
-  const radius = GAME_CONFIG.bombSize * 0.42;
+  const radius = opts.size * 0.42;
   const x = source.position.x + direction * (34 + radius + 4);
   const y = source.position.y + (distance ? dy / distance : 0) * (34 + radius + 4);
-  const flightFrames = 42;
   const gravityPerFrame = engine.gravity.y * engine.gravity.scale * (1000 / 60) ** 2;
   const body = Bodies.circle(x, y, radius, {
     restitution: 0,
@@ -50,8 +61,10 @@ function shootBomb(actor, forcedTarget) {
     // Trifft JEDE Figur im Weg – nur nicht die, die geworfen hat
     collisionFilter: { category: 2, mask: 1 | everyoneExcept(actor) | MINI_BIT }, // + Mini-Kobolde fangen ab
     customData: {
-      emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
-      size: GAME_CONFIG.bombSize,
+      emoji: opts.emoji,
+      size: opts.size,
+      damage: opts.damage || 1,
+      special: Boolean(opts.special),
       isPlayerBomb: true,
       shooter: actor,
       target: targetName,
@@ -65,8 +78,6 @@ function shootBomb(actor, forcedTarget) {
   Body.setAngularVelocity(body, direction * 0.2);
   Composite.add(engine.world, body);
   fallingBodies.push(body);
-  actors[actor].wiggle = 1;
-  playSound('throw');
 }
 
 function explodeBomb(bomb) {
@@ -98,8 +109,8 @@ function updateBombs(now) {
     const angle = b.angle;
     const data = b.customData;
 
-    // Aus dem Bildschirm gefallen?
-    if (pos.y > height + 80) {
+    // Aus dem Bildschirm gefallen oder seitlich rausgeflogen?
+    if (pos.y > height + 80 || pos.x < -150 || pos.x > width + 150) {
       Composite.remove(engine.world, b);
       fallingBodies.splice(i, 1);
       continue;
@@ -112,6 +123,9 @@ function updateBombs(now) {
       fallingBodies.splice(i, 1);
       continue;
     }
+
+    // 🔥 Feuerspeer wird extra gemalt (specials.js)
+    if (data.spear) { drawSpear(b, now); continue; }
 
     // Mit Drehung zeichnen
     ctx.save();

@@ -37,32 +37,47 @@ function initPhysics() {
       const other = bomb === bodyA ? bodyB : bodyA;
       // 🧌 Mini-Kobold fängt die Bombe ab (specials.js)
       if (other.label === 'miniKobold') { blockByMini(bomb, other); continue; }
-      const damage = bomb.customData.damage || 1; // Riesenball zählt mehr
+      const data = bomb.customData;
+      const victim = other.label;
       // Getroffen wird jede lebende Figur – nicht nur das Ziel (nur der Werfer nicht)
-      if (isAlive(other.label) && other.label !== bomb.customData.shooter) {
-        actors[other.label].wiggle = 1;
-        actors[other.label].hitsTaken += damage;
-        if (bomb.customData.shooter && actors[bomb.customData.shooter]) {
-          const shooter = actors[bomb.customData.shooter];
-          shooter.hitsGiven += damage;
-          if (!bomb.customData.steer) chargeSpecial(bomb.customData.shooter); // ⚡ Aufladen (specials.js)
-          // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
-          const shirt = actorCfg(bomb.customData.shooter, 'Shirt');
-          if (shirt && shirt.sixSeven) {
-            shooter.sixSevenUntil = performance.now() + 1600;
-            playSound('sixseven');
-          }
-        }
-        // TREFFER oben zählt nur deine eigenen (bei „Alle zusammen“: alle)
-        if (playerTeam === null || playerTeam.includes(bomb.customData.shooter)) {
-          score += damage;
-          scoreEl.textContent = score;
-        }
-        explodeBomb(bomb);
-        checkKnockout(other.label); // 💀 100 Treffer? Dann ist die Figur raus (knockout.js)
+      if (!isAlive(victim) || victim === data.shooter) continue;
+      if (data.pierce) {
+        // 🔥 Feuerspeer fliegt DURCH alle durch – jede Figur nur einmal (specials.js)
+        if (bomb.hitSet.has(victim)) continue;
+        bomb.hitSet.add(victim);
+        if (data.burn) startBurn(victim, data.shooter);
+        applyHit(victim, data.shooter, data.damage || 1, data.special);
+        continue;
       }
+      applyHit(victim, data.shooter, data.damage || 1, data.special);
+      explodeBomb(bomb);
     }
   });
+}
+
+// 💥 Eine Figur bekommt Schaden. Wird von Bomben, Katzensprung und Feuer benutzt.
+// `special` = kam von einer Spezialattacke (die lädt die Spezialkraft nicht auf).
+function applyHit(victim, shooterName, damage, special) {
+  if (!isAlive(victim)) return;
+  actors[victim].wiggle = 1;
+  actors[victim].hitsTaken += damage;
+  const shooter = actors[shooterName];
+  if (shooter) {
+    shooter.hitsGiven += damage;
+    if (!special) chargeSpecial(shooterName); // ⚡ Aufladen (specials.js)
+    // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
+    const shirt = actorCfg(shooterName, 'Shirt');
+    if (shirt && shirt.sixSeven) {
+      shooter.sixSevenUntil = performance.now() + 1600;
+      playSound('sixseven');
+    }
+  }
+  // TREFFER oben zählt nur deine eigenen (bei „Alle zusammen“: alle)
+  if (playerTeam === null || playerTeam.includes(shooterName)) {
+    score += damage;
+    scoreEl.textContent = score;
+  }
+  checkKnockout(victim); // 💀 Genug Treffer? Dann ist die Figur raus (knockout.js)
 }
 
 function resizeCanvas() {
