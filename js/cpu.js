@@ -9,6 +9,11 @@
 let playerActor = null; // Name der eigenen Figur, null = alle zusammen
 let cpuNextThrow = {};  // Wann wirft welche Computer-Figur das nächste Mal?
 
+// Wurf-Tempo der Computer im aktuellen Level (levels.js)
+function cpuThrowMs() {
+  return level() ? level().throwMs : GAME_CONFIG.cpuThrowMs;
+}
+
 // Spielt der Computer diese Figur?
 function isCpu(name) {
   return playerActor !== null && name !== playerActor;
@@ -17,6 +22,7 @@ function isCpu(name) {
 // Figur auswählen und los geht's!
 function chooseAndStart(name) {
   playerActor = name;
+  currentLevel = 0; // Immer bei Level 1 anfangen (levels.js)
   startGame();
 }
 
@@ -27,7 +33,7 @@ function setupPlayers() {
   cpuNextThrow = {};
   for (const name in actors) {
     document.getElementById(`${name}Btn`).classList.toggle('cpu', isCpu(name));
-    cpuNextThrow[name] = now + 1200 + Math.random() * GAME_CONFIG.cpuThrowMs;
+    cpuNextThrow[name] = now + 2000 + Math.random() * cpuThrowMs(); // Erst das LEVEL-Schild zeigen
   }
 }
 
@@ -37,9 +43,11 @@ function updateCpu(now) {
   for (const name in actors) {
     if (!isCpu(name) || !isAlive(name)) continue;
     if (now >= cpuNextThrow[name]) {
-      shootBomb(name);
+      // Je höher das Level, desto öfter zielen die Computer auf DICH
+      const hunt = Math.random() < level().huntPlayer;
+      shootBomb(name, hunt ? playerActor : undefined);
       // Nicht alle im gleichen Takt: etwas Zufall dazu
-      cpuNextThrow[name] = now + GAME_CONFIG.cpuThrowMs * (0.6 + Math.random() * 0.8);
+      cpuNextThrow[name] = now + cpuThrowMs() * (0.6 + Math.random() * 0.8);
     }
   }
 }

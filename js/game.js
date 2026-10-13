@@ -26,6 +26,7 @@ function startGame() {
   clearAllBodies();
   particles = [];
   resetActors();
+  startLevel();   // 🏅 Level-Schild & Anzeige (levels.js)
   setupPlayers(); // Wer spielt wen? (cpu.js)
 
   startScreen.classList.remove('active');
@@ -33,7 +34,11 @@ function startGame() {
   newRecordMsgEl.style.display = 'none';
 }
 
-restartBtn.addEventListener('click', startGame);
+// NOCHMAL / WEITER: startet das Level, das finishLevel() ausgesucht hat
+restartBtn.addEventListener('click', () => {
+  currentLevel = nextLevel;
+  startGame();
+});
 
 // Haupt-GameLoop
 let lastTime = performance.now();
@@ -59,6 +64,7 @@ function gameLoop(now) {
 
   // 4. Partikel malen
   drawParticles();
+  drawLevelBanner(now); // 📣 „LEVEL 2“ (levels.js)
 
   requestAnimationFrame(gameLoop);
 }

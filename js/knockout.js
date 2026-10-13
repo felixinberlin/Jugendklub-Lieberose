@@ -50,12 +50,11 @@ function checkKnockout(name) {
 function endGame(winner) {
   isPlaying = false;
   finalScoreEl.textContent = score;
-  if (playerActor !== null && !isAlive(playerActor)) {
-    winnerMsgEl.textContent = `😵 Du bist raus! (${actors[playerActor].name})`;
-  } else if (playerActor !== null && winner === playerActor) {
-    winnerMsgEl.textContent = '🏆 DU GEWINNST! 🏆';
+  if (playerActor !== null) {
+    finishLevel(isAlive(playerActor) && winner === playerActor); // 🏅 levels.js
   } else {
     winnerMsgEl.textContent = winner ? `🏆 ${actors[winner].name} gewinnt! 🏆` : 'Alle sind raus! 🤯';
+    restartBtn.textContent = 'NOCHMAL SPIELEN 🔄';
   }
   if (score > highScore) {
     highScore = score;

@@ -36,7 +36,15 @@ const GAME_CONFIG = {
   bombEmoji: '💣',
   bombSize: 36,
   // Eigene Wurfsachen pro Figur? z. B. katzeBomb: '🐟', cornBomb: '🍿', koboldBomb: '🪨'
-  cpuThrowMs: 1800,      // 🤖 So oft wirft eine Computer-Figur (kleiner = frecher)
+  // 🏅 Drei Level, jedes schwerer (nur wenn man eine eigene Figur spielt)
+  // throwMs = so oft wirft eine Computer-Figur (kleiner = frecher)
+  // huntPlayer = wie oft sie auf DICH zielt statt auf ihr normales Ziel (0 = nie, 1 = immer)
+  levels: [
+    { title: 'Aufwärmen 🌱',       throwMs: 2400, huntPlayer: 0.1 },
+    { title: 'Es wird wild 🔥',    throwMs: 1700, huntPlayer: 0.3 },
+    { title: 'Alle gegen dich 💀', throwMs: 1250, huntPlayer: 0.5 }
+  ],
+  cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
   throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.

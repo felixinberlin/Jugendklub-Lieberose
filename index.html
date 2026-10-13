@@ -16,6 +16,7 @@
       <!-- HUD -->
       <div id="hud">
         <div class="hud-item">TREFFER: <span id="score">0</span></div>
+        <div id="levelHud" class="hud-item" hidden>LEVEL <span id="level">1</span>/3</div>
         <div class="hud-item" hidden>REKORD: <span id="highScore">0</span></div>
       </div>
 
@@ -24,7 +25,7 @@
         <div class="badge">🏰 Jugendklub Lieberose</div>
         <h1>KOBOLD, MAIS, KATZE, MAUS, GOBLIN & MUSIALA</h1>
         <div class="instructions">
-          <p>👆 Antippen: werfen! ↔️ Ziehen: ausweichen!<br>💀 20 Treffer = raus. Wer übrig bleibt, gewinnt!<br>💣 Bomben treffen jeden im Weg · ☁️ Wolke = Regen · ☀️ Sonne = Nacht</p>
+          <p>👆 Antippen: werfen! ↔️ Ziehen: ausweichen!<br>💀 20 Treffer = raus. Wer übrig bleibt, gewinnt! 🏅 3 Level<br>💣 Bomben treffen jeden im Weg · ☁️ Wolke = Regen · ☀️ Sonne = Nacht</p>
         </div>
         <p class="pick-title">Wen spielst DU? 👇</p>
         <div id="pickGrid" class="pick-grid"></div>
@@ -67,6 +68,7 @@
   <script src="js/bombs.js"></script>
   <script src="js/physics.js"></script>
   <script src="js/cpu.js"></script>
+  <script src="js/levels.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

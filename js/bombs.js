@@ -16,14 +16,17 @@ function everyoneExcept(actor) {
 
 // Eine angeklickte Figur wirft eine Bombe zu ihrem Ziel (siehe `target` in actors.js).
 // Unterwegs trifft die Bombe aber jede Figur, die im Weg steht!
-function shootBomb(actor) {
+// `forcedTarget` (optional): auf diese Figur zielen statt aufs normale Ziel.
+function shootBomb(actor, forcedTarget) {
   if (!isPlaying || document.hidden) return;
   if (!isAlive(actor)) return;
   // Kleine Pause zwischen zwei Würfen, sonst gewinnt, wer am schnellsten tippt
   const now = performance.now();
   if (now - (actors[actor].lastThrow || 0) < GAME_CONFIG.throwCooldownMs) return;
   actors[actor].lastThrow = now;
-  const targetName = targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
+  const targetName = (forcedTarget && isAlive(forcedTarget) && forcedTarget !== actor)
+    ? forcedTarget
+    : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
   const source = actors[actor].body;
   const target = actors[targetName].body;

@@ -56,6 +56,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
+│   ├── levels.js     #   🏅 3 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
 └── [toy-name]/       # Optional future mini-games (e.g. gurken-angriff/index.html)
@@ -79,7 +80,8 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
 - `maxHits` – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
-- `cpuThrowMs` (Tempo der Computer-Gegner), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
+- `levels` – 3 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Balance per Bot-Simulation geprüft: L1 Bot gewinnt, L2 ~50 %, L3 Bot verliert knapp (Ausweichen nötig)
+- `cpuThrowMs` (Fallback ohne Level), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -214,10 +216,11 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/footballer.js` | `updateFootballers()` (Figuren mit `<name>Runs` dribbeln hin und her, außer `actor.dragging`), `drawFootballer(shirt, size, now, dir, kick)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, schwingende Arme, hochgehaltenen Ball, Schuss-Bein (`kick` = `wiggle`), `isSixSeven(actor)` – nach Treffer (`sixSevenUntil`, gesetzt in `physics.js`, nur wenn Shirt `sixSeven: true`) 6-7-Handgeste + „6 7!“ über dem Kopf, steht dabei still. `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
 | `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`: „DU GEWINNST“ / „Du bist raus“ / „X gewinnt“, Highscore; eigene Figur raus = sofort Ende), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
-| `js/bombs.js` | `fallingBodies`, `everyoneExcept(actor)` (Kollisionsmaske: alle Figuren außer Werfer), `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
+| `js/bombs.js` | `fallingBodies`, `everyoneExcept(actor)` (Kollisionsmaske: alle Figuren außer Werfer), `shootBomb(actor, forcedTarget?)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer = JEDE lebende Figur außer dem Werfer (`customData.shooter`), nicht nur das Ziel → `wiggle`, `hitsTaken`, `checkKnockout`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
-| `js/cpu.js` | `playerActor` (eigene Figur, `null` = „Alle zusammen“), `isCpu(name)`, `chooseAndStart(name)`, `setupPlayers()` (aus `startGame`: Knöpfe der Computer-Figuren bekommen Klasse `cpu` = nicht antippbar), `updateCpu(now)` (Computer wirft alle `cpuThrowMs` ±40 %), `drawPlayerMarker()`. Baut beim Laden die Auswahl-Kacheln `#pickGrid` aus `actors` (neue Figuren erscheinen automatisch). Muss NACH `actors.js` laden |
-| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateBombs` → `drawParticles`), Initialisierung |
+| `js/cpu.js` | `playerActor` (eigene Figur, `null` = „Alle zusammen“), `isCpu(name)`, `chooseAndStart(name)`, `setupPlayers()` (aus `startGame`: Knöpfe der Computer-Figuren bekommen Klasse `cpu` = nicht antippbar), `updateCpu(now)` (Computer wirft alle `level().throwMs` ±40 %, mit Wahrscheinlichkeit `huntPlayer` per `shootBomb(name, playerActor)` auf dich), `drawPlayerMarker()`. Baut beim Laden die Auswahl-Kacheln `#pickGrid` aus `actors` (neue Figuren erscheinen automatisch). Muss NACH `actors.js` laden |
+| `js/levels.js` | `currentLevel`, `nextLevel`, `level()` (Einstellungen aus `GAME_CONFIG.levels`), `startLevel()` (aus `startGame`), `finishLevel(won)` (aus `endGame`: Text + Knopf „WEITER ZU LEVEL n“ / „NOCHMAL LEVEL n“ / „ALLE 3 GESCHAFFT“), `drawLevelBanner(now)` |
+| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 
