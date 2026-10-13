@@ -51,7 +51,8 @@ function gameLoop(now) {
     // 2. Matter.js Physik-Schritt
     Engine.update(engine, dt);
 
-    // 3. Bomben malen & aufräumen
+    // 3. Fußballer dribbeln lassen, Bomben malen & aufräumen
+    updateFootballers();
     updateBombs(now);
   }
 

@@ -95,6 +95,7 @@ for (const name in actors) {
     if (!isPlaying || drag || event.button !== 0) return;
     initAudio();
     const body = actors[name].body;
+    actors[name].dragging = true;
     drag = {
       id: event.pointerId, startX: event.clientX, startY: event.clientY,
       x: body.position.x, y: body.position.y, moved: false
@@ -115,6 +116,7 @@ for (const name in actors) {
   function finishDrag(event) {
     if (!drag || drag.id !== event.pointerId) return;
     suppressClick = drag.moved || event.type !== 'pointerup';
+    actors[name].dragging = false;
     drag = null;
     if (button.hasPointerCapture(event.pointerId)) button.releasePointerCapture(event.pointerId);
   }
@@ -139,7 +141,7 @@ function drawActors(now) {
     ctx.textBaseline = 'middle';
     const shirt = GAME_CONFIG[`${name}Shirt`];
     if (shirt) {
-      drawFootballer(shirt, actorSize(name), now); // ⚽ Figur im Trikot (footballer.js)
+      drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle); // ⚽ Figur im Trikot (footballer.js)
     } else {
       ctx.font = `${actorSize(name)}px -apple-system, sans-serif`;
       ctx.fillText(actorEmoji(name), 0, 0);

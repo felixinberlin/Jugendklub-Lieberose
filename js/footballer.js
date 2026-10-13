@@ -1,43 +1,86 @@
 /**
- * ⚽ footballer.js – Eine Figur im Fußballtrikot
+ * ⚽ footballer.js – Eine Figur im Fußballtrikot, die über das Feld dribbelt
  *
  * Statt eines Emojis wird die Figur selbst gemalt: Kopf, Trikot mit Nummer,
- * Hose, rennende Beine und ein Ball am Fuß. So sieht sie auf jedem Handy gleich aus.
+ * Hose, rennende Beine, schwingende Arme und ein Ball, der hochgehalten wird.
+ * So sieht sie auf jedem Handy gleich aus.
  *
  * Jede Figur kann ein Trikot bekommen: in config.js `<name>Shirt` eintragen,
  * z. B. musialaShirt: { color: '#ffffff', number: '10', stripe: true }
+ * Mit `<name>Runs: true` rennt sie von allein hin und her.
  */
 
+// 🏃 Lässt alle Trikot-Figuren mit `<name>Runs` hin und her dribbeln.
+// Wird in jedem Bild aus gameLoop() aufgerufen, solange gespielt wird.
+function updateFootballers() {
+  for (const name in actors) {
+    const actor = actors[name];
+    if (!GAME_CONFIG[`${name}Shirt`] || !GAME_CONFIG[`${name}Runs`]) continue;
+    if (actor.dragging) continue; // Wer gerade gezogen wird, rennt nicht weg
+    if (!actor.runDir) actor.runDir = 1;
+
+    const speed = GAME_CONFIG[`${name}RunSpeed`] || 1.5;
+    const left = width * 0.15;
+    const right = width * 0.85;
+    let x = actor.body.position.x + actor.runDir * speed;
+    if (x > right) { x = right; actor.runDir = -1; } // Wende!
+    if (x < left) { x = left; actor.runDir = 1; }
+    moveActor(name, x, actor.body.position.y);
+  }
+}
+
 // Malt den Fußballer um den Punkt (0, 0). `size` ist die ungefähre Gesamthöhe.
-function drawFootballer(shirt, size, now) {
+// `dir` = Blickrichtung (1 = rechts, -1 = links), `kick` = 0..1 beim Schießen.
+function drawFootballer(shirt, size, now, dir = 1, kick = 0) {
   const s = size / 64; // Alles ist für Größe 64 gebaut und wird mitskaliert
-  const run = Math.sin(now / 90); // Beine laufen hin und her
+  const run = Math.sin(now / 90); // Beine und Arme laufen hin und her
+  const bob = Math.abs(Math.sin(now / 90)) * -2; // Beim Rennen hüpft der Körper
 
   ctx.save();
   ctx.scale(s, s);
+  ctx.translate(0, bob);
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
 
-  // 🦵 Beine (rennend)
+  // Beine, Arme und Ball schauen in Laufrichtung (gespiegelt bei dir = -1)
+  ctx.save();
+  ctx.scale(dir, 1);
+
+  // 🦵 Beine – beim Schuss schnellt das vordere Bein nach vorn
+  const backLeg = -run * 6;
+  const frontLeg = kick > 0.3 ? 14 : run * 6;
+  const frontFootY = kick > 0.3 ? 24 : 30;
   ctx.strokeStyle = '#f5c99b';
   ctx.lineWidth = 5;
   ctx.beginPath();
-  ctx.moveTo(-5, 18); ctx.lineTo(-5 - run * 6, 30);
-  ctx.moveTo(5, 18); ctx.lineTo(5 + run * 6, 30);
+  ctx.moveTo(-5, 18); ctx.lineTo(-5 + backLeg, 30);
+  ctx.moveTo(5, 18); ctx.lineTo(5 + frontLeg, frontFootY);
   ctx.stroke();
 
   // 👟 Schuhe
   ctx.fillStyle = '#111827';
   ctx.beginPath();
-  ctx.arc(-5 - run * 6, 31, 3.5, 0, Math.PI * 2);
-  ctx.arc(5 + run * 6, 31, 3.5, 0, Math.PI * 2);
+  ctx.arc(-5 + backLeg, 31, 3.5, 0, Math.PI * 2);
+  ctx.arc(5 + frontLeg, frontFootY + 1, 3.5, 0, Math.PI * 2);
   ctx.fill();
 
-  // ⚽ Ball am Fuß
-  ctx.font = '14px -apple-system, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('⚽', 15 + run * 3, 28);
+  // ⚽ Ball: hüpft vor dem Fuß auf und ab (Ball hochhalten). Beim Schuss ist er weg.
+  if (kick < 0.3) {
+    const juggle = Math.abs(Math.sin(now / 160)) * 12;
+    ctx.font = '14px -apple-system, sans-serif';
+    ctx.fillText('⚽', 15, 28 - juggle);
+  }
+
+  // 💪 Arme schwingen gegenläufig zu den Beinen
+  ctx.strokeStyle = '#f5c99b';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(-18, 0); ctx.lineTo(-20 + run * 5, 10);
+  ctx.moveTo(18, 0); ctx.lineTo(20 - run * 5, 10);
+  ctx.stroke();
+  ctx.restore();
 
   // 🩳 Hose
   ctx.fillStyle = shirt.shorts || '#111827';
@@ -72,14 +115,18 @@ function drawFootballer(shirt, size, now) {
     }
   }
 
-  // 🔢 Rückennummer
+  // 🔢 Nummer (nicht gespiegelt, damit man sie lesen kann)
   ctx.font = 'bold 11px -apple-system, sans-serif';
   ctx.fillStyle = shirt.numberColor || '#111827';
   ctx.fillText(shirt.number || '10', 0, 6);
 
-  // 🙂 Kopf
+  // 🙂 Kopf – nickt beim Rennen leicht
+  ctx.save();
+  ctx.translate(0, -22);
+  ctx.rotate(run * 0.08);
   ctx.font = '24px -apple-system, sans-serif';
-  ctx.fillText(shirt.head || '😃', 0, -22);
+  ctx.fillText(shirt.head || '😃', 0, 0);
+  ctx.restore();
 
   ctx.restore();
 }

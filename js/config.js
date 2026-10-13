@@ -22,6 +22,8 @@ const GAME_CONFIG = {
   musialaEmoji: '🏃', // Wird nur benutzt, wenn musialaShirt fehlt
   // 👕 Trikot! Farbe, Nummer, Schwarz-Rot-Gold-Streifen. Löschen = wieder Emoji.
   musialaShirt: { color: '#ffffff', number: '10', stripe: true },
+  musialaRuns: true,     // 🏃 Musiala dribbelt von allein hin und her
+  musialaRunSpeed: 1.5,  // 0.5 = gemütlich, 4 = Turbo-Sprint!
   musialaSize: 64,
   musialaBomb: '⚽', // Musiala schießt Fußbälle!
 

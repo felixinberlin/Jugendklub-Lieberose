@@ -75,7 +75,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
-- `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji
+- `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -205,11 +205,11 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/forest.js` | `FOREST_COLORS` (night/day), `skyLightPos()`, `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
-| `js/footballer.js` | `drawFootballer(shirt, size, now)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, Ball. `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
+| `js/footballer.js` | `updateFootballers()` (Figuren mit `<name>Runs` dribbeln hin und her, außer `actor.dragging`), `drawFootballer(shirt, size, now, dir, kick)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, schwingende Arme, hochgehaltenen Ball, Schuss-Bein (`kick` = `wiggle`). `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
-| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateBombs` → `drawParticles`), Initialisierung |
+| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateBombs` → `drawParticles`), Initialisierung |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 
