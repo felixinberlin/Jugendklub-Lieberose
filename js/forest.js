@@ -229,10 +229,7 @@ function drawDaySky(now) {
   ctx.save();
   ctx.translate(sunX, sunY);
   ctx.rotate(now * 0.0003); // Sonne dreht sich langsam
-  ctx.font = '44px -apple-system, sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(GAME_CONFIG.sunEmoji || '☀️', 0, 0);
+  drawEmoji(GAME_CONFIG.sunEmoji || '☀️', 0, 0, 44); // 🖼️ sprites.js
   ctx.restore();
 
   for (const c of forestData.clouds) {
@@ -272,7 +269,7 @@ function drawNightSky(now) {
   ctx.font = '34px -apple-system, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(GAME_CONFIG.moonEmoji || '🌙', moonX, moonY);
+  drawEmoji(GAME_CONFIG.moonEmoji || '🌙', moonX, moonY, 34); // 🖼️ sprites.js
 }
 
 // 🌲 Drei Reihen Hügel und Bäume, von hinten nach vorne
@@ -380,7 +377,7 @@ function drawButterflies(now) {
     ctx.save();
     ctx.translate(f.x, f.y);
     ctx.scale(0.6 + Math.abs(Math.sin(now * 0.012 + f.phase)) * 0.4, 1); // Flügelschlag
-    ctx.fillText('🦋', 0, 0);
+    drawEmoji('🦋', 0, 0, 16); // 🖼️ sprites.js
     ctx.restore();
   }
   ctx.restore();

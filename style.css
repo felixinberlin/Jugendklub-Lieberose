@@ -273,6 +273,47 @@ h2 {
 .special-btn.ready .sp-icon { filter: none; }
 .special-btn:active { transform: scale(0.92); }
 
+/* 🔢 Versionsnummer im Abzeichen */
+.version { opacity: 0.8; font-size: 0.75rem; margin-left: 4px; }
+
+/* 🎬 Abspann wie im Kino */
+.credits-screen {
+  background: #000;
+  overflow: hidden;
+  justify-content: flex-start;
+  z-index: 20;
+}
+.credits-roll {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  padding: 0 24px;
+  text-align: center;
+}
+@keyframes credits-roll {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - 100vh)); }
+}
+.credits-title { font-size: 2rem; font-weight: 900; color: #ffde59; margin-bottom: 6px; }
+.credits-version { font-size: 1.2rem; font-weight: 800; color: #ff5e7e; margin-bottom: 6px; }
+.credits-sub { font-size: 1.05rem; color: #cbd5e1; margin-bottom: 40px; }
+.credits-head { font-size: 1.3rem; font-weight: 900; color: #a78bfa; margin: 36px 0 14px; }
+.credits-workshop { font-size: 1.15rem; font-weight: 900; color: #6ee7b7; margin: 28px 0 12px; }
+.credits-wish { font-size: 1.05rem; color: #f1f5f9; margin-bottom: 12px; line-height: 1.4; }
+.credits-v { color: #facc15; font-weight: 800; margin-right: 6px; }
+.credits-end { font-size: 1.6rem; font-weight: 900; color: #ffde59; margin: 60px 0 40px; }
+.credits-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 0;
+  right: 0;
+  padding: 10px 0;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: linear-gradient(transparent, #000 40%); /* Text läuft darunter weg */
+}
+
 /* 🤖 Computer-Figuren kann man nicht antippen */
 .actor-btn.cpu { pointer-events: none; }
 

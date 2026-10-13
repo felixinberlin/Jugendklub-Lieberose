@@ -7,6 +7,7 @@
 let particles = [];
 
 function spawnParticles(x, y, color = '#ffde59', count = 14) {
+  count = Math.min(count, GAME_CONFIG.maxParticles - particles.length); // 🚀 Nicht zu viele
   for (let i = 0; i < count; i++) {
     const angle = Math.random() * Math.PI * 2;
     const speed = Math.random() * 6 + 2;
@@ -25,6 +26,7 @@ function spawnParticles(x, y, color = '#ffde59', count = 14) {
 
 // Ein Emoji-Partikel (z. B. 🪙): hüpft kurz hoch, fällt runter und verblasst.
 function spawnEmojiParticle(x, y, emoji, size = 14) {
+  if (particles.length >= GAME_CONFIG.maxParticles) return; // 🚀 Nicht zu viele
   particles.push({
     x, y,
     vx: (Math.random() - 0.5) * 3,
@@ -53,10 +55,7 @@ function drawParticles() {
     if (p.emoji) {
       p.vy += p.gravity; // Emoji-Partikel fallen nach unten
       ctx.globalAlpha = p.life;
-      ctx.font = `${p.size}px -apple-system, sans-serif`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(p.emoji, p.x, p.y);
+      drawEmoji(p.emoji, p.x, p.y, p.size); // 🖼️ sprites.js
       continue;
     }
 

@@ -82,7 +82,10 @@ function applyHit(victim, shooterName, damage, special) {
 
 function resizeCanvas() {
   const rect = container.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
+  // Höchstens 2-fache Pixeldichte: Bei 3 müsste das Handy 2,25-mal so viele Pixel malen,
+  // ohne dass man den Unterschied sieht. Das spart viel Tempo!
+  const dpr = Math.min(window.devicePixelRatio || 1, GAME_CONFIG.maxPixelRatio);
+  renderDpr = dpr; // Für den Bilder-Speicher (sprites.js)
   const oldWidth = width;
   const oldHeight = height;
   width = rect.width;

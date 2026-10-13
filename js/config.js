@@ -78,6 +78,8 @@ const GAME_CONFIG = {
   fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
   hitChoices: [5, 10, 20, 50], // Zum Auswählen auf dem Startbildschirm
+  maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte (3 = schärfer, aber langsamer)
+  maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)

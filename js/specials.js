@@ -342,10 +342,7 @@ function drawSpear(b, now) {
   ctx.lineTo(8, 7);
   ctx.closePath();
   ctx.fill();
-  ctx.font = `${26 + Math.sin(now / 50) * 4}px -apple-system, sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🔥', 16, -4);
+  drawEmoji('🔥', 16, -4, 26 + Math.sin(now / 50) * 4);
   ctx.restore();
 }
 
@@ -389,16 +386,15 @@ function drawSpecials(now) {
     ctx.save();
     ctx.translate(m.body.position.x, m.body.position.y);
     ctx.rotate(Math.sin(now / 150 + m.angle) * 0.2 + m.wiggle * 0.5);
-    ctx.font = '30px -apple-system, sans-serif';
-    ctx.fillText(actorEmoji('kobold'), 0, 0);
+    drawEmoji(actorEmoji('kobold'), 0, 0, 30); // 🖼️ sprites.js
     ctx.restore();
   }
   for (const name in actors) {
     if (!isAlive(name) || !actors[name].burn) continue;
     const p = actors[name].body.position;
-    ctx.font = `${22 + Math.sin(now / 60) * 4}px -apple-system, sans-serif`; // 🔥 flackert
-    ctx.fillText('🔥', p.x - 18, p.y - 30 + Math.sin(now / 90) * 3);
-    ctx.fillText('🔥', p.x + 18, p.y - 26 + Math.cos(now / 80) * 3);
+    const flame = 22 + Math.sin(now / 60) * 4; // 🔥 flackert
+    drawEmoji('🔥', p.x - 18, p.y - 30 + Math.sin(now / 90) * 3, flame);
+    drawEmoji('🔥', p.x + 18, p.y - 26 + Math.cos(now / 80) * 3, flame);
   }
   for (const name in actors) {
     if (!isAlive(name) || !isStunned(name)) continue;
@@ -407,11 +403,9 @@ function drawSpecials(now) {
     ctx.translate(p.x, p.y);
     ctx.globalAlpha = 0.85;
     ctx.rotate(now / 120); // 🌪️ dreht sich
-    ctx.font = '64px -apple-system, sans-serif';
-    ctx.fillText('🌪️', 0, 0);
+    drawEmoji('🌪️', 0, 0, 64);
     ctx.restore();
-    ctx.font = '18px -apple-system, sans-serif';
-    ctx.fillText('💫', p.x + Math.cos(now / 200) * 30, p.y - 40 + Math.sin(now / 200) * 6);
+    drawEmoji('💫', p.x + Math.cos(now / 200) * 30, p.y - 40 + Math.sin(now / 200) * 6, 18);
   }
   ctx.restore();
 }
@@ -422,8 +416,7 @@ function drawSpecialBadge(name, now) {
   const ready = specialReady(name);
   ctx.save();
   ctx.globalAlpha = ready ? 1 : 0.35;
-  ctx.font = `${ready ? 18 + Math.sin(now / 150) * 2 : 15}px -apple-system, sans-serif`;
-  ctx.fillText('⚡', 30, -26);
+  drawEmoji('⚡', 30, -26, ready ? 18 + Math.sin(now / 150) * 2 : 15);
   ctx.restore();
 }
 

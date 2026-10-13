@@ -35,6 +35,7 @@ function startGame() {
 
   startScreen.classList.remove('active');
   teamScreen.classList.remove('active');
+  hideCredits();
   gameOverScreen.classList.remove('active');
   newRecordMsgEl.style.display = 'none';
 }

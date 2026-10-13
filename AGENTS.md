@@ -46,6 +46,7 @@ If a user request would violate any of these, stop and clarify first:
 ├── js/               # Das Spiel, aufgeteilt nach Bedeutung (klassische <script>-Tags, KEINE ES-Module)
 │   ├── config.js     #   ⚙️ GAME_CONFIG – Live-Hacking-Zone
 │   ├── state.js      #   🧠 Matter-Alias, Canvas/DOM, width/height, isPlaying, score, engine
+│   ├── sprites.js    #   🖼️ Bilder-Speicher: drawEmoji / drawLabel (Tempo!)
 │   ├── audio.js      #   🔊 Web Audio Synthesizer
 │   ├── forest.js     #   🌲 Hintergrund (Zauberwald)
 │   ├── particles.js  #   ✨ Partikel
@@ -58,6 +59,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
 │   ├── teams.js      #   ⚔️ Team-Modus: mehrere Figuren, rote Gegner-Kopien, 8 Level
 │   ├── specials.js   #   ⚡ Spezialkräfte (Knopf unten links, lädt mit 20 Treffern): Riesenball, Mini-Kobolde, Wirbelsprung, Popcorn, Feuerspeer
+│   ├── credits.js    #   🎬 Abspann + GAME_VERSION – JEDER Kinder-Wunsch bekommt hier eine Zeile!
 │   ├── levels.js     #   🏅 5 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
@@ -86,6 +88,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `levels` – 5 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Anzahl beliebig, alles liest `levels.length`. Balance per Bot-Simulation (Bot wirft alle 300 ms, weicht NIE aus): L1–2 gewinnt, L3–4 ~50 %, L5 verliert knapp. Kinder fanden `throwMs 1250 / huntPlayer 0.5` zu schwer – nicht härter als L5 machen
 - `specialChargeHits` (Treffer bis zur Spezialkraft), `cpuSpecialChance`, `bigBall { size, damage, speed, seconds }`, `miniKobolds { count, seconds }`, `catStunSeconds`, `catDamage`, `popcorn { count, damage, size }`, `fireSpear { damage, speed, burnSeconds, burnDamage, burnEveryMs }` – ⚡ Spezialkräfte
 - `cpuThrowMs` (Fallback ohne Level), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
+- `maxPixelRatio` (2 – Tempo!), `maxParticles` (300)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -97,6 +100,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 
 ### C. Live Deployment Protocol
 Whenever an edit is made:
+0. **🎬 Abspann pflegen:** Jeder Kinder-Wunsch bekommt eine Zeile in `WISHES` (`js/credits.js`) und `GAME_VERSION` wird hochgezählt (2.22 → 2.23; neuer Workshop-Tag → neue Hauptnummer + `{ workshop: '🎪 Workshop 3 · Datum' }`). Kurz, kindgerecht, mit Emoji.
 1. Verify syntax: `for f in js/*.js; do node -c "$f"; done`.
 2. Run `./deploy.sh "<descriptive commit message>"` (works from any branch).
 3. Pushes the current commit to `origin main` $\rightarrow$ Vercel automatically deploys within ~15 seconds.
@@ -204,6 +208,7 @@ btn.addEventListener('click', async () => {
 22. **Playwright & rennende Figuren:** `page.click()` wartet, bis ein Element stillsteht – bei Musiala nie. In Tests `{ force: true }` oder `shootBomb(name)` per `evaluate` nutzen. Computer-Figuren werfen von allein – vor Eingabe-Tests `cpuNextThrow[n] = Infinity` setzen.
 23. **Gegner-Kopien (Team-Modus):** Figuren können zur Laufzeit dazukommen (`actors['katze_3']` mit `kind: 'katze'`). Deshalb NIE `GAME_CONFIG[`${name}…`]` oder `getElementById(`${name}Btn`)` direkt – immer `actorCfg(name, 'Emoji')` und `actorBtn(name)` (kann `null` sein). `for (const name in actors)` erwischt Kopien automatisch.
 24. **Bewegte Ziele & Flugzeit:** Bomben fliegen 42 Bilder lang. Kreist/rennt das Ziel weiter, landet die Bombe dort, wo es VORHER war. Lösung: Zielposition vorausberechnen (`decoyFor(..., 42)`). Ohne das fingen die Mini-Kobolde nur 7/12 Bomben, mit 12/12.
+25. **Tempo bei vielen Figuren:** Gemessen (Playwright, Pixeldichte 3, Team-Level 8 mit 13 Figuren): 26 fps mit Rucklern bis 267 ms. Ursache: farbige Emojis per `fillText` jedes Bild neu rastern + 2,6 Mio. Pixel Leinwand. Lösung: Bilder-Speicher (`sprites.js`) + `maxPixelRatio: 2` → 58 fps. Messen mit `requestAnimationFrame`-Zähler; headless-Chromium malt ohne GPU, also nur Vorher/Nachher vergleichen.
 
 ---
 
@@ -215,6 +220,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 |---|---|
 | `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
+| `js/sprites.js` | `renderDpr`, `spriteCache`, `getSprite(key, w, h, paint)`, `drawEmoji(emoji, x, y, size, bottom?)`, `drawLabel(text, x, y, { size, weight, fill, stroke, lineWidth })` – malt Emojis/Texte EINMAL in ein Mini-Canvas und kopiert es danach nur noch. **Im Spiel nie `ctx.fillText` mit Emojis direkt** (teuer!) |
 | `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `rain`, `night`, `day`, `sixseven`, `bigball`, `minis`, `jump`, `whirl`, `ready`, `popcorn`, `spear`, `boom`; Ton-Schalter |
 | `js/forest.js` | `FOREST_COLORS` (night/day), `skyLightPos()`, `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `spawnEmojiParticle(x, y, emoji, size)` (fällt mit Schwerkraft, z. B. 🪙), `drawParticles()` |
@@ -228,6 +234,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/levels.js` | `currentLevel`, `nextLevel`, `level()` (Einstellungen aus `GAME_CONFIG.levels`), `startLevel()` (aus `startGame`), `finishLevel(won)` (aus `endGame`: Text + Knopf „WEITER ZU LEVEL n“ / „NOCHMAL LEVEL n“ / „ALLE n GESCHAFFT“), `drawLevelBanner(now)` |
 | `js/teams.js` | `teamMode`, `chosenTeam`, `TEAM_COLORS` (🔵 mine / 🔴 enemy), `TEAM_BITS` (Physik-Kategorien 256/512 – kein Eigentor), `teamOf(name)`, `enemiesOf`, `nearestEnemy` (Ziel im Team-Modus), `removeClones()`, `setupTeams()` (nicht gewählte Figuren setzen aus, Gegner = Kopien `kind_i` mit `kind`-Feld, Aufstellung in Reihen), `teamScale()`, `drawTeamAura(name)`, `teamResult()`. Baut `#teamGrid`. Lädt nach `levels.js` |
 | `js/specials.js` | `SPECIALS` (`musiala` → `bigBall` (6 Schaden), `kobold` → `spawnMinis`, `katze` → `catJump` (4 Schaden + Wirbel), `corn` → `popcorn` (10× 🍿 per `launchArc`), `goblin` → `fireSpear` (Sensor-Speer `pierce` durch alle, `startBurn` → `updateBurns` Schaden über Zeit, `drawSpear`); per `kindOf`, gilt also auch für Gegner-Kopien), `trySpecial(name)`, `specialReady` (`specialCharge >= specialChargeHits`), `chargeSpecial(name)` (aus `physics.js` bei jedem Treffer mit NORMALEM Wurf, nicht mit Riesenball), `setupSpecialBar()` / `updateSpecialBar()` (Knöpfe `#specialBar` unten links für jede eigene Figur mit Kraft – Ladebalken, „12/20“, „BEREIT!“), `isStunned(name)` (blockiert Werfen, Ziehen, Dribbeln), `steerBalls()` (Riesenball: eigener folgt dem Finger `steer`, Computer-Ball zielsucht; keine Schwerkraft), Minis = Sensor-Bodies `miniKobold` (Kategorie `MINI_BIT` 1024, alle Bomben-Masken enthalten sie) + `decoyFor(target, from, frames)` (Bomben auf den Kobold zielen auf die vorausberechnete Mini-Position), `blockByMini()` (aus `physics.js`), `updateSpecials`, `drawSpecials`, `drawSpecialBadge` (⚡), `resetSpecials()` (aus `startGame`). Computer laden genauso auf und nutzen Kräfte dann mit `cpuSpecialChance`. Kein Doppeltippen mehr (Figur antippen = immer werfen) |
+| `js/credits.js` | `GAME_VERSION`, `WISHES` (Liste aller Kinder-Wünsche mit Version), `buildCredits()`, `showCredits()` (🎬-Knopf auf dem Game-Over-Bildschirm; automatisch nach dem letzten Level), `hideCredits()`. Version steht im Abzeichen auf dem Startbildschirm |
 | `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `drawSpecials` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateSpecials` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
