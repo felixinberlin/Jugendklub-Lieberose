@@ -21,6 +21,46 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 
 ---
 
+## 🕸️ Wer redet mit wem?
+
+Ein Pfeil bedeutet: *„Diese Datei ruft eine Funktion aus der anderen Datei auf."*
+
+```mermaid
+flowchart TD
+    game["🎮 game.js<br/>Start + Spielschleife"]
+    physics["🧪 physics.js<br/>Physik-Welt + Zusammenstöße"]
+    actors["🧌🌽 actors.js<br/>Kobold + Mais"]
+    bombs["💣 bombs.js<br/>Bomben"]
+    forest["🌲 forest.js<br/>Zauberwald"]
+    particles["✨ particles.js<br/>Funken"]
+    audio["🔊 audio.js<br/>Töne"]
+
+    game -->|"baut die Welt"| physics
+    game -->|"malt den Wald"| forest
+    game -->|"malt die Figuren"| actors
+    game -->|"malt die Bomben"| bombs
+    game -->|"malt die Funken"| particles
+
+    physics -->|"stellt die Figuren auf"| actors
+    physics -->|"Treffer! Explodiere!"| bombs
+    physics -->|"neue Bildschirmgröße"| forest
+
+    actors -->|"angetippt: wirf!"| bombs
+    bombs -->|"Funken streuen"| particles
+    bombs -->|"Wurf-Ton + BUMM"| audio
+
+    subgraph alle ["📦 Das benutzen alle"]
+        config["⚙️ config.js<br/>Stellschrauben"]
+        state["🧠 state.js<br/>Gedächtnis"]
+    end
+```
+
+Lies das Bild von oben nach unten: `game.js` ist der **Chef** und gibt die Aufträge. `audio.js` und `particles.js` stehen ganz unten – sie rufen niemanden auf, sie machen einfach nur ihre Arbeit, wenn jemand sie braucht.
+
+`config.js` und `state.js` haben keine Pfeile, weil **jede** Datei bei ihnen nachschaut. Das wären sonst so viele Pfeile, dass man nichts mehr erkennt.
+
+---
+
 ## 🔁 Die wichtigste Idee: die Spielschleife
 
 Ein Spiel ist wie ein **Daumenkino**. Der Computer malt ungefähr **60 Bilder pro Sekunde**, und jedes Bild ist ein kleines bisschen anders als das davor. So entsteht Bewegung.
