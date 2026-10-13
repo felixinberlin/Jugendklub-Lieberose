@@ -12,7 +12,7 @@ Ein mobiles HTML5-Webspiel, das gemeinsam mit den Kindern im **Jugendklub Lieber
 3. Mit dem Finger nach links und rechts wischen oder tippen, um auszuweichen und Schätze einzusammeln!
 
 ## 🕹️ Live-Vibecoding für den Workshop
-Alle Spielwerte können während des Workshops direkt in [`game.js`](game.js) angepasst werden:
+Alle Spielwerte können während des Workshops direkt in [`js/config.js`](js/config.js) angepasst werden (der restliche Code liegt nach Themen sortiert in [`js/`](js/)):
 
 ```javascript
 const GAME_CONFIG = {
@@ -22,6 +22,8 @@ const GAME_CONFIG = {
   baseSpeed: 1.0,          // Geschwindigkeit
 };
 ```
+
+👀 **Neugierig, wie das Spiel funktioniert?** Die Erklärung für Kinder steht in [`js/README.md`](js/README.md).
 
 ### ⚡ Live-Deployment während der Show
 Sobald eine Idee der Kinder eingebaut ist:

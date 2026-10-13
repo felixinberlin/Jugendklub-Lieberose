@@ -43,12 +43,22 @@ If a user request would violate any of these, stop and clarify first:
 ├── index.html        # Main landing page / active live game
 ├── style.css         # Arcade styling, safe-area insets, mobile touch lock
 ├── matter.min.js     # Vendored Matter.js 2D physics engine (zero CDN deps)
-├── game.js           # Live game loop, Matter.js physics, Web Audio synthesizer
+├── js/               # Das Spiel, aufgeteilt nach Bedeutung (klassische <script>-Tags, KEINE ES-Module)
+│   ├── config.js     #   ⚙️ GAME_CONFIG – Live-Hacking-Zone
+│   ├── state.js      #   🧠 Matter-Alias, Canvas/DOM, width/height, isPlaying, score, engine
+│   ├── audio.js      #   🔊 Web Audio Synthesizer
+│   ├── forest.js     #   🌲 Hintergrund (Zauberwald)
+│   ├── particles.js  #   ✨ Partikel
+│   ├── actors.js     #   🧌🌽 Kobold & Mais: Bodies, Bewegen, Eingabe, Zeichnen
+│   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
+│   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
+│   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
+│   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
 └── [toy-name]/       # Optional future mini-games (e.g. gurken-angriff/index.html)
 ```
 
 ### File Rules:
-- **Root game:** The main live-coded game lives at root (`index.html`, `style.css`, `game.js`).
+- **Root game:** The main live-coded game lives at root (`index.html`, `style.css`) with its code split by meaning in `js/`. Keep every file small enough for a curious kid to read in one sitting; a new game concept (e.g. enemies, power-ups) gets its own file plus a `<script>` tag in `index.html` before `js/game.js`.
 - **Additional toys:** Each additional toy lives in its own self-contained subfolder (`/gurken-angriff/index.html`).
 - **No deep nesting:** Never nest directories deeper than two levels.
 
@@ -57,7 +67,7 @@ If a user request would violate any of these, stop and clarify first:
 ## 4. 🎮 The Live "Vibecoding" Architecture
 
 ### A. The `GAME_CONFIG` Object (Live Hacking Zone)
-Located at the top of `game.js`. Designed for instant modifications when kids shout ideas on stage:
+Lives alone in `js/config.js`. Designed for instant modifications when kids shout ideas on stage:
 ```javascript
 const GAME_CONFIG = {
   playerEmoji: '🚀',       // Change player avatar (🐉, 🛹, 🐱, 🛸)
@@ -88,7 +98,7 @@ const GAME_CONFIG = {
 
 ### C. Live Deployment Protocol
 Whenever an edit is made:
-1. Verify syntax: `node -c game.js`.
+1. Verify syntax: `for f in js/*.js; do node -c "$f"; done`.
 2. Run `./deploy.sh "<descriptive commit message>"`.
 3. Pushes to `origin main` $\rightarrow$ Vercel automatically deploys within ~15 seconds.
 4. Inform the user to tell the kids: *"3... 2... 1... Handy aktualisieren!"*
@@ -183,39 +193,39 @@ btn.addEventListener('click', async () => {
 11. **Doppeltippen:** `dblclick` ist auf iOS unzuverlässig. `registerTap()` vergleicht Zeitstempel (`doubleTapMs`). Handys feuern nach `touchstart` noch ein emuliertes `mousedown` – das zählt sonst als 2. Tap (= jeder Einzeltipp würde werfen). Lösung: `lastTouchTime` merken und `mousedown` innerhalb von 800 ms ignorieren. Maus-Doppelklick und Leertaste laufen über denselben Weg (`throwBomb()`).
 12. **Eigene Projektile im `collisionStart`-Handler:** Der Handler behandelt jeden Body mit `customData` + Spieler-Kontakt als „Item einsammeln“. Neue Projektile (`isPlayerBomb`) deshalb ganz oben im Pair-Loop abfangen und mit `continue` verlassen, sonst werden sie wie gute Items eingesammelt.
 13. **Array nicht während der Zeichen-Schleife umbauen:** `explodeBomb()` ersetzt `fallingBodies` per `filter`. Das ist im `collisionStart` (vor dem Zeichnen) okay, aber NICHT innerhalb der rückwärtigen Schleife im `gameLoop` – dort nur `splice(i, 1)` + `continue`.
-14. **Testen ohne Handy:** `./serve.sh` + Playwright (Viewport 390×760). `game.js` nutzt globale `let`/`function`, daher lassen sich `fallingBodies`, `throwBomb()`, `isPlaying` direkt per `browser_evaluate` prüfen. Nach „Game Over“ (`isPlaying=false`) laufen keine Kollisionen mehr – Tests sofort nach `startGame` machen. Das `favicon.ico`-404 in der Konsole ist bekannt und harmlos.
+14. **Testen ohne Handy:** `./serve.sh` + Playwright (Viewport 390×760). Die Dateien in `js/` nutzen globale `let`/`function`, daher lassen sich `fallingBodies`, `throwBomb()`, `isPlaying` direkt per `browser_evaluate` prüfen. Nach „Game Over“ (`isPlaying=false`) laufen keine Kollisionen mehr – Tests sofort nach `startGame` machen. Das `favicon.ico`-404 in der Konsole ist bekannt und harmlos.
 15. **`.playwright-mcp/` nie committen:** `deploy.sh` macht `git add .` – Testordner stehen deshalb in `.gitignore`.
 16. **Live-Vibecoding Tempo & Niemals Nachfragen:** Bei Wünschen der Kinder auf der Bühne (z. B. „Den Hintergrund ändern“) NIEMALS interaktive Fragebögen oder Rückfragen (`ask_question`) stellen! Das unterbricht den Flow und dauert viel zu lange. Sofort eine kreative Entscheidung treffen („Bias for Action“), innerhalb von Sekunden umsetzen und deployen. Die Kinder rufen sowieso sofort die nächste Änderung rein.
 17. **Hintergrund-Presets in `GAME_CONFIG`:** Optische Themes und Hintergründe am besten über einfache Schalter oder Presets ansteuerbar halten, damit Änderungen blitzschnell sind.
+18. **Mehrere Dateien ohne Build-Schritt:** Das Spiel ist in `js/*.js` aufgeteilt und wird über normale `<script src>`-Tags geladen – KEINE ES-Module (`type="module"`, `import`/`export`), denn die scheitern beim direkten Öffnen per `file://` an CORS. Klassische Skripte teilen sich einen globalen Bereich: Funktionen und `let`/`const` einer Datei sind in allen später geladenen sichtbar. Deshalb: jeden globalen Namen nur EINMAL deklarieren (zweites `let x` in einer anderen Datei = SyntaxError, die Datei lädt gar nicht) und Code, der sofort beim Laden läuft, darf nur Dinge aus früher geladenen Dateien benutzen. `js/game.js` bleibt die letzte Datei.
 
 ---
 
-## 8b. 🗺️ Code-Map `game.js` (Zeilen ungefähr – per `grep -n "function name" game.js` prüfen)
+## 8b. 🗺️ Code-Map `js/` (per `grep -n "function name" js/*.js` prüfen)
 
-| Was | Wo |
+Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
+
+| Datei | Was |
 |---|---|
-| `GAME_CONFIG` (Emojis, Physik, Items, Bombe, Spawnrate) | Z. 7 |
-| Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …) | Z. 42–58 |
-| Audio: `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom` | Z. 68–118 |
-| State: `isPlaying`, `score`, `highScore`, `koboldBody`, `cornBody`, `cornWiggle`, `fallingBodies`, `particles`, `player` | Z. 124–155 |
-| `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `player`, `kobold`, `corn`, `goodItem`, `badItem`, `playerBomb`) | Z. 157–246 |
-| `resizeCanvas()` (Bumper per `Body.setPosition` neu setzen!) | Z. 248 |
-| `spawnPhysicsItem()` – Vorlage für jeden neuen fallenden/fliegenden Body | Z. 291 |
-| `spawnParticles(x, y, color, count)` | Z. 322 |
-| **Mais-Bombe:** `throwBomb()`, `explodeBomb()`, `registerTap()` (Doppeltipp-Erkennung) – Muster für „Figur wirft etwas“ | Z. 340–406 |
-| **Eingabe**: `handleTouchMove`, `touchstart/touchmove`, Maus, Tastatur (Leertaste = Bombe) | Z. 409–458 |
-| `startGame()`, `gameOver()`, `clearAllBodies()` | Z. 460–510 |
-| `gameLoop(now)` – Zeichnen (Kobold, Mais, Items, Partikel, Spieler) + Spawn-Timer | Z. 514–655 |
+| `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
+| `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
+| `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom`; Ton-Schalter |
+| `js/forest.js` | `forestData`, `initForest()`, `drawPineTree()`, `drawDeciduousTree()`, `drawForest(now)` |
+| `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
+| `js/actors.js` | `koboldBody`, `cornBody`, `koboldWiggle`, `cornWiggle`, `createActors()`, `moveActor(actor, x, y)`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
+| `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
+| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `characterBomb`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
+| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawActors` → `Engine.update` → `updateBombs` → `drawParticles`), Initialisierung |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 
-Immer danach: `node -c game.js` → lokal testen mit `./serve.sh` (http://localhost:8000, kein Cache) bzw. Playwright im Handy-Viewport (390×760) → `./deploy.sh "…"`.
+Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./serve.sh` (http://localhost:8000, kein Cache) bzw. Playwright im Handy-Viewport (390×760) → `./deploy.sh "…"`.
 
 **Vorbild für alles Neue:** die Mais-Bombe (`throwBomb` / `explodeBomb` / `registerTap`). Die Rezepte unten verweisen darauf.
 
 - **Neues Item / neue Gefahr:** nur Eintrag in `goodItems` / `badItems` in `GAME_CONFIG` (emoji, points/damage, size, density). Kein weiterer Code nötig.
 - **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.
-- **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (Z. ~324). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
+- **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (`js/actors.js`). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
 - **Figur wirft/schießt etwas:** existiert schon als `throwBomb()` – kopieren und anpassen. Prinzip: Funktion nach Vorbild `spawnPhysicsItem()` – `Bodies.circle` an der Position von `cornBody`/`koboldBody`, `Body.setVelocity`, eigenes `label` (z. B. `'playerBomb'`), in `fallingBodies` pushen (damit es off-screen entfernt wird). Treffer im `collisionStart`-Handler per Label prüfen; `Composite.remove` + `spawnParticles` + `playSound`. Die Figur danach `…Wiggle = 1` setzen.
 - **Neue Figur am Rand:** Body wie `cornBody` (static, hohe `restitution`), Position in `resizeCanvas()` mitführen, Zeichnen im `gameLoop`, Wiggle-Variable wie `cornWiggle`.
 - **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir`, `spawnRateMs` in `GAME_CONFIG`.
