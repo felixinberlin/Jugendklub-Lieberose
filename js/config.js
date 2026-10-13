@@ -22,6 +22,7 @@ const GAME_CONFIG = {
   // Die angeklickte Figur wirft, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
+  // Eigene Wurfsachen pro Figur? z. B. katzeBomb: '🐟', cornBomb: '🍿', koboldBomb: '🪨'
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)

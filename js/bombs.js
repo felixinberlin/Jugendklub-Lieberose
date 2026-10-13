@@ -26,7 +26,7 @@ function shootBomb(actor) {
     label: 'characterBomb',
     collisionFilter: { category: 2, mask: 1 | target.collisionFilter.category },
     customData: {
-      emoji: GAME_CONFIG.bombEmoji,
+      emoji: GAME_CONFIG[`${actor}Bomb`] || GAME_CONFIG.bombEmoji,
       size: GAME_CONFIG.bombSize,
       isPlayerBomb: true,
       target: target.label,

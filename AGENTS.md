@@ -49,7 +49,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── audio.js      #   🔊 Web Audio Synthesizer
 │   ├── forest.js     #   🌲 Hintergrund (Zauberwald)
 │   ├── particles.js  #   ✨ Partikel
-│   ├── actors.js     #   🧌🌽 Kobold & Mais: Bodies, Bewegen, Eingabe, Zeichnen
+│   ├── actors.js     #   🧌🌽🐱 Figuren-Liste `actors`: Bodies, Bewegen, Eingabe, Zeichnen
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
@@ -68,27 +68,12 @@ If a user request would violate any of these, stop and clarify first:
 
 ### A. The `GAME_CONFIG` Object (Live Hacking Zone)
 Lives alone in `js/config.js`. Designed for instant modifications when kids shout ideas on stage:
-```javascript
-const GAME_CONFIG = {
-  playerEmoji: '🚀',       // Change player avatar (🐉, 🛹, 🐱, 🛸)
-  playerSize: 52,
-
-  // 🧪 Physics parameters (Super fun for kids!)
-  gravityY: 0.9,          // 0.2 = Moon, 1.0 = Earth, 2.5 = Heavy Jupiter
-  restitution: 0.85,      // Bounciness (0.0 = lead, 0.95 = super bouncy rubber ball)
-  frictionAir: 0.015,     // Air resistance
-
-  goodItems: [            // Catchable point items
-    { emoji: '⭐', points: 1, size: 38, density: 0.001 },
-    { emoji: '🍕', points: 2, size: 42, density: 0.0015 },
-  ],
-  badItems: [             // Hazards & obstacles
-    { emoji: '💣', damage: 1, size: 42, density: 0.002 },
-  ],
-  spawnRateMs: 850,
-  rainbowBackground: true
-};
-```
+Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
+- `koboldEmoji` / `cornEmoji` / `katzeEmoji` + `…Size` – Aussehen der Figuren (`<name>Emoji`, `<name>Size`)
+- `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
+- `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
+- `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
+- `forestTheme`, `moonEmoji` – Hintergrund
 
 ### B. Procedural Audio Engine (`Web Audio API`)
 - Synthesize all beeps, chimes, bounces, and explosions on the fly.
@@ -99,8 +84,8 @@ const GAME_CONFIG = {
 ### C. Live Deployment Protocol
 Whenever an edit is made:
 1. Verify syntax: `for f in js/*.js; do node -c "$f"; done`.
-2. Run `./deploy.sh "<descriptive commit message>"`.
-3. Pushes to `origin main` $\rightarrow$ Vercel automatically deploys within ~15 seconds.
+2. Run `./deploy.sh "<descriptive commit message>"` (works from any branch).
+3. Pushes the current commit to `origin main` $\rightarrow$ Vercel automatically deploys within ~15 seconds.
 4. Inform the user to tell the kids: *"3... 2... 1... Handy aktualisieren!"*
 
 ---
@@ -190,14 +175,15 @@ btn.addEventListener('click', async () => {
 9. **Deploy build delay cushion:** Vercel takes ~10–15 seconds to rebuild and push to edge network. Presenter should lead a theatrical 5-second countdown ("3... 2... 1... Jetzt Handy aktualisieren!") so kids don't refresh prematurely.
 10. **Side bumper ricochet physics:** Giving side characters high restitution (`restitution: 1.05`) creates lively pinball bounces, while simple decaying wiggle multipliers (`wiggle *= 0.88`) give punchy hit reactions with zero external animation libraries.
 
-11. **Doppeltippen:** `dblclick` ist auf iOS unzuverlässig. `registerTap()` vergleicht Zeitstempel (`doubleTapMs`). Handys feuern nach `touchstart` noch ein emuliertes `mousedown` – das zählt sonst als 2. Tap (= jeder Einzeltipp würde werfen). Lösung: `lastTouchTime` merken und `mousedown` innerhalb von 800 ms ignorieren. Maus-Doppelklick und Leertaste laufen über denselben Weg (`throwBomb()`).
+11. **Doppeltippen:** `dblclick` ist auf iOS unzuverlässig. `registerTap()` vergleicht Zeitstempel (`doubleTapMs`). Handys feuern nach `touchstart` noch ein emuliertes `mousedown` – das zählt sonst als 2. Tap (= jeder Einzeltipp würde werfen). Lösung: `lastTouchTime` merken und `mousedown` innerhalb von 800 ms ignorieren. (Historisch – die aktuelle Eingabe nutzt Pointer-Events pro Figur: Antippen = werfen, Ziehen = bewegen.)
 12. **Eigene Projektile im `collisionStart`-Handler:** Der Handler behandelt jeden Body mit `customData` + Spieler-Kontakt als „Item einsammeln“. Neue Projektile (`isPlayerBomb`) deshalb ganz oben im Pair-Loop abfangen und mit `continue` verlassen, sonst werden sie wie gute Items eingesammelt.
 13. **Array nicht während der Zeichen-Schleife umbauen:** `explodeBomb()` ersetzt `fallingBodies` per `filter`. Das ist im `collisionStart` (vor dem Zeichnen) okay, aber NICHT innerhalb der rückwärtigen Schleife im `gameLoop` – dort nur `splice(i, 1)` + `continue`.
-14. **Testen ohne Handy:** `./serve.sh` + Playwright (Viewport 390×760). Die Dateien in `js/` nutzen globale `let`/`function`, daher lassen sich `fallingBodies`, `throwBomb()`, `isPlaying` direkt per `browser_evaluate` prüfen. Nach „Game Over“ (`isPlaying=false`) laufen keine Kollisionen mehr – Tests sofort nach `startGame` machen. Das `favicon.ico`-404 in der Konsole ist bekannt und harmlos.
+14. **Testen ohne Handy:** `./serve.sh` + Playwright (Viewport 390×760). Die Dateien in `js/` nutzen globale `let`/`function`, daher lassen sich `fallingBodies`, `actors`, `shootBomb('katze')`, `isPlaying`, `score` direkt per `browser_evaluate` prüfen. Nach „Game Over“ (`isPlaying=false`) laufen keine Kollisionen mehr – Tests sofort nach `startGame` machen. Das `favicon.ico`-404 in der Konsole ist bekannt und harmlos.
 15. **`.playwright-mcp/` nie committen:** `deploy.sh` macht `git add .` – Testordner stehen deshalb in `.gitignore`.
 16. **Live-Vibecoding Tempo & Niemals Nachfragen:** Bei Wünschen der Kinder auf der Bühne (z. B. „Den Hintergrund ändern“) NIEMALS interaktive Fragebögen oder Rückfragen (`ask_question`) stellen! Das unterbricht den Flow und dauert viel zu lange. Sofort eine kreative Entscheidung treffen („Bias for Action“), innerhalb von Sekunden umsetzen und deployen. Die Kinder rufen sowieso sofort die nächste Änderung rein.
 17. **Hintergrund-Presets in `GAME_CONFIG`:** Optische Themes und Hintergründe am besten über einfache Schalter oder Presets ansteuerbar halten, damit Änderungen blitzschnell sind.
 18. **Mehrere Dateien ohne Build-Schritt:** Das Spiel ist in `js/*.js` aufgeteilt und wird über normale `<script src>`-Tags geladen – KEINE ES-Module (`type="module"`, `import`/`export`), denn die scheitern beim direkten Öffnen per `file://` an CORS. Klassische Skripte teilen sich einen globalen Bereich: Funktionen und `let`/`const` einer Datei sind in allen später geladenen sichtbar. Deshalb: jeden globalen Namen nur EINMAL deklarieren (zweites `let x` in einer anderen Datei = SyntaxError, die Datei lädt gar nicht) und Code, der sofort beim Laden läuft, darf nur Dinge aus früher geladenen Dateien benutzen. `js/game.js` bleibt die letzte Datei.
+19. **`deploy.sh` von einem Branch:** Früher `git push origin main` = pushte den *lokalen* `main`, nicht den aktuellen Stand. Cloud-Agents arbeiten oft auf einem eigenen Branch → jetzt `git push origin HEAD:main`.
 
 ---
 
@@ -221,14 +207,16 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 
 Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./serve.sh` (http://localhost:8000, kein Cache) bzw. Playwright im Handy-Viewport (390×760) → `./deploy.sh "…"`.
 
-**Vorbild für alles Neue:** die Mais-Bombe (`throwBomb` / `explodeBomb` / `registerTap`). Die Rezepte unten verweisen darauf.
+**Vorbild für alles Neue:** die Bombe (`shootBomb` / `explodeBomb` in `js/bombs.js`) und die Figuren-Liste `actors` (`js/actors.js`). Neues Spielkonzept = neue Datei in `js/` + `<script>` vor `js/game.js`. Es gibt (noch) keine fallenden Items, kein Game Over durch Treffer und keine Lebenspunkte – wer das will, baut es als neue Datei.
 
-- **Neues Item / neue Gefahr:** nur Eintrag in `goodItems` / `badItems` in `GAME_CONFIG` (emoji, points/damage, size, density). Kein weiterer Code nötig.
+- **Andere Wurfsachen:** `bombEmoji` (alle) oder `<name>Bomb` (eine Figur, z. B. `katzeBomb: '🐟'`) in `GAME_CONFIG`. Kein weiterer Code nötig.
+- **Anderes Ziel:** `target` der Figur in `actors` (`js/actors.js`) ändern.
+- **Fallende Items / Gefahren vom Himmel:** gibt es nicht mehr. Neue Datei `js/items.js` nach Vorbild `shootBomb()` (Body in `fallingBodies` pushen, eigenes `customData`, Treffer im `collisionStart`-Handler VOR dem `continue` für Nicht-Bomben prüfen).
 - **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.
-- **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (`js/actors.js`). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
-- **Figur wirft/schießt etwas:** existiert schon als `throwBomb()` – kopieren und anpassen. Prinzip: Funktion nach Vorbild `spawnPhysicsItem()` – `Bodies.circle` an der Position von `cornBody`/`koboldBody`, `Body.setVelocity`, eigenes `label` (z. B. `'playerBomb'`), in `fallingBodies` pushen (damit es off-screen entfernt wird). Treffer im `collisionStart`-Handler per Label prüfen; `Composite.remove` + `spawnParticles` + `playSound`. Die Figur danach `…Wiggle = 1` setzen.
+- **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (`for (const name in actors)` in `js/actors.js`). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
+- **Neue Wurf-Art (z. B. Bumerang, Laser):** `shootBomb(actor)` kopieren. Prinzip: `Bodies.circle` an `actors[name].body.position`, `Body.setVelocity`, `customData` mit eigenem Flag, `collisionFilter.mask` = Kategorie des Ziels, in `fallingBodies` pushen (wird off-screen entfernt). Treffer im `collisionStart`-Handler prüfen; `Composite.remove` + `spawnParticles` + `playSound`; `actors[name].wiggle = 1`.
 - **Neue Figur:** Eintrag in `actors` (`js/actors.js`, neue `category` = nächste Zweierpotenz, `target`, `start()`), `<name>Emoji`/`<name>Size` in `GAME_CONFIG`, `<button id="<name>Btn" class="actor-btn">` in `index.html` + Startposition in `style.css`. Rest (Physik, Ziehen, Werfen, Zeichnen, Resize) läuft automatisch.
-- **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir`, `spawnRateMs` in `GAME_CONFIG`.
+- **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir` in `GAME_CONFIG`.
 - **Neuer Text / Button:** nur Deutsch, in `index.html`; Tap-Fläche ≥ 44×44 px.
 
 ## 9. 🗣️ Shared Vocabulary

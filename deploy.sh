@@ -13,7 +13,8 @@ echo "📝 Committing: $MSG"
 git commit -m "$MSG" || echo "No changes to commit"
 
 echo "☁️ Pushing to GitHub (origin main)..."
-git push origin main
+# HEAD:main – klappt auch, wenn gerade ein anderer Branch ausgecheckt ist.
+git push origin HEAD:main
 
 echo "✅ Fertig! Vercel baut jetzt automatisch in ~15 Sekunden."
 echo "👉 Sag den Kindern: '3... 2... 1... Handy aktualisieren!'"
