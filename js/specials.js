@@ -28,13 +28,20 @@ const MINI_RADIUS = 62;   // So weit weg vom Kobold
 let steer = { active: false, id: null, x: 0, y: 0 }; // Wo zeigt dein Finger hin?
 
 // Welche Figuren haben eine Spezialkraft?
+// `desc` = Erklärung für den Startbildschirm (mit den echten Zahlen aus config.js)
 const SPECIALS = {
-  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall },
-  kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis },
-  katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump },
-  corn: { name: 'POPCORN', icon: '🍿', use: popcorn },
-  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear },
-  maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse }
+  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall,
+    desc: () => `Riesiger Fußball, zählt ${GAME_CONFIG.bigBall.damage} Treffer. Du lenkst ihn mit dem Finger!` },
+  kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis,
+    desc: () => `${GAME_CONFIG.miniKobolds.count} Mini-Kobolde fangen ${GAME_CONFIG.miniKobolds.seconds} Sek. lang Bomben ab.` },
+  katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump,
+    desc: () => `Springt auf einen Gegner (${GAME_CONFIG.catDamage} Schaden). Der ist ${GAME_CONFIG.catStunSeconds} Sek. im Wirbel gefangen.` },
+  corn: { name: 'POPCORN', icon: '🍿', use: popcorn,
+    desc: () => `${GAME_CONFIG.popcorn.count} Popcorn fliegen auf alle Gegner.` },
+  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear,
+    desc: () => `Durchbohrt alle in einer Reihe und lässt sie ${GAME_CONFIG.fireSpear.burnSeconds} Sek. brennen.` },
+  maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse,
+    desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` }
 };
 
 function hasSpecial(name) {
@@ -484,3 +491,19 @@ for (const type of ['pointerup', 'pointercancel']) {
     if (event.pointerId === steer.id) steer.active = false;
   });
 }
+
+// 📖 Startbildschirm: Spezialkräfte erklären + kleines Symbol auf jeder Figur-Kachel
+function buildSpecialsInfo() {
+  const list = document.getElementById('specialsList');
+  let html = `<p class="sp-how">🎯 Triff ${GAME_CONFIG.specialChargeHits}-mal → der Knopf unten links leuchtet → antippen!</p>`;
+  for (const name in SPECIALS) {
+    const sp = SPECIALS[name];
+    html += `<p class="sp-row"><b>${actorEmoji(name)} ${actors[name].name} · ${sp.icon} ${sp.name}</b><br>${sp.desc()}</p>`;
+  }
+  list.innerHTML = html;
+  for (const tile of document.querySelectorAll('#pickGrid .pick-btn, #teamGrid .pick-btn')) {
+    const sp = SPECIALS[tile.dataset.name];
+    if (sp) tile.insertAdjacentHTML('beforeend', `<span class="pick-special">${sp.icon}</span>`);
+  }
+}
+buildSpecialsInfo();

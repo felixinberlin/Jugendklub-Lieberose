@@ -314,6 +314,35 @@ h2 {
   background: linear-gradient(transparent, #000 40%); /* Text läuft darunter weg */
 }
 
+/* 📖 Spezialkräfte auf dem Startbildschirm */
+.specials-info {
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 14px;
+  background: rgba(124, 58, 237, 0.25);
+  border: 2px solid rgba(167, 139, 250, 0.6);
+  border-radius: 14px;
+  padding: 10px 14px;
+  text-align: left;
+}
+.specials-info summary {
+  font-size: 1.05rem;
+  font-weight: 900;
+  cursor: pointer;
+  text-align: center;
+  min-height: 28px;
+}
+.specials-info .sp-how { font-size: 1rem; font-weight: 800; color: #ffde59; margin: 10px 0 6px; text-align: center; }
+.specials-info .sp-row { font-size: 1rem; line-height: 1.4; margin-top: 8px; color: #e2e8f0; }
+.specials-info .sp-row b { color: #fff; }
+.pick-btn { position: relative; }
+.pick-special {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 1.05rem;
+}
+
 /* 🤖 Computer-Figuren kann man nicht antippen */
 .actor-btn.cpu { pointer-events: none; }
 

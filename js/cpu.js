@@ -82,6 +82,7 @@ for (const name in actors) {
   const btn = document.createElement('button');
   btn.className = 'pick-btn';
   btn.type = 'button';
+  btn.dataset.name = name;
   btn.innerHTML = `<span class="pick-emoji">${GAME_CONFIG[`${name}Emoji`]}</span>${actors[name].name}`;
   btn.addEventListener('click', () => chooseAndStart(name));
   pickGrid.appendChild(btn);
