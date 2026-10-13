@@ -16,7 +16,8 @@
  *
  * AUFLADEN: Triff Gegner 20-mal mit normalen Würfen (egal welche) –
  * dann leuchtet der Knopf „BEREIT!“ (`specialChargeHits` in config.js).
- * Nach dem Benutzen geht es wieder bei 0 los.
+ * Nach dem Benutzen geht es wieder bei 0 los. Beim „WEITER“ ins nächste
+ * Level behalten deine Figuren ihre gesammelten Treffer.
  * Auch Computer-Figuren laden auf und benutzen ihre Kräfte.
  */
 
@@ -452,11 +453,13 @@ function drawSpecialBadge(name, now) {
   ctx.restore();
 }
 
-// Alles zurücksetzen (bei jedem Start)
-function resetSpecials() {
+// Alles zurücksetzen (bei jedem Start).
+// keepCharge = true: DEINE Figuren behalten ihre Ladung fürs nächste Level.
+function resetSpecials(keepCharge = false) {
   clearMinis();
   for (const name in actors) {
-    actors[name].specialCharge = 0;
+    const mine = playerTeam === null || playerTeam.includes(name);
+    if (!keepCharge || !mine) actors[name].specialCharge = 0;
     actors[name].stunnedUntil = 0;
     actors[name].jump = null;
     actors[name].burn = null;

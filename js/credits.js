@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.24';
+const GAME_VERSION = '2.25';
 
 const WISHES = [
   { workshop: '🎪 Workshop 1 · 8.–9. Oktober' },
@@ -44,7 +44,8 @@ const WISHES = [
   { v: '2.21', text: 'Goldsack 💰 mit Goldmünzen 🪙, Maiskörner und Fische 🐟' },
   { v: '2.22', text: 'Turbo 🚀 bei vielen Figuren – und dieser Abspann 🎬' },
   { v: '2.23', text: 'Abspann-Knopf auch auf dem Startbildschirm 🎬' },
-  { v: '2.24', text: 'Die Maus kann sich verstecken 🐭🕳️ – 6 Sekunden kein Schaden' }
+  { v: '2.24', text: 'Die Maus kann sich verstecken 🐭🕳️ – 6 Sekunden kein Schaden' },
+  { v: '2.25', text: 'Spezialkraft-Treffer bleiben fürs nächste Level ⚡➡️' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

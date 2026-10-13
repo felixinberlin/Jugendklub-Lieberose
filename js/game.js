@@ -17,14 +17,15 @@
  */
 
 // Start und Neustart
-function startGame() {
+// keepCharge = true: Deine Spezialkraft-Ladung bleibt (beim Weiter ins nächste Level)
+function startGame(keepCharge = false) {
   initAudio();
   isPlaying = true;
   score = 0;
   scoreEl.textContent = score;
 
   removeClones(); // Alte Gegner-Kopien weg (teams.js)
-  resetSpecials(); // ⚡ Mini-Kobolde weg, Wirbel aus (specials.js)
+  resetSpecials(keepCharge); // ⚡ Mini-Kobolde weg, Wirbel aus (specials.js)
   clearAllBodies();
   particles = [];
   resetActors();
@@ -42,8 +43,9 @@ function startGame() {
 
 // NOCHMAL / WEITER: startet das Level, das finishLevel() ausgesucht hat
 restartBtn.addEventListener('click', () => {
+  const nextOne = nextLevel > currentLevel; // „WEITER“ ins nächste Level?
   currentLevel = nextLevel;
-  startGame();
+  startGame(nextOne); // ⚡ Beim Weiter bleiben deine gesammelten Treffer für die Spezialkraft
 });
 
 // Haupt-GameLoop
