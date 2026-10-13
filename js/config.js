@@ -62,6 +62,7 @@ const GAME_CONFIG = {
   cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
   throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
+  hitChoices: [5, 10, 20, 50], // Zum Auswählen auf dem Startbildschirm
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)

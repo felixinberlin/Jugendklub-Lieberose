@@ -86,7 +86,7 @@ html, body {
   -webkit-backdrop-filter: blur(10px);
   display: none;
   flex-direction: column;
-  justify-content: center;
+  justify-content: safe center; /* safe: wenn zu hoch, oben nicht abschneiden – dann scrollen */
   align-items: center;
   text-align: center;
   padding: 30px 24px;
@@ -124,7 +124,7 @@ html, body {
 }
 
 h1 {
-  font-size: 2.6rem;
+  font-size: 2rem;
   font-weight: 900;
   letter-spacing: 2px;
   background: linear-gradient(135deg, #ffde59, #ff5e7e);
@@ -193,6 +193,32 @@ h2 {
   padding: 12px 24px;
   background: rgba(255, 255, 255, 0.15);
   box-shadow: none;
+}
+
+/* 💀 Wie viele Treffer hält eine Figur aus? */
+.hits-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.hits-label { font-size: 1.05rem; font-weight: 800; }
+.hits-choice { display: flex; gap: 8px; }
+.hits-btn {
+  min-width: 52px;
+  min-height: 44px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.hits-btn.selected {
+  background: #ff5e7e;
+  border-color: #ffde59;
+  box-shadow: 0 0 12px rgba(255, 94, 126, 0.8);
 }
 
 /* ⚔️ Team-Auswahl: gewählte Kacheln leuchten blau */
@@ -300,4 +326,6 @@ h2 {
   .pick-btn { min-height: 66px; }
   .pick-emoji { font-size: 1.8rem; }
   .btn-small { margin-top: 6px; padding: 8px 20px; }
+  .hits-row { margin-bottom: 6px; }
+  .hits-btn { min-height: 36px; }
 }

@@ -80,7 +80,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
-- `maxHits` – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
+- `maxHits` / `hitChoices` – Startwert und Auswahl (💀 5·10·20·50 auf dem Startbildschirm, gebaut in `knockout.js`, setzt `GAME_CONFIG.maxHits` zur Laufzeit) – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
 - `teamLevels` – 8 Team-Level `{ title, enemies, throwMs }`. Schaden wächst ~ enemies² / throwMs, darum throwMs mit der Gegnerzahl erhöhen. Bot-Simulation (3er-Team, Bot tippt alle 300 ms reihum): L1–5 locker, L6–7 knapp gewonnen, L8 knapp verloren
 - `levels` – 5 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Anzahl beliebig, alles liest `levels.length`. Balance per Bot-Simulation (Bot wirft alle 300 ms, weicht NIE aus): L1–2 gewinnt, L3–4 ~50 %, L5 verliert knapp. Kinder fanden `throwMs 1250 / huntPlayer 0.5` zu schwer – nicht härter als L5 machen
 - `cpuThrowMs` (Fallback ohne Level), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)

@@ -100,3 +100,19 @@ function drawLifeBar(actor) {
   ctx.fillStyle = life > 0.5 ? '#4ade80' : life > 0.2 ? '#facc15' : '#ef4444';
   ctx.fillRect(-w / 2, 64, w * life, 4);
 }
+
+// 💀 Auf dem Startbildschirm auswählen, wie viele Treffer eine Figur aushält
+const hitsChoice = document.getElementById('hitsChoice');
+for (const hits of GAME_CONFIG.hitChoices) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'hits-btn';
+  btn.textContent = hits;
+  btn.classList.toggle('selected', hits === GAME_CONFIG.maxHits);
+  btn.addEventListener('click', () => {
+    GAME_CONFIG.maxHits = hits;
+    for (const b of hitsChoice.children) b.classList.toggle('selected', b === btn);
+    document.getElementById('hitsText').textContent = hits;
+  });
+  hitsChoice.appendChild(btn);
+}
