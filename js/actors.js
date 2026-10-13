@@ -10,17 +10,17 @@
 const actors = {
   kobold: {
     name: 'KOBOLD', color: '#6ee7b7', category: 4, target: 'corn',
-    sway: 420, body: null, wiggle: 0,
+    sway: 420, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
     start: () => ({ x: Math.max(46, width * 0.1), y: height * 0.55 })
   },
   corn: {
     name: 'MAIS', color: '#fef08a', category: 8, target: 'katze',
-    sway: 480, body: null, wiggle: 0,
+    sway: 480, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
     start: () => ({ x: width - Math.max(46, width * 0.1), y: height * 0.55 })
   },
   katze: {
     name: 'KATZE', color: '#f9a8d4', category: 16, target: 'kobold',
-    sway: 360, body: null, wiggle: 0,
+    sway: 360, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
     start: () => ({ x: width / 2, y: height * 0.3 })
   }
 };
@@ -66,6 +66,8 @@ function resetActors() {
     const { x, y } = actors[name].start();
     moveActor(name, x, y);
     actors[name].wiggle = 0;
+    actors[name].hitsGiven = 0;
+    actors[name].hitsTaken = 0;
   }
 }
 
@@ -128,6 +130,15 @@ function drawActors(now) {
     ctx.strokeText(actor.name, 0, 42);
     ctx.fillStyle = actor.color;
     ctx.fillText(actor.name, 0, 42);
+
+    // Treffer-Zähler: gegeben (🎯) / eingesteckt (💥)
+    const statsText = `🎯${actor.hitsGiven} 💥${actor.hitsTaken}`;
+    ctx.font = 'bold 10px -apple-system, sans-serif';
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.strokeText(statsText, 0, 56);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(statsText, 0, 56);
     ctx.restore();
 
     // Wiggle-Dämpfung

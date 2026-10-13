@@ -29,6 +29,7 @@ function shootBomb(actor) {
       emoji: GAME_CONFIG[`${actor}Bomb`] || GAME_CONFIG.bombEmoji,
       size: GAME_CONFIG.bombSize,
       isPlayerBomb: true,
+      shooter: actor,
       target: target.label,
       born: performance.now()
     }

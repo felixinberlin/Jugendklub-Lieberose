@@ -37,6 +37,10 @@ function initPhysics() {
       const other = bomb === bodyA ? bodyB : bodyA;
       if (other.label === bomb.customData.target) {
         actors[other.label].wiggle = 1;
+        actors[other.label].hitsTaken++;
+        if (bomb.customData.shooter && actors[bomb.customData.shooter]) {
+          actors[bomb.customData.shooter].hitsGiven++;
+        }
         score++;
         scoreEl.textContent = score;
         explodeBomb(bomb);
