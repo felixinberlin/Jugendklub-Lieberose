@@ -101,11 +101,11 @@ function setupTeams() {
   // Breiter Bildschirm: mehr nebeneinander, weniger Reihen (sonst überlappen sie quer)
   const perRow = Math.max(4, Math.floor(width / 100));
   if (height < 500) {
-    placeInRows(enemyNames, [0.2, 0.45], perRow);
-    placeInRows(chosenTeam, [0.76], 6);
+    placeInRows(enemyNames, [0.18, 0.42], perRow);
+    placeInRows(chosenTeam, [0.68], 6); // Platz lassen für die ⚡-Knöpfe unten
   } else {
     placeInRows(enemyNames, [0.2, 0.34, 0.48], perRow);
-    placeInRows(chosenTeam, [0.66, 0.8], Math.max(3, Math.floor(width / 120)));
+    placeInRows(chosenTeam, [0.62, 0.76], Math.max(3, Math.floor(width / 120))); // Platz für ⚡-Knöpfe
   }
 }
 

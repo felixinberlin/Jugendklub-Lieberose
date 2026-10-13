@@ -1,5 +1,5 @@
 /**
- * ⚡ specials.js – Spezialkräfte! (Figur 2× schnell antippen)
+ * ⚡ specials.js – Spezialkräfte! (eigener Knopf unten links)
  *
  *  ⚽ Musiala: RIESENBALL – zählt 3 Treffer. Du steuerst ihn mit dem Finger
  *             (auf den Bildschirm drücken und ziehen, der Ball fliegt hin).
@@ -9,8 +9,10 @@
  *  🐱 Katze:   WIRBELSPRUNG – springt auf einen Gegner, 🌪️ Wirbelwolke:
  *             Der Gegner kann sich 4 Sekunden nicht bewegen und nicht werfen.
  *
- * Danach muss die Kraft neu laden (`specialCooldownMs` in config.js).
- * Auch Computer-Figuren benutzen ihre Kräfte manchmal.
+ * AUFLADEN: Triff Gegner 20-mal mit normalen Würfen (egal welche) –
+ * dann leuchtet der Knopf „BEREIT!“ (`specialChargeHits` in config.js).
+ * Nach dem Benutzen geht es wieder bei 0 los.
+ * Auch Computer-Figuren laden auf und benutzen ihre Kräfte.
  */
 
 const MINI_BIT = 1024; // Physik-Kategorie der Mini-Kobolde
@@ -21,17 +23,27 @@ let steer = { active: false, id: null, x: 0, y: 0 }; // Wo zeigt dein Finger hin
 
 // Welche Figuren haben eine Spezialkraft?
 const SPECIALS = {
-  musiala: { name: 'RIESENBALL', use: bigBall },
-  kobold: { name: 'MINI-KOBOLDE', use: spawnMinis },
-  katze: { name: 'WIRBELSPRUNG', use: catJump }
+  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall },
+  kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis },
+  katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump }
 };
 
 function hasSpecial(name) {
   return Boolean(SPECIALS[kindOf(name)]);
 }
 
-function specialReady(name, now = performance.now()) {
-  return hasSpecial(name) && now >= (actors[name].specialReadyAt || 0);
+// Aufgeladen? (20 Treffer mit normalen Würfen)
+function specialReady(name) {
+  return hasSpecial(name) && (actors[name].specialCharge || 0) >= GAME_CONFIG.specialChargeHits;
+}
+
+// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft lädt auf
+function chargeSpecial(name) {
+  if (!hasSpecial(name)) return;
+  const need = GAME_CONFIG.specialChargeHits;
+  actors[name].specialCharge = Math.min(need, (actors[name].specialCharge || 0) + 1);
+  if (actors[name].specialCharge === need && !isCpu(name)) playSound('ready'); // 🔔 Bereit!
+  updateSpecialBar();
 }
 
 // Ist die Figur gerade im Wirbel gefangen? 🌪️
@@ -45,19 +57,45 @@ function trySpecial(name) {
   if (!specialReady(name)) return false;
   const used = SPECIALS[kindOf(name)].use(name);
   if (used === false) return false;
-  actors[name].specialReadyAt = performance.now() + GAME_CONFIG.specialCooldownMs;
+  actors[name].specialCharge = 0; // Wieder von vorn aufladen
   actors[name].wiggle = 1;
+  updateSpecialBar();
   return true;
 }
 
-// 👆👆 Doppeltippen erkennen (aus dem click-Handler in actors.js).
-// Gibt true zurück, wenn dieser Tipp die Spezialkraft ausgelöst hat.
-function registerSpecialTap(name) {
-  const now = performance.now();
-  const actor = actors[name];
-  const isDouble = now - (actor.lastTap || 0) < GAME_CONFIG.doubleTapMs;
-  actor.lastTap = isDouble ? 0 : now;
-  return isDouble && trySpecial(name);
+// ---------- ⚡ Die Knöpfe unten links ----------
+// Ein Knopf für jede Figur, die DU steuerst und die eine Spezialkraft hat.
+function setupSpecialBar() {
+  specialBar.innerHTML = '';
+  const mine = Object.keys(actors).filter(n => !actors[n].kind && hasSpecial(n) && isAlive(n) &&
+    (playerTeam === null || playerTeam.includes(n)));
+  for (const name of mine) {
+    const sp = SPECIALS[name];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'special-btn';
+    btn.dataset.name = name;
+    btn.setAttribute('aria-label', `${actors[name].name}: ${sp.name}`);
+    btn.innerHTML = `<span class="sp-icon">${sp.icon}</span>` +
+      '<span class="sp-bar"><i></i></span><span class="sp-count"></span>';
+    btn.addEventListener('click', () => { initAudio(); trySpecial(name); });
+    specialBar.appendChild(btn);
+  }
+  updateSpecialBar();
+}
+
+// Ladebalken, Zahl und „BEREIT!“ auf den Knöpfen auffrischen
+function updateSpecialBar() {
+  const need = GAME_CONFIG.specialChargeHits;
+  for (const btn of specialBar.children) {
+    const name = btn.dataset.name;
+    const charge = actors[name].specialCharge || 0;
+    const ready = specialReady(name) && isAlive(name);
+    btn.classList.toggle('ready', ready);
+    btn.hidden = !isAlive(name);
+    btn.querySelector('.sp-bar i').style.width = `${(charge / need) * 100}%`;
+    btn.querySelector('.sp-count').textContent = ready ? 'BEREIT!' : `${charge}/${need}`;
+  }
 }
 
 // ---------- ⚽ Musiala: Riesenball ----------
@@ -260,7 +298,7 @@ function drawSpecials(now) {
 // ⚡ Kleines Blitz-Zeichen an der Figur: leuchtet, wenn die Kraft bereit ist
 function drawSpecialBadge(name, now) {
   if (!hasSpecial(name)) return;
-  const ready = specialReady(name, now);
+  const ready = specialReady(name);
   ctx.save();
   ctx.globalAlpha = ready ? 1 : 0.35;
   ctx.font = `${ready ? 18 + Math.sin(now / 150) * 2 : 15}px -apple-system, sans-serif`;
@@ -272,10 +310,9 @@ function drawSpecialBadge(name, now) {
 function resetSpecials() {
   clearMinis();
   for (const name in actors) {
-    actors[name].specialReadyAt = 0;
+    actors[name].specialCharge = 0;
     actors[name].stunnedUntil = 0;
     actors[name].jump = null;
-    actors[name].lastTap = 0;
   }
 }
 

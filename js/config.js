@@ -61,10 +61,9 @@ const GAME_CONFIG = {
   ],
   cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
   throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
-  // ⚡ Spezialkräfte (Figur 2× schnell antippen) – specials.js
-  doubleTapMs: 320,          // So schnell müssen die zwei Tipps sein
-  specialCooldownMs: 8000,   // So lange lädt eine Kraft neu
-  cpuSpecialChance: 0.25,    // Wie oft Computer statt zu werfen ihre Kraft nutzen
+  // ⚡ Spezialkräfte (Knopf unten links) – specials.js
+  specialChargeHits: 20,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
+  cpuSpecialChance: 0.5,     // Wenn aufgeladen: wie oft Computer statt zu werfen ihre Kraft nutzen
   bigBall: { size: 80, damage: 3, speed: 7, seconds: 5 }, // ⚽ Musialas Riesenball
   miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
   catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen

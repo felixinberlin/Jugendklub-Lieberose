@@ -45,6 +45,7 @@ function initPhysics() {
         if (bomb.customData.shooter && actors[bomb.customData.shooter]) {
           const shooter = actors[bomb.customData.shooter];
           shooter.hitsGiven += damage;
+          if (!bomb.customData.steer) chargeSpecial(bomb.customData.shooter); // ⚡ Aufladen (specials.js)
           // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
           const shirt = actorCfg(bomb.customData.shooter, 'Shirt');
           if (shirt && shirt.sixSeven) {

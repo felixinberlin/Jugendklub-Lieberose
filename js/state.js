@@ -26,6 +26,7 @@ const changeBtn = document.getElementById('changeBtn');
 const levelEl = document.getElementById('level');
 const levelHudEl = document.getElementById('levelHud');
 const teamScreen = document.getElementById('teamScreen');
+const specialBar = document.getElementById('specialBar');
 const teamModeBtn = document.getElementById('teamModeBtn');
 const teamGoBtn = document.getElementById('teamGoBtn');
 const teamBackBtn = document.getElementById('teamBackBtn');

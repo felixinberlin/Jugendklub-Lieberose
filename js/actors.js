@@ -136,7 +136,6 @@ for (const name in actors) {
   button.addEventListener('click', (event) => {
     if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
     initAudio();
-    if (registerSpecialTap(name)) return; // 👆👆 Doppeltippen = Spezialkraft ⚡ (specials.js)
     shootBomb(name);
   });
 }

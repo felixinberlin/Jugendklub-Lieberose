@@ -39,6 +39,7 @@ function checkKnockout(name) {
   Composite.remove(engine.world, actor.body);
   const btn = actorBtn(name);
   if (btn) btn.style.display = 'none';
+  updateSpecialBar(); // ⚡ Knopf der Figur verschwindet (specials.js)
 
   // ⚔️ Team-Modus: Ist ein ganzes Team raus?
   if (teamMode) {

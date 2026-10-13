@@ -31,6 +31,7 @@ function startGame() {
   setupTeams();   // ⚔️ Team-Modus aufstellen (teams.js)
   startLevel();   // 🏅 Level-Schild & Anzeige (levels.js)
   setupPlayers(); // Wer spielt wen? (cpu.js)
+  setupSpecialBar(); // ⚡ Knöpfe unten links (specials.js)
 
   startScreen.classList.remove('active');
   teamScreen.classList.remove('active');
