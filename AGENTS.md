@@ -55,6 +55,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── actors.js     #   🧌🌽🐱🐭👺⚽ Figuren-Liste `actors`: Bodies, Bewegen, Eingabe, Zeichnen
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
+│   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
 └── [toy-name]/       # Optional future mini-games (e.g. gurken-angriff/index.html)
@@ -78,6 +79,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
 - `maxHits` – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
+- `cpuThrowMs` (Tempo der Computer-Gegner), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -192,6 +194,8 @@ btn.addEventListener('click', async () => {
 18. **Mehrere Dateien ohne Build-Schritt:** Das Spiel ist in `js/*.js` aufgeteilt und wird über normale `<script src>`-Tags geladen – KEINE ES-Module (`type="module"`, `import`/`export`), denn die scheitern beim direkten Öffnen per `file://` an CORS. Klassische Skripte teilen sich einen globalen Bereich: Funktionen und `let`/`const` einer Datei sind in allen später geladenen sichtbar. Deshalb: jeden globalen Namen nur EINMAL deklarieren (zweites `let x` in einer anderen Datei = SyntaxError, die Datei lädt gar nicht) und Code, der sofort beim Laden läuft, darf nur Dinge aus früher geladenen Dateien benutzen. `js/game.js` bleibt die letzte Datei.
 19. **`deploy.sh` von einem Branch:** Früher `git push origin main` = pushte den *lokalen* `main`, nicht den aktuellen Stand. Cloud-Agents arbeiten oft auf einem eigenen Branch → jetzt `git push origin HEAD:main`.
 20. **Breitbild:** Alles, was im Hintergrund in fester Anzahl verteilt wird (Sterne, Wolken, Bäume), mit `wide = width / 390` multiplizieren – sonst wirkt es am Beamer leer. Immer in 3 Größen testen: 390×760, 844×390, 1440×900.
+21. **CSS-Reihenfolge bei `@media`:** Eine Media-Query, die VOR der normalen Regel im CSS steht, wird von ihr überschrieben (gleiche Spezifität, spätere gewinnt). Querformat-Regeln für neue Elemente deshalb ans Dateiende von `style.css`.
+22. **Playwright & rennende Figuren:** `page.click()` wartet, bis ein Element stillsteht – bei Musiala nie. In Tests `{ force: true }` oder `shootBomb(name)` per `evaluate` nutzen. Computer-Figuren werfen von allein – vor Eingabe-Tests `cpuNextThrow[n] = Infinity` setzen.
 
 ---
 
@@ -208,11 +212,12 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
 | `js/footballer.js` | `updateFootballers()` (Figuren mit `<name>Runs` dribbeln hin und her, außer `actor.dragging`), `drawFootballer(shirt, size, now, dir, kick)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, schwingende Arme, hochgehaltenen Ball, Schuss-Bein (`kick` = `wiggle`), `isSixSeven(actor)` – nach Treffer (`sixSevenUntil`, gesetzt in `physics.js`, nur wenn Shirt `sixSeven: true`) 6-7-Handgeste + „6 7!“ über dem Kopf, steht dabei still. `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
-| `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`, Highscore), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
+| `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`: „DU GEWINNST“ / „Du bist raus“ / „X gewinnt“, Highscore; eigene Figur raus = sofort Ende), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `everyoneExcept(actor)` (Kollisionsmaske: alle Figuren außer Werfer), `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer = JEDE lebende Figur außer dem Werfer (`customData.shooter`), nicht nur das Ziel → `wiggle`, `hitsTaken`, `checkKnockout`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
-| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateBombs` → `drawParticles`), Initialisierung |
+| `js/cpu.js` | `playerActor` (eigene Figur, `null` = „Alle zusammen“), `isCpu(name)`, `chooseAndStart(name)`, `setupPlayers()` (aus `startGame`: Knöpfe der Computer-Figuren bekommen Klasse `cpu` = nicht antippbar), `updateCpu(now)` (Computer wirft alle `cpuThrowMs` ±40 %), `drawPlayerMarker()`. Baut beim Laden die Auswahl-Kacheln `#pickGrid` aus `actors` (neue Figuren erscheinen automatisch). Muss NACH `actors.js` laden |
+| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateBombs` → `drawParticles`), Initialisierung |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 

@@ -23,20 +23,22 @@
       <div id="startScreen" class="overlay-screen active">
         <div class="badge">🏰 Jugendklub Lieberose</div>
         <h1>KOBOLD, MAIS, KATZE, MAUS, GOBLIN & MUSIALA</h1>
-        <p class="subtitle">🧌 Kobold, Mais 🌽, Katze 🐱, Maus 🐭, Goblin 👺 & Musiala ⚽</p>
         <div class="instructions">
-          <p>👆 Antippen: Die Figur wirft eine Bombe!<br>↔️ Ziehen: Figuren bewegen und ausweichen!<br>🔁 Kobold → Mais → Katze → Maus → Goblin → Musiala → Kobold<br>☁️ Wolke antippen: Regen! ☀️ Sonne antippen: Nacht!<br>💀 Wer 20-mal getroffen wird, ist raus!<br>💣 Bomben treffen jeden, der im Weg ist!</p>
+          <p>👆 Antippen: werfen! ↔️ Ziehen: ausweichen!<br>💀 20 Treffer = raus. Wer übrig bleibt, gewinnt!<br>💣 Bomben treffen jeden im Weg · ☁️ Wolke = Regen · ☀️ Sonne = Nacht</p>
         </div>
-        <button id="startBtn" class="btn">SPIEL STARTEN 🚀</button>
+        <p class="pick-title">Wen spielst DU? 👇</p>
+        <div id="pickGrid" class="pick-grid"></div>
+        <button id="startBtn" class="btn btn-small">👥 ALLE ZUSAMMEN</button>
       </div>
 
       <!-- Game Over Screen -->
       <div id="gameOverScreen" class="overlay-screen">
         <h2>BUMM! 💥</h2>
         <p id="winnerMsg" class="winner-msg"></p>
-        <p>Treffer insgesamt: <span id="finalScore">0</span></p>
+        <p>Treffer: <span id="finalScore">0</span></p>
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
+        <button id="changeBtn" class="btn btn-small">🎭 Andere Figur</button>
       </div>
 
       <button id="koboldBtn" class="actor-btn" type="button" aria-label="Kobold steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
@@ -64,6 +66,7 @@
   <script src="js/actors.js"></script>
   <script src="js/bombs.js"></script>
   <script src="js/physics.js"></script>
+  <script src="js/cpu.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

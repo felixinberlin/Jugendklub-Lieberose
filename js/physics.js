@@ -49,8 +49,11 @@ function initPhysics() {
             playSound('sixseven');
           }
         }
-        score++;
-        scoreEl.textContent = score;
+        // TREFFER oben zählt nur deine eigenen (bei „Alle zusammen“: alle)
+        if (playerActor === null || bomb.customData.shooter === playerActor) {
+          score++;
+          scoreEl.textContent = score;
+        }
         explodeBomb(bomb);
         checkKnockout(other.label); // 💀 100 Treffer? Dann ist die Figur raus (knockout.js)
       }

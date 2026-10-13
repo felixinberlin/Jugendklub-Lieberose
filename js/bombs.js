@@ -19,6 +19,10 @@ function everyoneExcept(actor) {
 function shootBomb(actor) {
   if (!isPlaying || document.hidden) return;
   if (!isAlive(actor)) return;
+  // Kleine Pause zwischen zwei Würfen, sonst gewinnt, wer am schnellsten tippt
+  const now = performance.now();
+  if (now - (actors[actor].lastThrow || 0) < GAME_CONFIG.throwCooldownMs) return;
+  actors[actor].lastThrow = now;
   const targetName = targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
   const source = actors[actor].body;

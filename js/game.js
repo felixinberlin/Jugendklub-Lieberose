@@ -26,13 +26,13 @@ function startGame() {
   clearAllBodies();
   particles = [];
   resetActors();
+  setupPlayers(); // Wer spielt wen? (cpu.js)
 
   startScreen.classList.remove('active');
   gameOverScreen.classList.remove('active');
   newRecordMsgEl.style.display = 'none';
 }
 
-startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', startGame);
 
 // Haupt-GameLoop
@@ -53,6 +53,7 @@ function gameLoop(now) {
 
     // 3. Fußballer dribbeln lassen, Bomben malen & aufräumen
     updateFootballers();
+    updateCpu(now); // 🤖 Computer-Figuren werfen (cpu.js)
     updateBombs(now);
   }
 

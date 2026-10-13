@@ -38,6 +38,9 @@ function checkKnockout(name) {
   Composite.remove(engine.world, actor.body);
   document.getElementById(`${name}Btn`).style.display = 'none';
 
+  // 😵 Deine eigene Figur ist raus? Dann ist das Spiel für dich vorbei.
+  if (name === playerActor) { endGame(null); return; }
+
   // 🏆 Nur noch eine Figur übrig? Dann hat sie gewonnen!
   const alive = Object.keys(actors).filter(isAlive);
   if (alive.length <= 1) endGame(alive[0]);
@@ -47,9 +50,13 @@ function checkKnockout(name) {
 function endGame(winner) {
   isPlaying = false;
   finalScoreEl.textContent = score;
-  winnerMsgEl.textContent = winner
-    ? `🏆 ${actors[winner].name} gewinnt! 🏆`
-    : 'Alle sind raus! 🤯';
+  if (playerActor !== null && !isAlive(playerActor)) {
+    winnerMsgEl.textContent = `😵 Du bist raus! (${actors[playerActor].name})`;
+  } else if (playerActor !== null && winner === playerActor) {
+    winnerMsgEl.textContent = '🏆 DU GEWINNST! 🏆';
+  } else {
+    winnerMsgEl.textContent = winner ? `🏆 ${actors[winner].name} gewinnt! 🏆` : 'Alle sind raus! 🤯';
+  }
   if (score > highScore) {
     highScore = score;
     localStorage.setItem('lieberose_highscore', String(highScore));

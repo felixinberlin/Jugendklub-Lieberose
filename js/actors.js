@@ -165,6 +165,7 @@ function drawActors(now) {
     ctx.fillStyle = '#ffffff';
     ctx.fillText(statsText, 0, 56);
     drawLifeBar(actor); // ❤️ (knockout.js)
+    drawPlayerMarker(name, now); // ⭐ DU (cpu.js)
     ctx.restore();
 
     // Wiggle-Dämpfung

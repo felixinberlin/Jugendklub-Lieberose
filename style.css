@@ -155,6 +155,49 @@ h2 {
   color: #e2e8f0;
 }
 
+/* 👇 Figuren-Auswahl auf dem Startbildschirm */
+.pick-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.pick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 92px);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pick-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 84px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pick-btn:active { transform: scale(0.94); background: rgba(255, 222, 89, 0.25); }
+.pick-emoji { font-size: 2.2rem; line-height: 1.1; }
+
+.btn-small {
+  margin-top: 12px;
+  font-size: 1rem;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+}
+
+/* 🤖 Computer-Figuren kann man nicht antippen */
+.actor-btn.cpu { pointer-events: none; }
+
 .winner-msg {
   color: #ffde59;
   font-weight: 900;
@@ -237,3 +280,14 @@ h2 {
 .actor-btn:focus-visible { outline: 3px solid #ffde59; }
 .actor-btn:active { cursor: grabbing; background: rgba(255, 222, 89, 0.15); }
 .instructions { font-size: 16px; line-height: 1.6; }
+
+/* 📱↔️ Handy quer: Figuren-Auswahl in EINER Reihe (steht am Ende, damit es gewinnt) */
+@media (max-height: 520px) {
+  h1 { font-size: 1.5rem; }
+  .instructions { font-size: 0.85rem; }
+  .pick-title { margin-bottom: 6px; }
+  .pick-grid { grid-template-columns: repeat(6, 84px); gap: 8px; margin-bottom: 4px; }
+  .pick-btn { min-height: 66px; }
+  .pick-emoji { font-size: 1.8rem; }
+  .btn-small { margin-top: 6px; padding: 8px 20px; }
+}

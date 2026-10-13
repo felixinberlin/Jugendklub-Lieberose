@@ -22,6 +22,7 @@ const startScreen = document.getElementById('startScreen');
 const gameOverScreen = document.getElementById('gameOverScreen');
 const startBtn = document.getElementById('startBtn');
 const restartBtn = document.getElementById('restartBtn');
+const changeBtn = document.getElementById('changeBtn');
 const soundToggle = document.getElementById('soundToggle');
 
 // Dimensions & DPR Handling
