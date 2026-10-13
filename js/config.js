@@ -13,6 +13,9 @@ const GAME_CONFIG = {
   cornSize: 74,
   katzeEmoji: '🐱',
   katzeSize: 70,
+  mausEmoji: '🐭',
+  mausSize: 58,
+  mausBomb: '🧀', // Die Maus wirft Käse!
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
