@@ -19,7 +19,9 @@ const GAME_CONFIG = {
   goblinEmoji: '👺',
   goblinSize: 66,
   goblinBomb: '🔥', // Der Goblin wirft Feuer!
-  musialaEmoji: '🏃',
+  musialaEmoji: '🏃', // Wird nur benutzt, wenn musialaShirt fehlt
+  // 👕 Trikot! Farbe, Nummer, Schwarz-Rot-Gold-Streifen. Löschen = wieder Emoji.
+  musialaShirt: { color: '#ffffff', number: '10', stripe: true },
   musialaSize: 64,
   musialaBomb: '⚽', // Musiala schießt Fußbälle!
 

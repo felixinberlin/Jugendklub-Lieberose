@@ -12,6 +12,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | ⚙️ [`config.js`](config.js) | Die **Stellschrauben**: Emojis, Größen, Schwerkraft | ⭐ Fang hier an! |
 | 🔊 [`audio.js`](audio.js) | Alle **Töne** – ohne eine einzige Sounddatei | ⭐⭐ |
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
+| ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich, ohne Emoji | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
@@ -119,6 +120,8 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `mausBomb: '🧀'` → `'🍕'` | Die Maus wirft Pizza statt Käse |
 | `goblinBomb: '🔥'` → `'❄️'` | Der Goblin wirft Schneebälle statt Feuer |
 | `musialaBomb: '⚽'` → `'🏀'` | Musiala wechselt zum Basketball |
+| `musialaShirt` → `color: '#dc2626'` | Rotes Trikot statt weißem |
+| `musialaShirt` → `number: '42'` | Andere Rückennummer |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
 | `rain: false` → `true` | Alle Wolken regnen immer 🌧️ |
 | `rainSeconds: 8` → `30` | Eine angetippte Wolke regnet lange |

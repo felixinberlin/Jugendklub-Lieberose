@@ -135,13 +135,19 @@ function drawActors(now) {
     ctx.save();
     ctx.translate(actor.body.position.x, actor.body.position.y);
     ctx.rotate(Math.sin(now / actor.sway) * 0.07 + (actor.wiggle * 0.25));
-    ctx.font = `${actorSize(name)}px -apple-system, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(actorEmoji(name), 0, 0);
+    const shirt = GAME_CONFIG[`${name}Shirt`];
+    if (shirt) {
+      drawFootballer(shirt, actorSize(name), now); // ⚽ Figur im Trikot (footballer.js)
+    } else {
+      ctx.font = `${actorSize(name)}px -apple-system, sans-serif`;
+      ctx.fillText(actorEmoji(name), 0, 0);
+    }
     ctx.font = 'bold 11px -apple-system, sans-serif';
     ctx.lineWidth = 3;
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)'; // Dunkler Rand: lesbar bei Tag und Nacht
+    ctx.lineJoin = 'round'; // Sonst stehen bei „M“ spitze Zacken heraus
     ctx.strokeText(actor.name, 0, 42);
     ctx.fillStyle = actor.color;
     ctx.fillText(actor.name, 0, 42);
