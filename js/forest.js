@@ -115,7 +115,8 @@ function initForest() {
       x: Math.random() * width,
       y: height * (0.05 + Math.random() * 0.4),
       size: 0.7 + Math.random() * 0.7,
-      speed: 0.1 + Math.random() * 0.2
+      speed: 0.1 + Math.random() * 0.2,
+      rainUntil: 0 // Bis wann diese Wolke regnet (Wolke antippen!)
     });
   }
 
@@ -208,9 +209,13 @@ function drawForest(now) {
 }
 
 // ☁️☀️ Sonne und Wolken
+// Wo Sonne und Mond am Himmel stehen (gleiche Stelle – zum Antippen in weather.js)
+function skyLightPos() {
+  return { x: width * 0.82, y: height * 0.12 };
+}
+
 function drawDaySky(now) {
-  const sunX = width * 0.82;
-  const sunY = height * 0.12;
+  const { x: sunX, y: sunY } = skyLightPos();
   const sunGlow = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 70);
   sunGlow.addColorStop(0, 'rgba(255, 236, 120, 0.7)');
   sunGlow.addColorStop(1, 'rgba(255, 236, 120, 0)');
@@ -228,9 +233,9 @@ function drawDaySky(now) {
   ctx.fillText(GAME_CONFIG.sunEmoji || '☀️', 0, 0);
   ctx.restore();
 
-  // Regenwolken sind grau, sonst weiß
-  ctx.fillStyle = GAME_CONFIG.rain ? 'rgba(203, 213, 225, 0.95)' : 'rgba(255, 255, 255, 0.9)';
   for (const c of forestData.clouds) {
+    // Regenwolken sind grau, sonst weiß
+    ctx.fillStyle = isRaining(c, now) ? 'rgba(203, 213, 225, 0.95)' : 'rgba(255, 255, 255, 0.9)';
     c.x += c.speed;
     if (c.x > width + 80) c.x = -80;
     const r = 18 * c.size;
@@ -253,8 +258,7 @@ function drawNightSky(now) {
   }
 
   // Leuchtender Mond über den Bäumen
-  const moonX = width * 0.82;
-  const moonY = height * 0.12;
+  const { x: moonX, y: moonY } = skyLightPos();
   const moonGlow = ctx.createRadialGradient(moonX, moonY, 8, moonX, moonY, 42);
   moonGlow.addColorStop(0, 'rgba(254, 240, 138, 0.4)');
   moonGlow.addColorStop(1, 'rgba(254, 240, 138, 0)');

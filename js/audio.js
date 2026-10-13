@@ -49,6 +49,16 @@ function playSound(type) {
   } else if (type === 'throw') {
     playTone(300, 'triangle', 0.1, 0.15);
     setTimeout(() => playTone(500, 'triangle', 0.1, 0.15), 60);
+  } else if (type === 'rain') {
+    playTone(900, 'sine', 0.06, 0.1);
+    setTimeout(() => playTone(700, 'sine', 0.06, 0.1), 70);
+    setTimeout(() => playTone(1000, 'sine', 0.06, 0.1), 140);
+  } else if (type === 'night') {
+    playTone(520, 'triangle', 0.15, 0.15);
+    setTimeout(() => playTone(330, 'triangle', 0.2, 0.15), 100);
+  } else if (type === 'day') {
+    playTone(330, 'triangle', 0.15, 0.15);
+    setTimeout(() => playTone(660, 'triangle', 0.2, 0.15), 100);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);

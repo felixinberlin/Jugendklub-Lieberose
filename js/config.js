@@ -32,7 +32,9 @@ const GAME_CONFIG = {
   sunEmoji: '☀️',
 
   // 🌧️ Regen & wachsende Bäume (nur bei Tag)
-  rain: true,
+  // Wolke antippen = sie regnet. Sonne antippen = Nacht, Mond antippen = Tag.
+  rain: false,              // true = alle Wolken regnen immer
+  rainSeconds: 8,           // So lange regnet eine angetippte Wolke
   rainAmount: 0.3,          // 0.05 = Nieselregen, 1 = Wolkenbruch!
   treeChance: 0.02,         // Wie oft ein Tropfen einen Samen pflanzt (0.2 = Turbo-Wald)
   treeGrowSeconds: 12,      // So lange braucht ein Samen bis zum großen Baum

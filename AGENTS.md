@@ -73,7 +73,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `koboldEmoji` / `cornEmoji` / `katzeEmoji` + `…Size` – Aussehen der Figuren (`<name>Emoji`, `<name>Size`)
 - `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
-- `rain`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
+- `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -197,10 +197,10 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 |---|---|
 | `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
-| `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom`; Ton-Schalter |
-| `js/forest.js` | `FOREST_COLORS` (night/day), `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
+| `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `rain`, `night`, `day`, `boom`; Ton-Schalter |
+| `js/forest.js` | `FOREST_COLORS` (night/day), `skyLightPos()`, `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
-| `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `spawnRain()`, `landRaindrop()`, `drawWeather(now)` – Regen aus `forestData.clouds`, Tropfen am Boden pflanzt manchmal 🌱→🌿→🌳 (nur bei `dayMode`) |
+| `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
@@ -220,6 +220,7 @@ Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./
 - **Neue Wurf-Art (z. B. Bumerang, Laser):** `shootBomb(actor)` kopieren. Prinzip: `Bodies.circle` an `actors[name].body.position`, `Body.setVelocity`, `customData` mit eigenem Flag, `collisionFilter.mask` = Kategorie des Ziels, in `fallingBodies` pushen (wird off-screen entfernt). Treffer im `collisionStart`-Handler prüfen; `Composite.remove` + `spawnParticles` + `playSound`; `actors[name].wiggle = 1`.
 - **Neue Figur:** Eintrag in `actors` (`js/actors.js`, neue `category` = nächste Zweierpotenz, `target`, `start()`), `<name>Emoji`/`<name>Size` in `GAME_CONFIG`, `<button id="<name>Btn" class="actor-btn">` in `index.html` + Startposition in `style.css`. Rest (Physik, Ziehen, Werfen, Zeichnen, Resize) läuft automatisch.
 - **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir` in `GAME_CONFIG`.
+- **Etwas im Hintergrund antippbar machen:** in `handleSkyTap()` (`js/weather.js`) einen Treffertest ergänzen (Abstand Finger ↔ Objekt). Der Canvas bekommt alle Taps, die nicht auf einer Figur landen.
 - **Neuer Text / Button:** nur Deutsch, in `index.html`; Tap-Fläche ≥ 44×44 px.
 
 ## 9. 🗣️ Shared Vocabulary

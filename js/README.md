@@ -12,7 +12,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | ⚙️ [`config.js`](config.js) | Die **Stellschrauben**: Emojis, Größen, Schwerkraft | ⭐ Fang hier an! |
 | 🔊 [`audio.js`](audio.js) | Alle **Töne** – ohne eine einzige Sounddatei | ⭐⭐ |
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
-| 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken – und unten **wachsen Bäume** | ⭐⭐ |
+| 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
 | 🧌🌽🐱 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais** und **Katze** | ⭐⭐⭐ |
@@ -99,6 +99,8 @@ Geworfen wird immer im Kreis: **Kobold → Mais → Katze → Kobold**. Wer auf 
 
 Sechs Dateien arbeiten zusammen – wie eine Mannschaft, in der jeder seine Position hat.
 
+Und wenn du in den **Himmel** tippst? Dann schaut `handleSkyTap()` in [`weather.js`](weather.js) nach, was da ist: ☁️ eine Wolke → sie regnet. ☀️ die Sonne → es wird Nacht. 🌙 der Mond → es wird wieder Tag.
+
 Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`actors.js`](actors.js) sie an die neue Stelle. So kannst du Bomben ausweichen.
 
 ---
@@ -115,6 +117,8 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `cornEmoji: '🌽'` → `'🥒'` | Aus Mais wird eine Spreewald-Gurke |
 | `katzeEmoji: '🐱'` → `'🦁'` | Aus der Katze wird ein Löwe |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
+| `rain: false` → `true` | Alle Wolken regnen immer 🌧️ |
+| `rainSeconds: 8` → `30` | Eine angetippte Wolke regnet lange |
 | `rainAmount: 0.3` → `1` | Wolkenbruch! 🌧️ |
 | `treeChance: 0.02` → `0.2` | Turbo-Wald – überall sprießen Bäume 🌱 |
 | `treeEmojis` → `['🌻', '🌷']` | Statt Bäumen wachsen Blumen |

@@ -3,7 +3,9 @@
  *
  * Jede Wolke lässt Regentropfen fallen. Trifft ein Tropfen den Boden,
  * spritzt es – und manchmal sprießt dort ein Samen 🌱, der langsam
- * zu einem Baum 🌳 heranwächst. Schalter: `rain` in config.js.
+ * zu einem Baum 🌳 heranwächst.
+ *
+ * Antippen am Himmel: Wolke → sie regnet. Sonne → Nacht. Mond → Tag.
  */
 
 let raindrops = [];
@@ -14,10 +16,15 @@ function groundY() {
   return height * 0.97;
 }
 
-// Neue Tropfen unter den Wolken erzeugen.
-function spawnRain() {
+// Regnet diese Wolke gerade?
+function isRaining(cloud, now) {
+  return GAME_CONFIG.rain || cloud.rainUntil > now;
+}
+
+// Neue Tropfen unter den regnenden Wolken erzeugen.
+function spawnRain(now) {
   for (const c of forestData.clouds) {
-    if (Math.random() < GAME_CONFIG.rainAmount) {
+    if (isRaining(c, now) && Math.random() < GAME_CONFIG.rainAmount) {
       const r = 18 * c.size;
       raindrops.push({
         x: c.x + (Math.random() - 0.5) * r * 2.5,
@@ -47,11 +54,8 @@ function landRaindrop(drop) {
 
 // Wird in jedem Bild aufgerufen: Regen fallen lassen, Bäume wachsen lassen, alles malen.
 function drawWeather(now) {
-  if (!GAME_CONFIG.rain || !GAME_CONFIG.dayMode) {
-    raindrops = [];
-  } else {
-    spawnRain();
-  }
+  if (GAME_CONFIG.dayMode) spawnRain(now);
+  else raindrops = [];
 
   // 🌧️ Regentropfen
   ctx.save();
@@ -92,3 +96,31 @@ function drawWeather(now) {
   }
   ctx.restore();
 }
+
+// 👆 Antippen am Himmel: Sonne/Mond wechselt Tag und Nacht, Wolke lässt es regnen.
+function handleSkyTap(x, y) {
+  const now = performance.now();
+  const light = skyLightPos();
+  if (Math.hypot(x - light.x, y - light.y) < 45) {
+    GAME_CONFIG.dayMode = !GAME_CONFIG.dayMode;
+    initForest(); // Bäume und Himmel in den neuen Farben
+    spawnParticles(light.x, light.y, GAME_CONFIG.dayMode ? '#ffde59' : '#c7d2fe', 20);
+    playSound(GAME_CONFIG.dayMode ? 'day' : 'night');
+    return;
+  }
+  if (!GAME_CONFIG.dayMode) return; // Nachts gibt es keine Wolken
+  for (const c of forestData.clouds) {
+    const r = 18 * c.size;
+    if (Math.abs(x - c.x) < r * 2.2 && Math.abs(y - c.y) < r * 1.6) {
+      c.rainUntil = now + GAME_CONFIG.rainSeconds * 1000;
+      playSound('rain');
+      return;
+    }
+  }
+}
+
+canvas.addEventListener('pointerdown', (event) => {
+  initAudio();
+  const rect = canvas.getBoundingClientRect();
+  handleSkyTap(event.clientX - rect.left, event.clientY - rect.top);
+});
