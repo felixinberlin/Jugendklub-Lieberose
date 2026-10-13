@@ -56,6 +56,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
+│   ├── teams.js      #   ⚔️ Team-Modus: mehrere Figuren, rote Gegner-Kopien, 8 Level
 │   ├── levels.js     #   🏅 5 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
@@ -80,6 +81,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
 - `maxHits` – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
+- `teamLevels` – 8 Team-Level `{ title, enemies, throwMs }`. Schaden wächst ~ enemies² / throwMs, darum throwMs mit der Gegnerzahl erhöhen. Bot-Simulation (3er-Team, Bot tippt alle 300 ms reihum): L1–5 locker, L6–7 knapp gewonnen, L8 knapp verloren
 - `levels` – 5 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Anzahl beliebig, alles liest `levels.length`. Balance per Bot-Simulation (Bot wirft alle 300 ms, weicht NIE aus): L1–2 gewinnt, L3–4 ~50 %, L5 verliert knapp. Kinder fanden `throwMs 1250 / huntPlayer 0.5` zu schwer – nicht härter als L5 machen
 - `cpuThrowMs` (Fallback ohne Level), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
@@ -198,6 +200,7 @@ btn.addEventListener('click', async () => {
 20. **Breitbild:** Alles, was im Hintergrund in fester Anzahl verteilt wird (Sterne, Wolken, Bäume), mit `wide = width / 390` multiplizieren – sonst wirkt es am Beamer leer. Immer in 3 Größen testen: 390×760, 844×390, 1440×900.
 21. **CSS-Reihenfolge bei `@media`:** Eine Media-Query, die VOR der normalen Regel im CSS steht, wird von ihr überschrieben (gleiche Spezifität, spätere gewinnt). Querformat-Regeln für neue Elemente deshalb ans Dateiende von `style.css`.
 22. **Playwright & rennende Figuren:** `page.click()` wartet, bis ein Element stillsteht – bei Musiala nie. In Tests `{ force: true }` oder `shootBomb(name)` per `evaluate` nutzen. Computer-Figuren werfen von allein – vor Eingabe-Tests `cpuNextThrow[n] = Infinity` setzen.
+23. **Gegner-Kopien (Team-Modus):** Figuren können zur Laufzeit dazukommen (`actors['katze_3']` mit `kind: 'katze'`). Deshalb NIE `GAME_CONFIG[`${name}…`]` oder `getElementById(`${name}Btn`)` direkt – immer `actorCfg(name, 'Emoji')` und `actorBtn(name)` (kann `null` sein). `for (const name in actors)` erwischt Kopien automatisch.
 
 ---
 
@@ -215,11 +218,12 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
 | `js/footballer.js` | `updateFootballers()` (Figuren mit `<name>Runs` dribbeln hin und her, außer `actor.dragging`), `drawFootballer(shirt, size, now, dir, kick)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, schwingende Arme, hochgehaltenen Ball, Schuss-Bein (`kick` = `wiggle`), `isSixSeven(actor)` – nach Treffer (`sixSevenUntil`, gesetzt in `physics.js`, nur wenn Shirt `sixSeven: true`) 6-7-Handgeste + „6 7!“ über dem Kopf, steht dabei still. `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
 | `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`: „DU GEWINNST“ / „Du bist raus“ / „X gewinnt“, Highscore; eigene Figur raus = sofort Ende), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
-| `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
+| `js/actors.js` | `kindOf(name)`, `actorCfg(name, key)`, `actorBtn(name)` (Kopien-sicher!), `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `everyoneExcept(actor)` (Kollisionsmaske: alle Figuren außer Werfer), `shootBomb(actor, forcedTarget?)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer = JEDE lebende Figur außer dem Werfer (`customData.shooter`), nicht nur das Ziel → `wiggle`, `hitsTaken`, `checkKnockout`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
 | `js/cpu.js` | `playerActor` (eigene Figur, `null` = „Alle zusammen“), `isCpu(name)`, `chooseAndStart(name)`, `setupPlayers()` (aus `startGame`: Knöpfe der Computer-Figuren bekommen Klasse `cpu` = nicht antippbar), `updateCpu(now)` (Computer wirft alle `level().throwMs` ±40 %, mit Wahrscheinlichkeit `huntPlayer` per `shootBomb(name, playerActor)` auf dich), `drawPlayerMarker()`. Baut beim Laden die Auswahl-Kacheln `#pickGrid` aus `actors` (neue Figuren erscheinen automatisch). Muss NACH `actors.js` laden |
 | `js/levels.js` | `currentLevel`, `nextLevel`, `level()` (Einstellungen aus `GAME_CONFIG.levels`), `startLevel()` (aus `startGame`), `finishLevel(won)` (aus `endGame`: Text + Knopf „WEITER ZU LEVEL n“ / „NOCHMAL LEVEL n“ / „ALLE n GESCHAFFT“), `drawLevelBanner(now)` |
+| `js/teams.js` | `teamMode`, `chosenTeam`, `TEAM_COLORS` (🔵 mine / 🔴 enemy), `TEAM_BITS` (Physik-Kategorien 256/512 – kein Eigentor), `teamOf(name)`, `enemiesOf`, `nearestEnemy` (Ziel im Team-Modus), `removeClones()`, `setupTeams()` (nicht gewählte Figuren setzen aus, Gegner = Kopien `kind_i` mit `kind`-Feld, Aufstellung in Reihen), `teamScale()`, `drawTeamAura(name)`, `teamResult()`. Baut `#teamGrid`. Lädt nach `levels.js` |
 | `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche

@@ -23,13 +23,16 @@ function startGame() {
   score = 0;
   scoreEl.textContent = score;
 
+  removeClones(); // Alte Gegner-Kopien weg (teams.js)
   clearAllBodies();
   particles = [];
   resetActors();
+  setupTeams();   // ⚔️ Team-Modus aufstellen (teams.js)
   startLevel();   // 🏅 Level-Schild & Anzeige (levels.js)
   setupPlayers(); // Wer spielt wen? (cpu.js)
 
   startScreen.classList.remove('active');
+  teamScreen.classList.remove('active');
   gameOverScreen.classList.remove('active');
   newRecordMsgEl.style.display = 'none';
 }

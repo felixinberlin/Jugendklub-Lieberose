@@ -40,9 +40,16 @@ const actors = {
   }
 };
 
+// Welche Figur steckt dahinter? Bei Gegner-Kopien (teams.js) z. B. 'katze_3' → 'katze'
+function kindOf(name) { return (actors[name] && actors[name].kind) || name; }
+// Einstellung aus config.js für diese Figur, z. B. actorCfg('katze', 'Emoji') → katzeEmoji
+function actorCfg(name, key) { return GAME_CONFIG[`${kindOf(name)}${key}`]; }
+// Der Knopf zum Antippen (Gegner-Kopien haben keinen → null)
+function actorBtn(name) { return document.getElementById(`${name}Btn`); }
+
 // Emoji und Größe kommen aus config.js (z. B. koboldEmoji, katzeSize).
-function actorEmoji(name) { return GAME_CONFIG[`${name}Emoji`]; }
-function actorSize(name) { return GAME_CONFIG[`${name}Size`]; }
+function actorEmoji(name) { return actorCfg(name, 'Emoji'); }
+function actorSize(name) { return actorCfg(name, 'Size') * teamScale(); }
 
 // Baut die Physik-Körper der Figuren und setzt sie in die Welt.
 function createActors() {
@@ -70,7 +77,8 @@ function moveActor(name, x, y) {
     y: Math.max(marginY, Math.min(height - marginY, y))
   };
   Body.setPosition(actor.body, position);
-  const button = document.getElementById(`${name}Btn`);
+  const button = actorBtn(name);
+  if (!button) return;
   button.style.left = `${position.x}px`;
   button.style.top = `${position.y}px`;
 }
@@ -139,9 +147,13 @@ function drawActors(now) {
     ctx.save();
     ctx.translate(actor.body.position.x, actor.body.position.y);
     ctx.rotate(Math.sin(now / actor.sway) * 0.07 + (actor.wiggle * 0.25));
+    drawTeamAura(name); // 🔵🔴 Teamfarbe (teams.js)
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    const shirt = GAME_CONFIG[`${name}Shirt`];
+    let shirt = actorCfg(name, 'Shirt');
+    if (shirt && teamMode && teamOf(name) === 'enemy') {
+      shirt = { ...shirt, color: TEAM_COLORS.enemy, numberColor: '#ffffff' }; // Gegner: rotes Trikot
+    }
     if (shirt) {
       drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ Figur im Trikot (footballer.js)
     } else {
@@ -153,7 +165,7 @@ function drawActors(now) {
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)'; // Dunkler Rand: lesbar bei Tag und Nacht
     ctx.lineJoin = 'round'; // Sonst stehen bei „M“ spitze Zacken heraus
     ctx.strokeText(actor.name, 0, 42);
-    ctx.fillStyle = actor.color;
+    ctx.fillStyle = teamMode ? TEAM_COLORS[teamOf(name)] : actor.color;
     ctx.fillText(actor.name, 0, 42);
 
     // Treffer-Zähler: gegeben (🎯) / eingesteckt (💥)

@@ -6,7 +6,8 @@
  * „👥 ALLE ZUSAMMEN“ = alte Variante: jeder darf jede Figur antippen, kein Computer.
  */
 
-let playerActor = null; // Name der eigenen Figur, null = alle zusammen
+let playerActor = null; // Name der eigenen Figur (Solo), sonst null
+let playerTeam = null;  // Alle Figuren, die DU steuerst. null = „Alle zusammen“
 let cpuNextThrow = {};  // Wann wirft welche Computer-Figur das nächste Mal?
 
 // Wurf-Tempo der Computer im aktuellen Level (levels.js)
@@ -16,12 +17,14 @@ function cpuThrowMs() {
 
 // Spielt der Computer diese Figur?
 function isCpu(name) {
-  return playerActor !== null && name !== playerActor;
+  return playerTeam !== null && !playerTeam.includes(name);
 }
 
 // Figur auswählen und los geht's!
 function chooseAndStart(name) {
   playerActor = name;
+  playerTeam = name === null ? null : [name];
+  teamMode = false;
   currentLevel = 0; // Immer bei Level 1 anfangen (levels.js)
   startGame();
 }
@@ -32,20 +35,28 @@ function setupPlayers() {
   const now = performance.now();
   cpuNextThrow = {};
   for (const name in actors) {
-    document.getElementById(`${name}Btn`).classList.toggle('cpu', isCpu(name));
+    const btn = actorBtn(name);
+    if (btn) btn.classList.toggle('cpu', isCpu(name));
     cpuNextThrow[name] = now + 2000 + Math.random() * cpuThrowMs(); // Erst das LEVEL-Schild zeigen
   }
 }
 
 // 🤖 In jedem Bild: Ist eine Computer-Figur dran? Dann wirft sie.
 function updateCpu(now) {
-  if (playerActor === null) return;
+  if (playerTeam === null) return;
   for (const name in actors) {
     if (!isCpu(name) || !isAlive(name)) continue;
+    if (cpuNextThrow[name] === undefined) cpuNextThrow[name] = now + 2000 + Math.random() * cpuThrowMs(); // Neue Gegner-Kopie
     if (now >= cpuNextThrow[name]) {
-      // Je höher das Level, desto öfter zielen die Computer auf DICH
-      const hunt = Math.random() < level().huntPlayer;
-      shootBomb(name, hunt ? playerActor : undefined);
+      if (teamMode) {
+        // ⚔️ Gegner werfen auf eine zufällige Figur aus deinem Team
+        const targets = playerTeam.filter(isAlive);
+        shootBomb(name, targets[Math.floor(Math.random() * targets.length)]);
+      } else {
+        // Je höher das Level, desto öfter zielen die Computer auf DICH
+        const hunt = Math.random() < level().huntPlayer;
+        shootBomb(name, hunt ? playerActor : undefined);
+      }
       // Nicht alle im gleichen Takt: etwas Zufall dazu
       cpuNextThrow[name] = now + cpuThrowMs() * (0.6 + Math.random() * 0.8);
     }

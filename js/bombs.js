@@ -7,6 +7,8 @@ let fallingBodies = [];
 
 // Alle Figuren-Kategorien außer `actor` (für den collisionFilter der Bombe).
 function everyoneExcept(actor) {
+  // ⚔️ Team-Modus: nur das andere Team (kein Eigentor)
+  if (teamMode) return teamOf(actor) === 'mine' ? TEAM_BITS.enemy : TEAM_BITS.mine;
   let mask = 0;
   for (const name in actors) {
     if (name !== actor) mask |= actors[name].category;
@@ -46,7 +48,7 @@ function shootBomb(actor, forcedTarget) {
     // Trifft JEDE Figur im Weg – nur nicht die, die geworfen hat
     collisionFilter: { category: 2, mask: 1 | everyoneExcept(actor) },
     customData: {
-      emoji: GAME_CONFIG[`${actor}Bomb`] || GAME_CONFIG.bombEmoji,
+      emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
       size: GAME_CONFIG.bombSize,
       isPlayerBomb: true,
       shooter: actor,

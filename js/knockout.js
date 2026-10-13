@@ -14,6 +14,7 @@ function isAlive(name) {
 // Auf wen wirft diese Figur? Ihr Ziel – oder, wenn das raus ist,
 // das nächste lebende Ziel im Kreis.
 function targetOf(name) {
+  if (teamMode) return nearestEnemy(name); // ⚔️ teams.js
   let next = actors[name].target;
   for (let i = 0; i < Object.keys(actors).length; i++) {
     if (next === name) return null; // Einmal rum: niemand mehr da
@@ -36,7 +37,15 @@ function checkKnockout(name) {
   spawnParticles(x, y, '#ffffff', 20);
   playSound('hit');
   Composite.remove(engine.world, actor.body);
-  document.getElementById(`${name}Btn`).style.display = 'none';
+  const btn = actorBtn(name);
+  if (btn) btn.style.display = 'none';
+
+  // ⚔️ Team-Modus: Ist ein ganzes Team raus?
+  if (teamMode) {
+    const result = teamResult();
+    if (result !== null) endGame(result ? chosenTeam.find(isAlive) : null);
+    return;
+  }
 
   // 😵 Deine eigene Figur ist raus? Dann ist das Spiel für dich vorbei.
   if (name === playerActor) { endGame(null); return; }
@@ -50,7 +59,9 @@ function checkKnockout(name) {
 function endGame(winner) {
   isPlaying = false;
   finalScoreEl.textContent = score;
-  if (playerActor !== null) {
+  if (teamMode) {
+    finishLevel(teamResult() === true); // 🏅 levels.js
+  } else if (playerActor !== null) {
     finishLevel(isAlive(playerActor) && winner === playerActor); // 🏅 levels.js
   } else {
     winnerMsgEl.textContent = winner ? `🏆 ${actors[winner].name} gewinnt! 🏆` : 'Alle sind raus! 🤯';
@@ -74,7 +85,8 @@ function reviveActors() {
     if (!Composite.get(engine.world, actor.body.id, 'body')) {
       Composite.add(engine.world, actor.body);
     }
-    document.getElementById(`${name}Btn`).style.display = '';
+    const btn = actorBtn(name);
+    if (btn) btn.style.display = '';
   }
 }
 

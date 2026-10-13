@@ -46,6 +46,19 @@ const GAME_CONFIG = {
     { title: 'Richtig schwer 😤',  throwMs: 1800, huntPlayer: 0.3 },
     { title: 'Alle gegen dich 💀', throwMs: 1700, huntPlayer: 0.34 }
   ],
+  // ⚔️ Team-Modus: eigene Level, jedes mit MEHR Gegnern
+  // enemies = Anzahl Gegner, throwMs = so oft wirft JEDER Gegner.
+  // Viele Gegner werfen zusammen sehr oft – darum wird throwMs mit mehr Gegnern größer.
+  teamLevels: [
+    { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 1300 },
+    { title: 'Zu dritt 🙂',         enemies: 3,  throwMs: 1700 },
+    { title: 'Vier gewinnt? 🔥',    enemies: 4,  throwMs: 2300 },
+    { title: 'Die Bande 😤',        enemies: 5,  throwMs: 3000 },
+    { title: 'Übermacht 😱',        enemies: 6,  throwMs: 3500 },
+    { title: 'Riesen-Armee 🪖',     enemies: 7,  throwMs: 3900 },
+    { title: 'Chaos pur 🌪️',        enemies: 8,  throwMs: 4400 },
+    { title: 'Endboss-Horde 💀',    enemies: 10, throwMs: 6000 }
+  ],
   cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
   throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus

@@ -43,14 +43,14 @@ function initPhysics() {
           const shooter = actors[bomb.customData.shooter];
           shooter.hitsGiven++;
           // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
-          const shirt = GAME_CONFIG[`${bomb.customData.shooter}Shirt`];
+          const shirt = actorCfg(bomb.customData.shooter, 'Shirt');
           if (shirt && shirt.sixSeven) {
             shooter.sixSevenUntil = performance.now() + 1600;
             playSound('sixseven');
           }
         }
         // TREFFER oben zählt nur deine eigenen (bei „Alle zusammen“: alle)
-        if (playerActor === null || bomb.customData.shooter === playerActor) {
+        if (playerTeam === null || playerTeam.includes(bomb.customData.shooter)) {
           score++;
           scoreEl.textContent = score;
         }

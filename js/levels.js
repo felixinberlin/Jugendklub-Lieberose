@@ -11,23 +11,26 @@ let nextLevel = 0;    // Welches Level startet „WEITER“ / „NOCHMAL“?
 let levelStartTime = 0;
 
 // Die Einstellungen des aktuellen Levels
+function levelList() {
+  return teamMode ? GAME_CONFIG.teamLevels : GAME_CONFIG.levels; // ⚔️ Team-Modus hat eigene Level
+}
 function level() {
-  return GAME_CONFIG.levels[currentLevel];
+  return levelList()[currentLevel];
 }
 
 // Wird bei jedem Spielstart aufgerufen.
 function startLevel() {
   levelStartTime = performance.now();
-  levelEl.textContent = `${currentLevel + 1}/${GAME_CONFIG.levels.length}`;
-  levelHudEl.hidden = playerActor === null;
+  levelEl.textContent = `${currentLevel + 1}/${levelList().length}`;
+  levelHudEl.hidden = playerTeam === null;
 }
 
 // Level vorbei: Text und Knopf auf dem Game-Over-Bildschirm einstellen.
 function finishLevel(won) {
   const nr = currentLevel + 1;
-  const last = currentLevel === GAME_CONFIG.levels.length - 1;
+  const last = currentLevel === levelList().length - 1;
   if (!won) {
-    winnerMsgEl.textContent = `😵 Du bist raus! (Level ${nr})`;
+    winnerMsgEl.textContent = teamMode ? `😵 Dein Team ist raus! (Level ${nr})` : `😵 Du bist raus! (Level ${nr})`;
     restartBtn.textContent = `NOCHMAL LEVEL ${nr} 🔄`;
     nextLevel = currentLevel;
   } else if (!last) {
@@ -43,7 +46,7 @@ function finishLevel(won) {
 
 // 📣 Großes „LEVEL 2“-Schild am Anfang jedes Levels (2 Sekunden)
 function drawLevelBanner(now) {
-  if (playerActor === null || !isPlaying) return;
+  if (playerTeam === null || !isPlaying) return;
   const t = (now - levelStartTime) / 2000; // 0 → 1
   if (t > 1) return;
   const lv = level();
@@ -65,5 +68,11 @@ function drawLevelBanner(now) {
   ctx.fillStyle = '#ffffff';
   ctx.strokeText(lv.title, 0, 44);
   ctx.fillText(lv.title, 0, 44);
+  if (teamMode) { // ⚔️ Wie viele Gegner?
+    ctx.font = '800 18px -apple-system, sans-serif';
+    ctx.fillStyle = TEAM_COLORS.enemy;
+    ctx.strokeText(`${lv.enemies} Gegner!`, 0, 76);
+    ctx.fillText(`${lv.enemies} Gegner!`, 0, 76);
+  }
   ctx.restore();
 }
