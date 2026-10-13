@@ -125,6 +125,7 @@ All vanilla JS, no external libraries:
 ```
 
 ### Orientation
+- **Root game (Kobold, Mais & Katze):** volle Breite in jeder Lage (hochkant, quer, Laptop, Beamer). Figuren-Startplätze und Waldmenge skalieren mit `width`; Startbildschirm hat eine kompakte `@media (max-height: 520px)`-Variante für quer gehaltene Handys.
 - **Vertical dodger/catcher games:** Portrait layout (constrained to `max-width: 500px` on desktop).
 - **Horizontal slingshot/runner games:** Landscape layout with a polite *"Bitte das Handy quer halten"* overlay in portrait.
 
@@ -186,6 +187,7 @@ btn.addEventListener('click', async () => {
 17. **Hintergrund-Presets in `GAME_CONFIG`:** Optische Themes und Hintergründe am besten über einfache Schalter oder Presets ansteuerbar halten, damit Änderungen blitzschnell sind.
 18. **Mehrere Dateien ohne Build-Schritt:** Das Spiel ist in `js/*.js` aufgeteilt und wird über normale `<script src>`-Tags geladen – KEINE ES-Module (`type="module"`, `import`/`export`), denn die scheitern beim direkten Öffnen per `file://` an CORS. Klassische Skripte teilen sich einen globalen Bereich: Funktionen und `let`/`const` einer Datei sind in allen später geladenen sichtbar. Deshalb: jeden globalen Namen nur EINMAL deklarieren (zweites `let x` in einer anderen Datei = SyntaxError, die Datei lädt gar nicht) und Code, der sofort beim Laden läuft, darf nur Dinge aus früher geladenen Dateien benutzen. `js/game.js` bleibt die letzte Datei.
 19. **`deploy.sh` von einem Branch:** Früher `git push origin main` = pushte den *lokalen* `main`, nicht den aktuellen Stand. Cloud-Agents arbeiten oft auf einem eigenen Branch → jetzt `git push origin HEAD:main`.
+20. **Breitbild:** Alles, was im Hintergrund in fester Anzahl verteilt wird (Sterne, Wolken, Bäume), mit `wide = width / 390` multiplizieren – sonst wirkt es am Beamer leer. Immer in 3 Größen testen: 390×760, 844×390, 1440×900.
 
 ---
 

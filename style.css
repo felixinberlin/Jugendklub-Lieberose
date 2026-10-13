@@ -24,7 +24,7 @@ html, body {
   position: relative;
   width: 100%;
   height: 100%;
-  max-width: 500px; /* Perfect smartphone aspect ratio on desktop */
+  /* Volle Breite: Handy hochkant, quer, Laptop und Beamer */
   background: #07111e;
   overflow: hidden;
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
@@ -94,10 +94,23 @@ html, body {
   padding: 30px 24px;
   pointer-events: auto;
   z-index: 10;
+  overflow-y: auto; /* Falls der Bildschirm sehr flach ist: scrollen statt abschneiden */
 }
 
 .overlay-screen.active {
   display: flex;
+}
+
+/* 📱↔️ Handy quer (flacher Bildschirm): Startbildschirm kompakter */
+@media (max-height: 520px) {
+  .overlay-screen { padding: 10px 24px; justify-content: safe center; }
+  .badge { margin-bottom: 4px; padding: 4px 14px; }
+  h1 { font-size: 1.8rem; margin-bottom: 2px; }
+  h2 { font-size: 1.6rem; margin-bottom: 6px; }
+  .subtitle { margin-bottom: 8px; }
+  .instructions { margin-bottom: 10px; padding: 8px 16px; }
+  .instructions p { line-height: 1.4; }
+  .btn { padding: 12px 28px; }
 }
 
 .badge {

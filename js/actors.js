@@ -11,12 +11,12 @@ const actors = {
   kobold: {
     name: 'KOBOLD', color: '#6ee7b7', category: 4, target: 'corn',
     sway: 420, body: null, wiggle: 0,
-    start: () => ({ x: 46, y: height * 0.55 })
+    start: () => ({ x: Math.max(46, width * 0.1), y: height * 0.55 })
   },
   corn: {
     name: 'MAIS', color: '#fef08a', category: 8, target: 'katze',
     sway: 480, body: null, wiggle: 0,
-    start: () => ({ x: width - 46, y: height * 0.55 })
+    start: () => ({ x: width - Math.max(46, width * 0.1), y: height * 0.55 })
   },
   katze: {
     name: 'KATZE', color: '#f9a8d4', category: 16, target: 'kobold',

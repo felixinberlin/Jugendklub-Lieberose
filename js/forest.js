@@ -94,10 +94,12 @@ function drawDeciduousTree(ctx, x, baseY, w, h, foliageColor, trunkColor, sway =
 
 function initForest() {
   const colors = forestColors();
+  // Breiter Bildschirm (quer, Laptop, Beamer) = mehr Sterne, Wolken und Bäume
+  const wide = Math.max(1, width / 390);
 
   // Sterne am Nachthimmel
   forestData.stars = [];
-  for (let i = 0; i < 35; i++) {
+  for (let i = 0; i < 35 * wide; i++) {
     forestData.stars.push({
       x: Math.random() * width,
       y: Math.random() * (height * 0.55),
@@ -110,7 +112,7 @@ function initForest() {
 
   // Wolken am Taghimmel
   forestData.clouds = [];
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 5 * wide; i++) {
     forestData.clouds.push({
       x: Math.random() * width,
       y: height * (0.05 + Math.random() * 0.4),
@@ -122,7 +124,7 @@ function initForest() {
 
   // Schwebende Glühwürmchen (tagsüber: Schmetterlinge)
   forestData.fireflies = [];
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 16 * wide; i++) {
     forestData.fireflies.push({
       x: Math.random() * width,
       y: height * 0.35 + Math.random() * (height * 0.58),
@@ -135,7 +137,7 @@ function initForest() {
 
   // Hintergrund-Bäume (ferne Silhouetten am Horizont)
   forestData.backTrees = [];
-  const backCount = 8;
+  const backCount = Math.round(8 * wide);
   for (let i = 0; i <= backCount; i++) {
     const x = (width / backCount) * i + (Math.random() - 0.5) * (width / backCount * 0.5);
     const h = 65 + Math.random() * 35;
@@ -149,7 +151,7 @@ function initForest() {
 
   // Mittlere Baumreihe (dichter Mischwald)
   forestData.midTrees = [];
-  const midCount = 7;
+  const midCount = Math.round(7 * wide);
   for (let i = 0; i <= midCount; i++) {
     const x = (width / midCount) * (i + 0.25) + (Math.random() - 0.5) * 18;
     const h = 95 + Math.random() * 45;
