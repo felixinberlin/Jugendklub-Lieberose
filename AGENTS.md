@@ -56,7 +56,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
-│   ├── levels.js     #   🏅 3 Level, Level-Schild, Weiter/Nochmal
+│   ├── levels.js     #   🏅 5 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
 └── [toy-name]/       # Optional future mini-games (e.g. gurken-angriff/index.html)
@@ -80,7 +80,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
 - `maxHits` – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
-- `levels` – 3 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Balance per Bot-Simulation geprüft: L1 Bot gewinnt, L2 ~50 %, L3 Bot verliert knapp (Ausweichen nötig)
+- `levels` – 5 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Anzahl beliebig, alles liest `levels.length`. Balance per Bot-Simulation (Bot wirft alle 300 ms, weicht NIE aus): L1–2 gewinnt, L3–4 ~50 %, L5 verliert knapp. Kinder fanden `throwMs 1250 / huntPlayer 0.5` zu schwer – nicht härter als L5 machen
 - `cpuThrowMs` (Fallback ohne Level), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
@@ -219,7 +219,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/bombs.js` | `fallingBodies`, `everyoneExcept(actor)` (Kollisionsmaske: alle Figuren außer Werfer), `shootBomb(actor, forcedTarget?)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer = JEDE lebende Figur außer dem Werfer (`customData.shooter`), nicht nur das Ziel → `wiggle`, `hitsTaken`, `checkKnockout`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
 | `js/cpu.js` | `playerActor` (eigene Figur, `null` = „Alle zusammen“), `isCpu(name)`, `chooseAndStart(name)`, `setupPlayers()` (aus `startGame`: Knöpfe der Computer-Figuren bekommen Klasse `cpu` = nicht antippbar), `updateCpu(now)` (Computer wirft alle `level().throwMs` ±40 %, mit Wahrscheinlichkeit `huntPlayer` per `shootBomb(name, playerActor)` auf dich), `drawPlayerMarker()`. Baut beim Laden die Auswahl-Kacheln `#pickGrid` aus `actors` (neue Figuren erscheinen automatisch). Muss NACH `actors.js` laden |
-| `js/levels.js` | `currentLevel`, `nextLevel`, `level()` (Einstellungen aus `GAME_CONFIG.levels`), `startLevel()` (aus `startGame`), `finishLevel(won)` (aus `endGame`: Text + Knopf „WEITER ZU LEVEL n“ / „NOCHMAL LEVEL n“ / „ALLE 3 GESCHAFFT“), `drawLevelBanner(now)` |
+| `js/levels.js` | `currentLevel`, `nextLevel`, `level()` (Einstellungen aus `GAME_CONFIG.levels`), `startLevel()` (aus `startGame`), `finishLevel(won)` (aus `endGame`: Text + Knopf „WEITER ZU LEVEL n“ / „NOCHMAL LEVEL n“ / „ALLE n GESCHAFFT“), `drawLevelBanner(now)` |
 | `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche

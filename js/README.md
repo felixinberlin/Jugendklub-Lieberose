@@ -14,7 +14,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
 | 💀 [`knockout.js`](knockout.js) | **Lebensleiste** ❤️ – wer 20-mal getroffen wird, ist **raus**. Die letzte Figur **gewinnt** 🏆 | ⭐⭐ |
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
-| 🏅 [`levels.js`](levels.js) | **3 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
+| 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
@@ -128,7 +128,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `musialaShirt` → `sixSeven: false` | Kein 6-7-Jubel mehr nach Treffern 🤲 |
 | `musialaRunSpeed: 1.5` → `4` | Turbo-Sprint! 🏃💨 |
 | `musialaRuns: true` → `false` | Musiala bleibt stehen |
-| `levels` → bei Level 3 `throwMs: 1250` → `500` | Level 3 wird zur Hölle 🔥 |
+| `levels` → bei Level 5 `throwMs: 1700` → `500` | Level 5 wird zur Hölle 🔥 |
 | `levels` → `huntPlayer: 0.5` → `1` | In dem Level zielen ALLE nur auf dich 🎯 |
 | `maxHits: 20` → `5` | Schnelles Spiel – nach 5 Treffern ist eine Figur raus 💀 |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |

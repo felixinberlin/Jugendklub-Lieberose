@@ -1,12 +1,12 @@
 /**
- * 🏅 levels.js – Drei Level, jedes schwerer
+ * 🏅 levels.js – Fünf Level, jedes schwerer
  *
  * Nur wenn du eine eigene Figur spielst (nicht bei „Alle zusammen“).
  * Gewinnst du ein Level, geht's ins nächste. Verlierst du, nochmal dasselbe.
  * Wie schwer jedes Level ist, steht in config.js unter `levels`.
  */
 
-let currentLevel = 0; // 0 = Level 1, 1 = Level 2, 2 = Level 3
+let currentLevel = 0; // 0 = Level 1, 1 = Level 2, … (Anzahl = GAME_CONFIG.levels)
 let nextLevel = 0;    // Welches Level startet „WEITER“ / „NOCHMAL“?
 let levelStartTime = 0;
 
@@ -18,7 +18,7 @@ function level() {
 // Wird bei jedem Spielstart aufgerufen.
 function startLevel() {
   levelStartTime = performance.now();
-  levelEl.textContent = currentLevel + 1;
+  levelEl.textContent = `${currentLevel + 1}/${GAME_CONFIG.levels.length}`;
   levelHudEl.hidden = playerActor === null;
 }
 
