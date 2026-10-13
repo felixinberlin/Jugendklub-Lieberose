@@ -122,7 +122,10 @@ function drawActors(now) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(actorEmoji(name), 0, 0);
-    ctx.font = 'bold 10px -apple-system, sans-serif';
+    ctx.font = 'bold 11px -apple-system, sans-serif';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)'; // Dunkler Rand: lesbar bei Tag und Nacht
+    ctx.strokeText(actor.name, 0, 42);
     ctx.fillStyle = actor.color;
     ctx.fillText(actor.name, 0, 42);
     ctx.restore();

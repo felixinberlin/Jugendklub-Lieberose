@@ -1,7 +1,8 @@
 /**
  * 🌲 forest.js – Der Lieberoser Zauberwald (Hintergrund)
  *
- * Nachthimmel, Sterne, Mond, drei Reihen Bäume und Glühwürmchen.
+ * Nachts: Sternenhimmel, Mond und Glühwürmchen. Tags: blauer Himmel, Sonne,
+ * Wolken und Schmetterlinge. Umschalten mit `dayMode` in config.js.
  * initForest() denkt sich den Wald aus, drawForest() malt ihn in jedem Bild neu.
  */
 
@@ -12,6 +13,27 @@ let forestData = {
   midTrees: [],
   frontTrees: []
 };
+
+// 🎨 Farben für Nacht und Tag. Welche gilt, entscheidet GAME_CONFIG.dayMode.
+const FOREST_COLORS = {
+  night: {
+    sky: ['#07111e', '#0e232a', '#143628', '#0a1d14'],
+    hills: ['#0a1f22', '#0d2820', '#081a14'],
+    back: '#122e2e', backTrunk: '#0a1d1d',
+    mid: ['#1a4933', '#22583b'], midTrunk: '#1d1912',
+    front: ['#133e26', '#16432b', '#1a4a30', '#16452c'], frontTrunk: '#28180f'
+  },
+  day: {
+    sky: ['#3fa9f5', '#8fd3ff', '#d4f1ff', '#7cc66a'],
+    hills: ['#5fae6b', '#4c9a55', '#3d8a45'],
+    back: '#6fb87a', backTrunk: '#5a7d4f',
+    mid: ['#3f9a4f', '#4fb05a'], midTrunk: '#6b4a2b',
+    front: ['#2f8a3e', '#33923f', '#3ea34a', '#2f8f3c'], frontTrunk: '#5c3a1e'
+  }
+};
+function forestColors() {
+  return GAME_CONFIG.dayMode ? FOREST_COLORS.day : FOREST_COLORS.night;
+}
 
 // 🌲 Bäume zeichnen (Kiefern & Laubbäume für den Lieberoser Zauberwald)
 function drawPineTree(ctx, x, baseY, w, h, foliageColor, trunkColor, sway = 0) {
@@ -71,6 +93,8 @@ function drawDeciduousTree(ctx, x, baseY, w, h, foliageColor, trunkColor, sway =
 }
 
 function initForest() {
+  const colors = forestColors();
+
   // Sterne am Nachthimmel
   forestData.stars = [];
   for (let i = 0; i < 35; i++) {
@@ -84,7 +108,18 @@ function initForest() {
     });
   }
 
-  // Schwebende Glühwürmchen
+  // Wolken am Taghimmel
+  forestData.clouds = [];
+  for (let i = 0; i < 5; i++) {
+    forestData.clouds.push({
+      x: Math.random() * width,
+      y: height * (0.05 + Math.random() * 0.4),
+      size: 0.7 + Math.random() * 0.7,
+      speed: 0.1 + Math.random() * 0.2
+    });
+  }
+
+  // Schwebende Glühwürmchen (tagsüber: Schmetterlinge)
   forestData.fireflies = [];
   for (let i = 0; i < 16; i++) {
     forestData.fireflies.push({
@@ -107,7 +142,7 @@ function initForest() {
     const type = (i % 3 === 0) ? 'deciduous' : 'pine';
     forestData.backTrees.push({
       x, baseY: height * 0.88, w, h, type,
-      foliageColor: '#122e2e', trunkColor: '#0a1d1d'
+      foliageColor: colors.back, trunkColor: colors.backTrunk
     });
   }
 
@@ -121,8 +156,8 @@ function initForest() {
     const type = (i % 2 === 0) ? 'pine' : 'deciduous';
     forestData.midTrees.push({
       x, baseY: height * 0.93, w, h, type,
-      foliageColor: (i % 2 === 0) ? '#1a4933' : '#22583b',
-      trunkColor: '#1d1912'
+      foliageColor: colors.mid[i % 2],
+      trunkColor: colors.midTrunk
     });
   }
 
@@ -131,35 +166,84 @@ function initForest() {
   // Große Kiefer links am Rand
   forestData.frontTrees.push({
     x: 18, baseY: height + 8, w: 90, h: Math.min(240, height * 0.35), type: 'pine',
-    foliageColor: '#133e26', trunkColor: '#28180f'
+    foliageColor: colors.front[0], trunkColor: colors.frontTrunk
   });
   // Große Kiefer rechts am Rand
   forestData.frontTrees.push({
     x: width - 18, baseY: height + 8, w: 92, h: Math.min(245, height * 0.36), type: 'pine',
-    foliageColor: '#16432b', trunkColor: '#28180f'
+    foliageColor: colors.front[1], trunkColor: colors.frontTrunk
   });
   // Schöne Bäume dazwischen
   forestData.frontTrees.push({
     x: width * 0.28, baseY: height + 15, w: 72, h: Math.min(160, height * 0.24), type: 'deciduous',
-    foliageColor: '#1a4a30', trunkColor: '#2c1b11'
+    foliageColor: colors.front[2], trunkColor: colors.frontTrunk
   });
   forestData.frontTrees.push({
     x: width * 0.72, baseY: height + 15, w: 76, h: Math.min(170, height * 0.25), type: 'pine',
-    foliageColor: '#16452c', trunkColor: '#28180f'
+    foliageColor: colors.front[3], trunkColor: colors.frontTrunk
   });
 }
 
 // Malt den ganzen Hintergrund – von hinten (Himmel) nach vorne (Glühwürmchen).
 function drawForest(now) {
-  // Nachthimmel & Dämmerung
+  const colors = forestColors();
+  const day = GAME_CONFIG.dayMode;
+
+  // Himmel (nachts dunkel, tagsüber blau)
   const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
-  skyGrad.addColorStop(0.0, '#07111e');  // Tiefe Waldnacht
-  skyGrad.addColorStop(0.45, '#0e232a'); // Geheimnisvolles Dämmergrün
-  skyGrad.addColorStop(0.8, '#143628');  // Weicher Horizont über den Wipfeln
-  skyGrad.addColorStop(1.0, '#0a1d14');  // Dunkler Waldboden
+  skyGrad.addColorStop(0.0, colors.sky[0]);  // Oben
+  skyGrad.addColorStop(0.45, colors.sky[1]);
+  skyGrad.addColorStop(0.8, colors.sky[2]);  // Horizont über den Wipfeln
+  skyGrad.addColorStop(1.0, colors.sky[3]);  // Waldboden
   ctx.fillStyle = skyGrad;
   ctx.fillRect(0, 0, width, height);
 
+  if (day) drawDaySky(now);
+  else drawNightSky(now);
+
+  drawTreeLayers(now, colors);
+
+  if (day) drawButterflies(now);
+  else drawFireflies(now);
+}
+
+// ☁️☀️ Sonne und Wolken
+function drawDaySky(now) {
+  const sunX = width * 0.82;
+  const sunY = height * 0.12;
+  const sunGlow = ctx.createRadialGradient(sunX, sunY, 10, sunX, sunY, 70);
+  sunGlow.addColorStop(0, 'rgba(255, 236, 120, 0.7)');
+  sunGlow.addColorStop(1, 'rgba(255, 236, 120, 0)');
+  ctx.fillStyle = sunGlow;
+  ctx.beginPath();
+  ctx.arc(sunX, sunY, 70, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(sunX, sunY);
+  ctx.rotate(now * 0.0003); // Sonne dreht sich langsam
+  ctx.font = '44px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(GAME_CONFIG.sunEmoji || '☀️', 0, 0);
+  ctx.restore();
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  for (const c of forestData.clouds) {
+    c.x += c.speed;
+    if (c.x > width + 80) c.x = -80;
+    const r = 18 * c.size;
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, r, 0, Math.PI * 2);
+    ctx.arc(c.x + r, c.y + r * 0.2, r * 0.8, 0, Math.PI * 2);
+    ctx.arc(c.x - r, c.y + r * 0.25, r * 0.7, 0, Math.PI * 2);
+    ctx.arc(c.x + r * 0.3, c.y - r * 0.5, r * 0.75, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// 🌙✨ Sterne und Mond
+function drawNightSky(now) {
   // Funkelnde Sterne
   for (const s of forestData.stars) {
     const alpha = s.baseAlpha + Math.sin(now * s.twinkleSpeed + s.phase) * 0.25;
@@ -182,9 +266,12 @@ function drawForest(now) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(GAME_CONFIG.moonEmoji || '🌙', moonX, moonY);
+}
 
+// 🌲 Drei Reihen Hügel und Bäume, von hinten nach vorne
+function drawTreeLayers(now, colors) {
   // 🌲 Schicht 1: Ferner Wald & sanfter Hügel im Hintergrund
-  ctx.fillStyle = '#0a1f22';
+  ctx.fillStyle = colors.hills[0];
   ctx.beginPath();
   ctx.moveTo(0, height * 0.85);
   ctx.quadraticCurveTo(width * 0.5, height * 0.81, width, height * 0.86);
@@ -205,7 +292,7 @@ function drawForest(now) {
   }
 
   // 🌲 Schicht 2: Mittlerer Waldboden & Mischwald
-  ctx.fillStyle = '#0d2820';
+  ctx.fillStyle = colors.hills[1];
   ctx.beginPath();
   ctx.moveTo(0, height * 0.91);
   ctx.quadraticCurveTo(width * 0.45, height * 0.87, width, height * 0.92);
@@ -226,7 +313,7 @@ function drawForest(now) {
   }
 
   // 🌲 Schicht 3: Vordergrund-Waldboden & große Randbäume
-  ctx.fillStyle = '#081a14';
+  ctx.fillStyle = colors.hills[2];
   ctx.beginPath();
   ctx.moveTo(0, height * 0.96);
   ctx.quadraticCurveTo(width * 0.6, height * 0.92, width, height * 0.97);
@@ -246,7 +333,10 @@ function drawForest(now) {
     }
   }
 
-  // ✨ Glühwürmchen, die durch den Wald schweben
+}
+
+// ✨ Glühwürmchen, die durch den Wald schweben
+function drawFireflies(now) {
   for (const f of forestData.fireflies) {
     f.x += f.speedX + Math.sin(now * 0.002 + f.phase) * 0.35;
     f.y += f.speedY + Math.cos(now * 0.0025 + f.phase) * 0.25;
@@ -266,4 +356,25 @@ function drawForest(now) {
     ctx.arc(f.x, f.y, f.size * 2.8, 0, Math.PI * 2);
     ctx.fill();
   }
+}
+
+// 🦋 Schmetterlinge flattern tagsüber (sie benutzen die Wege der Glühwürmchen)
+function drawButterflies(now) {
+  ctx.save();
+  ctx.font = '16px -apple-system, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  for (let i = 0; i < forestData.fireflies.length; i += 3) {
+    const f = forestData.fireflies[i];
+    f.x += f.speedX * 2 + Math.sin(now * 0.002 + f.phase) * 0.6;
+    f.y += Math.cos(now * 0.003 + f.phase) * 0.5;
+    if (f.x < -10) f.x = width + 10;
+    if (f.x > width + 10) f.x = -10;
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    ctx.scale(0.6 + Math.abs(Math.sin(now * 0.012 + f.phase)) * 0.4, 1); // Flügelschlag
+    ctx.fillText('🦋', 0, 0);
+    ctx.restore();
+  }
+  ctx.restore();
 }

@@ -108,6 +108,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `koboldEmoji: '🧌'` → `'🐉'` | Der Kobold wird ein Drache |
 | `cornEmoji: '🌽'` → `'🥒'` | Aus Mais wird eine Spreewald-Gurke |
 | `katzeEmoji: '🐱'` → `'🦁'` | Aus der Katze wird ein Löwe |
+| `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
 | `bombEmoji: '💣'` → `'🍕'` | Pizza-Schlacht! |
 | `gravityY: 0.9` → `0.2` | Schwerkraft wie auf dem Mond – Bomben fliegen in hohem Bogen |
 | `gravityY: 0.9` → `2.5` | Riesen-Schwerkraft – Bomben sausen flach und schnell |
@@ -130,7 +131,7 @@ Ein Ton wird so gemacht: `playTone(600, 'square', 0.08, 0.15)`
 
 ### 🌲 In `forest.js`
 
-- In `initForest()` steht `i < 35` bei den Sternen. Mach **300** daraus für einen Sternenhimmel.
+- In `initForest()` steht `i < 35` bei den Sternen. Mach **300** daraus für einen Sternenhimmel (nur bei Nacht: `dayMode: false`).
 - Bei den Glühwürmchen steht `i < 16`. Wie sieht der Wald mit **100** aus?
 
 ---

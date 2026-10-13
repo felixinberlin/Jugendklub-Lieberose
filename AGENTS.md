@@ -73,7 +73,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
-- `forestTheme`, `moonEmoji` – Hintergrund
+- `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
 ### B. Procedural Audio Engine (`Web Audio API`)
 - Synthesize all beeps, chimes, bounces, and explosions on the fly.
@@ -196,7 +196,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
 | `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom`; Ton-Schalter |
-| `js/forest.js` | `forestData`, `initForest()`, `drawPineTree()`, `drawDeciduousTree()`, `drawForest(now)` |
+| `js/forest.js` | `FOREST_COLORS` (night/day), `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |

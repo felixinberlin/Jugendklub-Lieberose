@@ -27,5 +27,7 @@ const GAME_CONFIG = {
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)
   forestTheme: true,
-  moonEmoji: '🌙'
+  dayMode: true,        // true = ☀️ Tag, false = 🌙 Nacht
+  moonEmoji: '🌙',
+  sunEmoji: '☀️'
 };
