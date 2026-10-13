@@ -5,7 +5,7 @@
  */
 
 // Alle Figuren in einer Liste. Jede wirft ihre Bombe auf `target`:
-// Kobold → Mais → Katze → Maus → Goblin → Kobold (immer im Kreis – die Katze jagt die Maus!).
+// Kobold → Mais → Katze → Maus → Goblin → Musiala → Kobold (immer im Kreis – die Katze jagt die Maus!).
 // Neue Figur? Eintrag hier + Knopf in index.html + Werte in config.js.
 const actors = {
   kobold: {
@@ -29,9 +29,14 @@ const actors = {
     start: () => ({ x: width / 2, y: height * 0.72 })
   },
   goblin: {
-    name: 'GOBLIN', color: '#fca5a5', category: 64, target: 'kobold',
+    name: 'GOBLIN', color: '#fca5a5', category: 64, target: 'musiala',
     sway: 300, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
     start: () => ({ x: width * 0.25, y: height * 0.32 })
+  },
+  musiala: {
+    name: 'MUSIALA', color: '#fecaca', category: 128, target: 'kobold',
+    sway: 220, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
+    start: () => ({ x: width * 0.75, y: height * 0.34 })
   }
 };
 

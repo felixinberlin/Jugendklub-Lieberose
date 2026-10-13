@@ -11,7 +11,7 @@
  *   forest.js    🌲 Hintergrund
  *   particles.js ✨ Funken
  *   weather.js   🌧️ Regen und wachsende Bäume
- *   actors.js    🧌🌽🐱🐭👺 Kobold, Mais, Katze, Maus, Goblin
+ *   actors.js    🧌🌽🐱🐭👺⚽ Kobold, Mais, Katze, Maus, Goblin, Musiala
  *   bombs.js     💣 Bomben
  *   physics.js   🧪 Physik-Welt und Zusammenstöße
  */

@@ -50,7 +50,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── forest.js     #   🌲 Hintergrund (Zauberwald)
 │   ├── particles.js  #   ✨ Partikel
 │   ├── weather.js    #   🌧️ Regen & wachsende Bäume
-│   ├── actors.js     #   🧌🌽🐱🐭👺 Figuren-Liste `actors`: Bodies, Bewegen, Eingabe, Zeichnen
+│   ├── actors.js     #   🧌🌽🐱🐭👺⚽ Figuren-Liste `actors`: Bodies, Bewegen, Eingabe, Zeichnen
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
@@ -70,7 +70,7 @@ If a user request would violate any of these, stop and clarify first:
 ### A. The `GAME_CONFIG` Object (Live Hacking Zone)
 Lives alone in `js/config.js`. Designed for instant modifications when kids shout ideas on stage:
 Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
-- `koboldEmoji` / `cornEmoji` / `katzeEmoji` / `mausEmoji` / `goblinEmoji` + `…Size` – Aussehen der Figuren (`<name>Emoji`, `<name>Size`)
+- `koboldEmoji` / `cornEmoji` / `katzeEmoji` / `mausEmoji` / `goblinEmoji` / `musialaEmoji` + `…Size` – Aussehen der Figuren (`<name>Emoji`, `<name>Size`)
 - `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
@@ -125,7 +125,7 @@ All vanilla JS, no external libraries:
 ```
 
 ### Orientation
-- **Root game (Kobold, Mais, Katze, Maus & Goblin):** volle Breite in jeder Lage (hochkant, quer, Laptop, Beamer). Figuren-Startplätze und Waldmenge skalieren mit `width`; Startbildschirm hat eine kompakte `@media (max-height: 520px)`-Variante für quer gehaltene Handys.
+- **Root game (Kobold, Mais, Katze, Maus, Goblin & Musiala):** volle Breite in jeder Lage (hochkant, quer, Laptop, Beamer). Figuren-Startplätze und Waldmenge skalieren mit `width`; Startbildschirm hat eine kompakte `@media (max-height: 520px)`-Variante für quer gehaltene Handys.
 - **Vertical dodger/catcher games:** Portrait layout (constrained to `max-width: 500px` on desktop).
 - **Horizontal slingshot/runner games:** Landscape layout with a polite *"Bitte das Handy quer halten"* overlay in portrait.
 
@@ -203,9 +203,9 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/forest.js` | `FOREST_COLORS` (night/day), `skyLightPos()`, `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
-| `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
+| `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
-| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
+| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
 | `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateBombs` → `drawParticles`), Initialisierung |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche

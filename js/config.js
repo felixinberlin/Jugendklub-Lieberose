@@ -19,6 +19,9 @@ const GAME_CONFIG = {
   goblinEmoji: '👺',
   goblinSize: 66,
   goblinBomb: '🔥', // Der Goblin wirft Feuer!
+  musialaEmoji: '🏃',
+  musialaSize: 64,
+  musialaBomb: '⚽', // Musiala schießt Fußbälle!
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
