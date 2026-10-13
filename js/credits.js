@@ -6,7 +6,8 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.26';
+const GAME_VERSION = '2.27';
+const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
   { workshop: '🎪 Workshop 1 · 8.–9. Oktober' },
@@ -46,7 +47,8 @@ const WISHES = [
   { v: '2.23', text: 'Abspann-Knopf auch auf dem Startbildschirm 🎬' },
   { v: '2.24', text: 'Die Maus kann sich verstecken 🐭🕳️ – 6 Sekunden kein Schaden' },
   { v: '2.25', text: 'Spezialkraft-Treffer bleiben fürs nächste Level ⚡➡️' },
-  { v: '2.26', text: 'Spezialkräfte werden am Anfang erklärt 📖⚡' }
+  { v: '2.26', text: 'Spezialkräfte werden am Anfang erklärt 📖⚡' },
+  { v: '2.27', text: 'Link zum Code für Eltern 👨‍👩‍👧' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
@@ -62,6 +64,8 @@ function buildCredits() {
   }
   html += '<p class="credits-head">💡 Ideen</p><p class="credits-wish">Die Kinder vom Jugendklub Lieberose</p>' +
     '<p class="credits-head">⌨️ Programmiert</p><p class="credits-wish">live auf der Bühne – mit KI 🤖</p>' +
+    '<p class="credits-head">👨‍👩‍👧 Für Eltern</p>' +
+    `<p class="credits-wish">Der ganze Code ist offen:<br><a class="credits-link" href="${REPO_URL}" target="_blank" rel="noopener">github.com/felixinberlin/Jugendklub-Lieberose</a></p>` +
     '<p class="credits-end">Danke fürs Spielen! ❤️</p>';
   creditsRoll.innerHTML = html;
   versionEl.textContent = `v${GAME_VERSION}`;
@@ -82,5 +86,8 @@ function hideCredits() {
 buildCredits();
 creditsBtn.addEventListener('click', showCredits);
 document.getElementById('creditsStartBtn').addEventListener('click', showCredits); // Auch auf dem Startbildschirm
-creditsScreen.addEventListener('click', hideCredits); // Antippen = zurück
+creditsScreen.addEventListener('click', (event) => {
+  if (event.target.closest('a')) return; // Link antippen = Link öffnen, Abspann läuft weiter
+  hideCredits(); // Sonst: Antippen = zurück
+});
 creditsRoll.addEventListener('animationend', hideCredits); // Ende = zurück

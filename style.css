@@ -343,6 +343,25 @@ h2 {
   font-size: 1.05rem;
 }
 
+/* 👨‍👩‍👧 Link zum Code für Eltern */
+.parents-link {
+  margin-top: 16px;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #cbd5e1;
+  max-width: 420px;
+}
+.parents-link a, .credits-link {
+  color: #93c5fd;
+  font-weight: 800;
+  text-decoration: underline;
+  display: inline-block;
+  padding: 10px 4px; /* Große Tipp-Fläche */
+  user-select: text;
+  -webkit-user-select: text;
+  word-break: break-all;
+}
+
 /* 🤖 Computer-Figuren kann man nicht antippen */
 .actor-btn.cpu { pointer-events: none; }
 
