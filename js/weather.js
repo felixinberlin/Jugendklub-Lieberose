@@ -37,7 +37,9 @@ function spawnRain(now) {
 
 // Ein Tropfen ist unten angekommen: spritzen und vielleicht einen Baum pflanzen.
 function landRaindrop(drop) {
-  spawnParticles(drop.x, groundY(), 'rgba(147, 197, 253, 0.9)', 2);
+  if (Math.random() < 0.15) {
+    spawnParticles(drop.x, groundY(), 'rgba(147, 197, 253, 0.9)', 1);
+  }
   if (Math.random() > GAME_CONFIG.treeChance) return;
   if (growingTrees.length >= GAME_CONFIG.maxGrowingTrees) return;
   // Nicht zu dicht neben einen anderen Baum
