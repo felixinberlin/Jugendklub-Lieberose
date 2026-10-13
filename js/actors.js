@@ -1,59 +1,83 @@
 /**
- * 🧌🌽 actors.js – Die beiden Figuren: Kobold und Mais
+ * 🧌🌽🐱 actors.js – Die Figuren: Kobold, Mais und Katze
  *
  * Hier steht, wie die Figuren gebaut, bewegt, angetippt und gemalt werden.
  */
 
-let koboldBody, cornBody;
-let koboldWiggle = 0;
-let cornWiggle = 0;
+// Alle Figuren in einer Liste. Jede wirft ihre Bombe auf `target`:
+// Kobold → Mais → Katze → Kobold (immer im Kreis).
+// Neue Figur? Eintrag hier + Knopf in index.html + Werte in config.js.
+const actors = {
+  kobold: {
+    name: 'KOBOLD', color: '#6ee7b7', category: 4, target: 'corn',
+    sway: 420, body: null, wiggle: 0,
+    start: () => ({ x: 46, y: height * 0.55 })
+  },
+  corn: {
+    name: 'MAIS', color: '#fef08a', category: 8, target: 'katze',
+    sway: 480, body: null, wiggle: 0,
+    start: () => ({ x: width - 46, y: height * 0.55 })
+  },
+  katze: {
+    name: 'KATZE', color: '#f9a8d4', category: 16, target: 'kobold',
+    sway: 360, body: null, wiggle: 0,
+    start: () => ({ x: width / 2, y: height * 0.3 })
+  }
+};
 
-// Baut die Physik-Körper der beiden Figuren und setzt sie in die Welt.
+// Emoji und Größe kommen aus config.js (z. B. koboldEmoji, katzeSize).
+function actorEmoji(name) { return GAME_CONFIG[`${name}Emoji`]; }
+function actorSize(name) { return GAME_CONFIG[`${name}Size`]; }
+
+// Baut die Physik-Körper der Figuren und setzt sie in die Welt.
 function createActors() {
-  // Kobold auf der linken Seite (Physik-Bumper)
-  koboldBody = Bodies.circle(46, height * 0.55, 34, {
-    isStatic: true,
-    label: 'kobold',
-    collisionFilter: { category: 4 },
-    restitution: 1.05 // Bounct Items extra stark weg!
-  });
-
-  // Maispflanze auf der rechten Seite (Physik-Bumper)
-  cornBody = Bodies.circle(width - 46, height * 0.55, 34, {
-    isStatic: true,
-    label: 'corn',
-    collisionFilter: { category: 8 },
-    restitution: 1.05 // Bounct Items extra stark weg!
-  });
-
-  Composite.add(engine.world, [koboldBody, cornBody]);
+  for (const name in actors) {
+    const actor = actors[name];
+    const { x, y } = actor.start();
+    actor.body = Bodies.circle(x, y, 34, {
+      isStatic: true,
+      label: name,
+      collisionFilter: { category: actor.category },
+      restitution: 1.05 // Bounct Items extra stark weg!
+    });
+    Composite.add(engine.world, actor.body);
+  }
 }
 
 // Physikkörper, sichtbare Figur und Trefferfläche bleiben an derselben Position.
-function moveActor(actor, x, y) {
-  const body = actor === 'kobold' ? koboldBody : actor === 'corn' ? cornBody : null;
-  if (!body) return;
+function moveActor(name, x, y) {
+  const actor = actors[name];
+  if (!actor || !actor.body) return;
   const marginX = Math.min(46, width / 2);
   const marginY = Math.min(65, height / 2);
   const position = {
     x: Math.max(marginX, Math.min(width - marginX, x)),
     y: Math.max(marginY, Math.min(height - marginY, y))
   };
-  Body.setPosition(body, position);
-  const button = document.getElementById(`${actor}Btn`);
+  Body.setPosition(actor.body, position);
+  const button = document.getElementById(`${name}Btn`);
   button.style.left = `${position.x}px`;
   button.style.top = `${position.y}px`;
 }
 
-// Jede Figur hat ihren eigenen Pointer: auch zwei Finger gleichzeitig gehen.
-for (const actor of ['kobold', 'corn']) {
-  const button = document.getElementById(`${actor}Btn`);
+// Alle Figuren zurück an ihren Startplatz.
+function resetActors() {
+  for (const name in actors) {
+    const { x, y } = actors[name].start();
+    moveActor(name, x, y);
+    actors[name].wiggle = 0;
+  }
+}
+
+// Jede Figur hat ihren eigenen Pointer: auch mehrere Finger gleichzeitig gehen.
+for (const name in actors) {
+  const button = document.getElementById(`${name}Btn`);
   let drag = null;
   let suppressClick = false;
   button.addEventListener('pointerdown', (event) => {
     if (!isPlaying || drag || event.button !== 0) return;
     initAudio();
-    const body = actor === 'kobold' ? koboldBody : cornBody;
+    const body = actors[name].body;
     drag = {
       id: event.pointerId, startX: event.clientX, startY: event.clientY,
       x: body.position.x, y: body.position.y, moved: false
@@ -68,7 +92,7 @@ for (const actor of ['kobold', 'corn']) {
     if (Math.hypot(dx, dy) >= GAME_CONFIG.dragThreshold) drag.moved = true;
     if (drag.moved) {
       suppressClick = true;
-      moveActor(actor, drag.x + dx, drag.y + dy);
+      moveActor(name, drag.x + dx, drag.y + dy);
     }
   });
   function finishDrag(event) {
@@ -83,41 +107,27 @@ for (const actor of ['kobold', 'corn']) {
   button.addEventListener('click', (event) => {
     if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
     initAudio();
-    shootBomb(actor);
+    shootBomb(name);
   });
 }
 
-// Malt beide Figuren. Nach einem Wurf oder Treffer wackeln sie kurz (Wiggle).
+// Malt alle Figuren. Nach einem Wurf oder Treffer wackeln sie kurz (Wiggle).
 function drawActors(now) {
-  // 🧌 Kobold auf der linken Seite zeichnen
-  ctx.save();
-  const kY = koboldBody.position.y;
-  ctx.translate(koboldBody.position.x, kY);
-  ctx.rotate(Math.sin(now / 420) * 0.06 + (koboldWiggle * 0.25));
-  ctx.font = `${GAME_CONFIG.koboldSize}px -apple-system, sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(GAME_CONFIG.koboldEmoji, 0, 0);
-  ctx.font = 'bold 10px -apple-system, sans-serif';
-  ctx.fillStyle = '#6ee7b7';
-  ctx.fillText('KOBOLD', 0, 42);
-  ctx.restore();
+  for (const name in actors) {
+    const actor = actors[name];
+    ctx.save();
+    ctx.translate(actor.body.position.x, actor.body.position.y);
+    ctx.rotate(Math.sin(now / actor.sway) * 0.07 + (actor.wiggle * 0.25));
+    ctx.font = `${actorSize(name)}px -apple-system, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(actorEmoji(name), 0, 0);
+    ctx.font = 'bold 10px -apple-system, sans-serif';
+    ctx.fillStyle = actor.color;
+    ctx.fillText(actor.name, 0, 42);
+    ctx.restore();
 
-  // 🌽 Maispflanze auf der rechten Seite zeichnen
-  ctx.save();
-  const cY = cornBody.position.y;
-  ctx.translate(cornBody.position.x, cY);
-  ctx.rotate(Math.sin(now / 480) * 0.08 + (cornWiggle * 0.25));
-  ctx.font = `${GAME_CONFIG.cornSize}px -apple-system, sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(GAME_CONFIG.cornEmoji, 0, 0);
-  ctx.font = 'bold 10px -apple-system, sans-serif';
-  ctx.fillStyle = '#fef08a';
-  ctx.fillText('MAIS', 0, 42);
-  ctx.restore();
-
-  // Wiggle-Dämpfung
-  koboldWiggle *= 0.88;
-  cornWiggle *= 0.88;
+    // Wiggle-Dämpfung
+    actor.wiggle *= 0.88;
+  }
 }

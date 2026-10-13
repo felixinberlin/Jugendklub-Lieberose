@@ -10,7 +10,7 @@
  *   audio.js     🔊 Töne
  *   forest.js    🌲 Hintergrund
  *   particles.js ✨ Funken
- *   actors.js    🧌🌽 Kobold und Mais
+ *   actors.js    🧌🌽🐱 Kobold, Mais und Katze
  *   bombs.js     💣 Bomben
  *   physics.js   🧪 Physik-Welt und Zusammenstöße
  */
@@ -24,10 +24,7 @@ function startGame() {
 
   clearAllBodies();
   particles = [];
-  moveActor('kobold', 46, height * 0.55);
-  moveActor('corn', width - 46, height * 0.55);
-  koboldWiggle = 0;
-  cornWiggle = 0;
+  resetActors();
 
   startScreen.classList.remove('active');
   gameOverScreen.classList.remove('active');

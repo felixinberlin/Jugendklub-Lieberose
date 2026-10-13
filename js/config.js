@@ -11,6 +11,8 @@ const GAME_CONFIG = {
   koboldSize: 70,
   cornEmoji: '🌽',
   cornSize: 74,
+  katzeEmoji: '🐱',
+  katzeSize: 70,
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!

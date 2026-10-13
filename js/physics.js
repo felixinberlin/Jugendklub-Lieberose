@@ -36,8 +36,7 @@ function initPhysics() {
       if (!bomb || bomb.exploded) continue;
       const other = bomb === bodyA ? bodyB : bodyA;
       if (other.label === bomb.customData.target) {
-        if (other === koboldBody) koboldWiggle = 1;
-        else cornWiggle = 1;
+        actors[other.label].wiggle = 1;
         score++;
         scoreEl.textContent = score;
         explodeBomb(bomb);
@@ -58,9 +57,9 @@ function resizeCanvas() {
   canvas.height = height * dpr;
   ctx.scale(dpr, dpr);
 
-  for (const actor of ['kobold', 'corn']) {
-    const body = actor === 'kobold' ? koboldBody : cornBody;
-    if (body) moveActor(actor, body.position.x * width / oldWidth, body.position.y * height / oldHeight);
+  for (const name in actors) {
+    const body = actors[name].body;
+    if (body) moveActor(name, body.position.x * width / oldWidth, body.position.y * height / oldHeight);
   }
   if (leftWall && rightWall) {
     Body.setPosition(leftWall, { x: -30, y: height / 2 });

@@ -14,7 +14,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
-| 🧌🌽 [`actors.js`](actors.js) | Die Figuren **Kobold** und **Mais** | ⭐⭐⭐ |
+| 🧌🌽🐱 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais** und **Katze** | ⭐⭐⭐ |
 | 🌲 [`forest.js`](forest.js) | Der **Zauberwald** im Hintergrund | ⭐⭐⭐ |
 | 🧪 [`physics.js`](physics.js) | Die **Physik-Welt**: Wände und Zusammenstöße | ⭐⭐⭐ |
 | 🧠 [`state.js`](state.js) | Das **Gedächtnis**: Punkte, Spielfeldgröße, … | ⭐ (kurz, aber wichtig) |
@@ -29,7 +29,7 @@ Ein Pfeil bedeutet: *„Diese Datei ruft eine Funktion aus der anderen Datei auf
 flowchart TD
     game["🎮 game.js<br/>Start + Spielschleife"]
     physics["🧪 physics.js<br/>Physik-Welt + Zusammenstöße"]
-    actors["🧌🌽 actors.js<br/>Kobold + Mais"]
+    actors["🧌🌽🐱 actors.js<br/>Kobold + Mais + Katze"]
     bombs["💣 bombs.js<br/>Bomben"]
     forest["🌲 forest.js<br/>Zauberwald"]
     particles["✨ particles.js<br/>Funken"]
@@ -69,7 +69,7 @@ Das passiert in `gameLoop()` in [`game.js`](game.js) – immer wieder, in dieser
 
 ```
 1. 🌲 Hintergrund malen        → drawForest()     (forest.js)
-2. 🧌 Kobold und Mais malen    → drawActors()     (actors.js)
+2. 🧌 Figuren malen           → drawActors()     (actors.js)
 3. 🧪 Physik weiterrechnen     → Engine.update()  (Matter.js)
 4. 💣 Bomben malen             → updateBombs()    (bombs.js)
 5. ✨ Funken malen             → drawParticles()  (particles.js)
@@ -89,6 +89,8 @@ Die Reihenfolge ist wie beim Malen mit Deckfarben: Was **zuletzt** gemalt wird, 
 5. [`physics.js`](physics.js) bemerkt den Zusammenstoß: *„Bombe trifft Mais!"* → **+1 Treffer**.
 6. [`bombs.js`](bombs.js) lässt die Bombe explodieren, [`particles.js`](particles.js) streut die Funken, [`audio.js`](audio.js) macht **BUMM**.
 
+Geworfen wird immer im Kreis: **Kobold → Mais → Katze → Kobold**. Wer auf wen wirft, steht bei `target` in der Liste `actors` in [`actors.js`](actors.js).
+
 Sechs Dateien arbeiten zusammen – wie eine Mannschaft, in der jeder seine Position hat.
 
 Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`actors.js`](actors.js) sie an die neue Stelle. So kannst du Bomben ausweichen.
@@ -105,6 +107,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 |---|---|
 | `koboldEmoji: '🧌'` → `'🐉'` | Der Kobold wird ein Drache |
 | `cornEmoji: '🌽'` → `'🥒'` | Aus Mais wird eine Spreewald-Gurke |
+| `katzeEmoji: '🐱'` → `'🦁'` | Aus der Katze wird ein Löwe |
 | `bombEmoji: '💣'` → `'🍕'` | Pizza-Schlacht! |
 | `gravityY: 0.9` → `0.2` | Schwerkraft wie auf dem Mond – Bomben fliegen in hohem Bogen |
 | `gravityY: 0.9` → `2.5` | Riesen-Schwerkraft – Bomben sausen flach und schnell |

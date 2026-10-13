@@ -212,9 +212,9 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom`; Ton-Schalter |
 | `js/forest.js` | `forestData`, `initForest()`, `drawPineTree()`, `drawDeciduousTree()`, `drawForest(now)` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
-| `js/actors.js` | `koboldBody`, `cornBody`, `koboldWiggle`, `cornWiggle`, `createActors()`, `moveActor(actor, x, y)`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
+| `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
-| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `characterBomb`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
+| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
 | `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawActors` → `Engine.update` → `updateBombs` → `drawParticles`), Initialisierung |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
@@ -227,7 +227,7 @@ Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./
 - **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.
 - **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (`js/actors.js`). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
 - **Figur wirft/schießt etwas:** existiert schon als `throwBomb()` – kopieren und anpassen. Prinzip: Funktion nach Vorbild `spawnPhysicsItem()` – `Bodies.circle` an der Position von `cornBody`/`koboldBody`, `Body.setVelocity`, eigenes `label` (z. B. `'playerBomb'`), in `fallingBodies` pushen (damit es off-screen entfernt wird). Treffer im `collisionStart`-Handler per Label prüfen; `Composite.remove` + `spawnParticles` + `playSound`. Die Figur danach `…Wiggle = 1` setzen.
-- **Neue Figur am Rand:** Body wie `cornBody` (static, hohe `restitution`), Position in `resizeCanvas()` mitführen, Zeichnen im `gameLoop`, Wiggle-Variable wie `cornWiggle`.
+- **Neue Figur:** Eintrag in `actors` (`js/actors.js`, neue `category` = nächste Zweierpotenz, `target`, `start()`), `<name>Emoji`/`<name>Size` in `GAME_CONFIG`, `<button id="<name>Btn" class="actor-btn">` in `index.html` + Startposition in `style.css`. Rest (Physik, Ziehen, Werfen, Zeichnen, Resize) läuft automatisch.
 - **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir`, `spawnRateMs` in `GAME_CONFIG`.
 - **Neuer Text / Button:** nur Deutsch, in `index.html`; Tap-Fläche ≥ 44×44 px.
 
