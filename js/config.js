@@ -11,8 +11,13 @@ const GAME_CONFIG = {
   koboldSize: 70,
   cornEmoji: '🌽',
   cornSize: 74,
+  cornBomb: '🟡',        // 🌽 Der Mais schießt kleine Maiskörner
+  cornBombSize: 18,
+  koboldBomb: '💰',      // 🧌 Der Kobold wirft einen Goldsack …
+  koboldTrail: '🪙',     // … aus dem Goldmünzen purzeln
   katzeEmoji: '🐱',
   katzeSize: 70,
+  katzeBomb: '🐟',       // 🐱 Die Katze wirft Fische
   mausEmoji: '🐭',
   mausSize: 58,
   mausBomb: '🧀', // Die Maus wirft Käse!
@@ -35,7 +40,8 @@ const GAME_CONFIG = {
   // Die angeklickte Figur wirft, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
-  // Eigene Wurfsachen pro Figur? z. B. katzeBomb: '🐟', cornBomb: '🍿', koboldBomb: '🪨'
+  // Eigene Wurfsachen pro Figur: <name>Bomb (Emoji), <name>BombSize (Größe),
+  // <name>Trail (Emoji, das beim Fliegen herausfällt, z. B. koboldTrail: '🪙')
   // 🏅 Fünf Level, jedes schwerer (nur wenn man eine eigene Figur spielt)
   // throwMs = so oft wirft eine Computer-Figur (kleiner = frecher)
   // huntPlayer = wie oft sie auf DICH zielt statt auf ihr normales Ziel (0 = nie, 1 = immer)

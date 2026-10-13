@@ -123,6 +123,8 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `cornEmoji: '🌽'` → `'🥒'` | Aus Mais wird eine Spreewald-Gurke |
 | `katzeEmoji: '🐱'` → `'🦁'` | Aus der Katze wird ein Löwe |
 | `mausBomb: '🧀'` → `'🍕'` | Die Maus wirft Pizza statt Käse |
+| `koboldTrail: '🪙'` → `'💎'` | Aus dem Goldsack fallen Diamanten |
+| `katzeBomb: '🐟'` → `'🐠'` | Die Katze wirft bunte Fische |
 | `goblinBomb: '🔥'` → `'❄️'` | Der Goblin wirft Schneebälle statt Feuer |
 | `musialaBomb: '⚽'` → `'🏀'` | Musiala wechselt zum Basketball |
 | `musialaShirt` → `color: '#dc2626'` | Rotes Trikot statt weißem |

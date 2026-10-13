@@ -77,7 +77,7 @@ If a user request would violate any of these, stop and clarify first:
 Lives alone in `js/config.js`. Designed for instant modifications when kids shout ideas on stage:
 Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `koboldEmoji` / `cornEmoji` / `katzeEmoji` / `mausEmoji` / `goblinEmoji` / `musialaEmoji` + `…Size` – Aussehen der Figuren (`<name>Emoji`, `<name>Size`)
-- `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
+- `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` / `<name>BombSize` / `<name>Trail` geben einer Figur ein eigenes Wurfgeschoss (Kobold 💰 mit 🪙-Spur, Mais 🟡 Maiskörner, Katze 🐟, Maus 🧀, Goblin 🔥, Musiala ⚽)
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
 - `rain` (true = alle Wolken regnen immer; sonst nur angetippte), `rainSeconds`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `<name>Shirt` (z. B. `musialaShirt: { color, number, stripe, shorts, head, sixSeven }`) – Figur wird als Fußballer im Trikot gemalt statt als Emoji; `<name>Runs` / `<name>RunSpeed` – sie dribbelt von allein hin und her
@@ -217,7 +217,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
 | `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `rain`, `night`, `day`, `sixseven`, `bigball`, `minis`, `jump`, `whirl`, `ready`, `popcorn`, `spear`, `boom`; Ton-Schalter |
 | `js/forest.js` | `FOREST_COLORS` (night/day), `skyLightPos()`, `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
-| `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
+| `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `spawnEmojiParticle(x, y, emoji, size)` (fällt mit Schwerkraft, z. B. 🪙), `drawParticles()` |
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
 | `js/footballer.js` | `updateFootballers()` (Figuren mit `<name>Runs` dribbeln hin und her, außer `actor.dragging`), `drawFootballer(shirt, size, now, dir, kick)` – malt Kopf, Trikot (Farbe, Nummer, Schwarz-Rot-Gold-Streifen), Hose, rennende Beine, schwingende Arme, hochgehaltenen Ball, Schuss-Bein (`kick` = `wiggle`), `isSixSeven(actor)` – nach Treffer (`sixSevenUntil`, gesetzt in `physics.js`, nur wenn Shirt `sixSeven: true`) 6-7-Handgeste + „6 7!“ über dem Kopf, steht dabei still. `drawActors` nimmt es statt des Emojis, wenn `GAME_CONFIG.<name>Shirt` existiert |
 | `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`: „DU GEWINNST“ / „Du bist raus“ / „X gewinnt“, Highscore; eigene Figur raus = sofort Ende), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
@@ -236,7 +236,7 @@ Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./
 
 **Vorbild für alles Neue:** die Bombe (`shootBomb` / `explodeBomb` in `js/bombs.js`) und die Figuren-Liste `actors` (`js/actors.js`). Neues Spielkonzept = neue Datei in `js/` + `<script>` vor `js/game.js`. Es gibt (noch) keine fallenden Items. Game Over gibt es: wer `maxHits` Treffer hat, ist raus; die letzte Figur gewinnt (`js/knockout.js`). Neue Wurf-Funktionen IMMER `targetOf(name)` statt `actors[name].target` benutzen und `isAlive()` prüfen.
 
-- **Andere Wurfsachen:** `bombEmoji` (alle) oder `<name>Bomb` (eine Figur, z. B. `katzeBomb: '🐟'`) in `GAME_CONFIG`. Kein weiterer Code nötig.
+- **Andere Wurfsachen:** `bombEmoji` (alle) oder `<name>Bomb` (eine Figur, z. B. `katzeBomb: '🐟'`), dazu `<name>BombSize` und `<name>Trail` (fällt beim Fliegen heraus) in `GAME_CONFIG`. Kein weiterer Code nötig.
 - **Anderes Ziel:** `target` der Figur in `actors` (`js/actors.js`) ändern.
 - **Fallende Items / Gefahren vom Himmel:** gibt es nicht mehr. Neue Datei `js/items.js` nach Vorbild `shootBomb()` (Body in `fallingBodies` pushen, eigenes `customData`, Treffer im `collisionStart`-Handler VOR dem `continue` für Nicht-Bomben prüfen).
 - **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.

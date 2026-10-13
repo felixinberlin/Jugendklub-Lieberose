@@ -23,6 +23,20 @@ function spawnParticles(x, y, color = '#ffde59', count = 14) {
   }
 }
 
+// Ein Emoji-Partikel (z. B. 🪙): hüpft kurz hoch, fällt runter und verblasst.
+function spawnEmojiParticle(x, y, emoji, size = 14) {
+  particles.push({
+    x, y,
+    vx: (Math.random() - 0.5) * 3,
+    vy: -1 - Math.random() * 2.5,
+    gravity: 0.18,
+    life: 1.0,
+    decay: 0.018,
+    size,
+    emoji
+  });
+}
+
 // Bewegt alle Partikel ein Stück weiter und malt sie.
 function drawParticles() {
   for (let i = particles.length - 1; i >= 0; i--) {
@@ -33,6 +47,16 @@ function drawParticles() {
 
     if (p.life <= 0) {
       particles.splice(i, 1);
+      continue;
+    }
+
+    if (p.emoji) {
+      p.vy += p.gravity; // Emoji-Partikel fallen nach unten
+      ctx.globalAlpha = p.life;
+      ctx.font = `${p.size}px -apple-system, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(p.emoji, p.x, p.y);
       continue;
     }
 

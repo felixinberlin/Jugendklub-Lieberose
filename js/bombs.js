@@ -33,7 +33,8 @@ function shootBomb(actor, forcedTarget) {
   if (!targetName) return;
   launchArc(actor, targetName, {
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
-    size: GAME_CONFIG.bombSize
+    size: actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize,
+    trail: actorCfg(actor, 'Trail') // z. B. 🪙 Goldmünzen aus dem Goldsack
   });
   actors[actor].wiggle = 1;
   playSound('throw');
@@ -65,6 +66,7 @@ function launchArc(actor, targetName, opts) {
       size: opts.size,
       damage: opts.damage || 1,
       special: Boolean(opts.special),
+      trail: opts.trail,
       isPlayerBomb: true,
       shooter: actor,
       target: targetName,
@@ -126,6 +128,9 @@ function updateBombs(now) {
 
     // 🔥 Feuerspeer wird extra gemalt (specials.js)
     if (data.spear) { drawSpear(b, now); continue; }
+
+    // 🪙 Spur: Beim Fliegen purzelt etwas heraus (z. B. Goldmünzen)
+    if (data.trail && Math.random() < 0.3) spawnEmojiParticle(pos.x, pos.y, data.trail);
 
     // Mit Drehung zeichnen
     ctx.save();
