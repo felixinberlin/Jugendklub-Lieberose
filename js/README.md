@@ -15,7 +15,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
-| 🧌🌽🐱🐭 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais**, **Katze** und **Maus** | ⭐⭐⭐ |
+| 🧌🌽🐱🐭👺 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais**, **Katze**, **Maus** und **Goblin** | ⭐⭐⭐ |
 | 🌲 [`forest.js`](forest.js) | Der **Zauberwald** im Hintergrund | ⭐⭐⭐ |
 | 🧪 [`physics.js`](physics.js) | Die **Physik-Welt**: Wände und Zusammenstöße | ⭐⭐⭐ |
 | 🧠 [`state.js`](state.js) | Das **Gedächtnis**: Punkte, Spielfeldgröße, … | ⭐ (kurz, aber wichtig) |
@@ -30,7 +30,7 @@ Ein Pfeil bedeutet: *„Diese Datei ruft eine Funktion aus der anderen Datei auf
 flowchart TD
     game["🎮 game.js<br/>Start + Spielschleife"]
     physics["🧪 physics.js<br/>Physik-Welt + Zusammenstöße"]
-    actors["🧌🌽🐱🐭 actors.js<br/>Kobold + Mais + Katze + Maus"]
+    actors["🧌🌽🐱🐭👺 actors.js<br/>Kobold, Mais, Katze, Maus, Goblin"]
     bombs["💣 bombs.js<br/>Bomben"]
     forest["🌲 forest.js<br/>Zauberwald"]
     particles["✨ particles.js<br/>Funken"]
@@ -95,7 +95,7 @@ Die Reihenfolge ist wie beim Malen mit Deckfarben: Was **zuletzt** gemalt wird, 
 5. [`physics.js`](physics.js) bemerkt den Zusammenstoß: *„Bombe trifft Mais!"* → **+1 Treffer**.
 6. [`bombs.js`](bombs.js) lässt die Bombe explodieren, [`particles.js`](particles.js) streut die Funken, [`audio.js`](audio.js) macht **BUMM**.
 
-Geworfen wird immer im Kreis: **Kobold → Mais → Katze → Maus → Kobold**. Wer auf wen wirft, steht bei `target` in der Liste `actors` in [`actors.js`](actors.js).
+Geworfen wird immer im Kreis: **Kobold → Mais → Katze → Maus → Goblin → Kobold**. Wer auf wen wirft, steht bei `target` in der Liste `actors` in [`actors.js`](actors.js).
 
 Sechs Dateien arbeiten zusammen – wie eine Mannschaft, in der jeder seine Position hat.
 
@@ -117,6 +117,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `cornEmoji: '🌽'` → `'🥒'` | Aus Mais wird eine Spreewald-Gurke |
 | `katzeEmoji: '🐱'` → `'🦁'` | Aus der Katze wird ein Löwe |
 | `mausBomb: '🧀'` → `'🍕'` | Die Maus wirft Pizza statt Käse |
+| `goblinBomb: '🔥'` → `'❄️'` | Der Goblin wirft Schneebälle statt Feuer |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
 | `rain: false` → `true` | Alle Wolken regnen immer 🌧️ |
 | `rainSeconds: 8` → `30` | Eine angetippte Wolke regnet lange |

@@ -16,6 +16,9 @@ const GAME_CONFIG = {
   mausEmoji: '🐭',
   mausSize: 58,
   mausBomb: '🧀', // Die Maus wirft Käse!
+  goblinEmoji: '👺',
+  goblinSize: 66,
+  goblinBomb: '🔥', // Der Goblin wirft Feuer!
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!

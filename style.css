@@ -225,6 +225,7 @@ h2 {
 #cornBtn { left: calc(100% - 46px); }
 #katzeBtn { left: 50%; top: 30%; }
 #mausBtn { left: 50%; top: 72%; }
+#goblinBtn { left: 25%; top: 32%; }
 .actor-btn:focus-visible { outline: 3px solid #ffde59; }
 .actor-btn:active { cursor: grabbing; background: rgba(255, 222, 89, 0.15); }
 .instructions { font-size: 16px; line-height: 1.6; }
