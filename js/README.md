@@ -122,6 +122,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `musialaBomb: '⚽'` → `'🏀'` | Musiala wechselt zum Basketball |
 | `musialaShirt` → `color: '#dc2626'` | Rotes Trikot statt weißem |
 | `musialaShirt` → `number: '42'` | Andere Rückennummer |
+| `musialaShirt` → `sixSeven: false` | Kein 6-7-Jubel mehr nach Treffern 🤲 |
 | `musialaRunSpeed: 1.5` → `4` | Turbo-Sprint! 🏃💨 |
 | `musialaRuns: true` → `false` | Musiala bleibt stehen |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |

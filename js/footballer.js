@@ -8,6 +8,7 @@
  * Jede Figur kann ein Trikot bekommen: in config.js `<name>Shirt` eintragen,
  * z. B. musialaShirt: { color: '#ffffff', number: '10', stripe: true }
  * Mit `<name>Runs: true` rennt sie von allein hin und her.
+ * Mit `sixSeven: true` im Shirt macht sie nach jedem Treffer die 6-7-Geste 🤲.
  */
 
 // 🏃 Lässt alle Trikot-Figuren mit `<name>Runs` hin und her dribbeln.
@@ -17,6 +18,7 @@ function updateFootballers() {
     const actor = actors[name];
     if (!GAME_CONFIG[`${name}Shirt`] || !GAME_CONFIG[`${name}Runs`]) continue;
     if (actor.dragging) continue; // Wer gerade gezogen wird, rennt nicht weg
+    if (isSixSeven(actor)) continue; // Beim Jubeln bleibt er stehen
     if (!actor.runDir) actor.runDir = 1;
 
     const speed = GAME_CONFIG[`${name}RunSpeed`] || 1.5;
@@ -29,9 +31,14 @@ function updateFootballers() {
   }
 }
 
+// 🤲 Jubelt die Figur gerade mit der 6-7-Geste? (startet in physics.js nach einem Treffer)
+function isSixSeven(actor) {
+  return actor.sixSevenUntil > performance.now();
+}
+
 // Malt den Fußballer um den Punkt (0, 0). `size` ist die ungefähre Gesamthöhe.
 // `dir` = Blickrichtung (1 = rechts, -1 = links), `kick` = 0..1 beim Schießen.
-function drawFootballer(shirt, size, now, dir = 1, kick = 0) {
+function drawFootballer(shirt, size, now, dir = 1, kick = 0, sixSeven = false) {
   const s = size / 64; // Alles ist für Größe 64 gebaut und wird mitskaliert
   const run = Math.sin(now / 90); // Beine und Arme laufen hin und her
   const bob = Math.abs(Math.sin(now / 90)) * -2; // Beim Rennen hüpft der Körper
@@ -74,13 +81,33 @@ function drawFootballer(shirt, size, now, dir = 1, kick = 0) {
   }
 
   // 💪 Arme schwingen gegenläufig zu den Beinen
-  ctx.strokeStyle = '#f5c99b';
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  ctx.moveTo(-18, 0); ctx.lineTo(-20 + run * 5, 10);
-  ctx.moveTo(18, 0); ctx.lineTo(20 - run * 5, 10);
-  ctx.stroke();
+  if (!sixSeven) {
+    ctx.strokeStyle = '#f5c99b';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(-18, 0); ctx.lineTo(-20 + run * 5, 10);
+    ctx.moveTo(18, 0); ctx.lineTo(20 - run * 5, 10);
+    ctx.stroke();
+  }
   ctx.restore();
+
+  // 🤲 6-7-Geste: Hände nach vorn, Handflächen hoch, abwechselnd rauf und runter
+  if (sixSeven) {
+    const wave = Math.sin(now / 70) * 7;
+    ctx.strokeStyle = '#f5c99b';
+    ctx.fillStyle = '#f5c99b';
+    ctx.lineWidth = 4;
+    for (const side of [-1, 1]) {
+      const handY = 2 + wave * side;
+      ctx.beginPath();
+      ctx.moveTo(side * 18, 0);
+      ctx.lineTo(side * 27, handY);
+      ctx.stroke();
+      ctx.beginPath(); // Offene Handfläche
+      ctx.ellipse(side * 29, handY - 1, 5, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
 
   // 🩳 Hose
   ctx.fillStyle = shirt.shorts || '#111827';
@@ -127,6 +154,19 @@ function drawFootballer(shirt, size, now, dir = 1, kick = 0) {
   ctx.font = '24px -apple-system, sans-serif';
   ctx.fillText(shirt.head || '😃', 0, 0);
   ctx.restore();
+
+  // 💬 „6 7!“ über dem Kopf – die Zahlen hüpfen abwechselnd
+  if (sixSeven) {
+    const wave = Math.sin(now / 70);
+    ctx.font = '900 18px -apple-system, sans-serif';
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#111827';
+    ctx.fillStyle = '#facc15';
+    ctx.strokeText('6', -11, -46 - wave * 5);
+    ctx.fillText('6', -11, -46 - wave * 5);
+    ctx.strokeText('7', 11, -46 + wave * 5);
+    ctx.fillText('7', 11, -46 + wave * 5);
+  }
 
   ctx.restore();
 }

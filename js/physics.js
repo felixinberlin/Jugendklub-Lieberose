@@ -39,7 +39,14 @@ function initPhysics() {
         actors[other.label].wiggle = 1;
         actors[other.label].hitsTaken++;
         if (bomb.customData.shooter && actors[bomb.customData.shooter]) {
-          actors[bomb.customData.shooter].hitsGiven++;
+          const shooter = actors[bomb.customData.shooter];
+          shooter.hitsGiven++;
+          // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
+          const shirt = GAME_CONFIG[`${bomb.customData.shooter}Shirt`];
+          if (shirt && shirt.sixSeven) {
+            shooter.sixSevenUntil = performance.now() + 1600;
+            playSound('sixseven');
+          }
         }
         score++;
         scoreEl.textContent = score;

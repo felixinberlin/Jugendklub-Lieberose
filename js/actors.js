@@ -141,7 +141,7 @@ function drawActors(now) {
     ctx.textBaseline = 'middle';
     const shirt = GAME_CONFIG[`${name}Shirt`];
     if (shirt) {
-      drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle); // ⚽ Figur im Trikot (footballer.js)
+      drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ Figur im Trikot (footballer.js)
     } else {
       ctx.font = `${actorSize(name)}px -apple-system, sans-serif`;
       ctx.fillText(actorEmoji(name), 0, 0);

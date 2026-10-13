@@ -59,6 +59,9 @@ function playSound(type) {
   } else if (type === 'day') {
     playTone(330, 'triangle', 0.15, 0.15);
     setTimeout(() => playTone(660, 'triangle', 0.2, 0.15), 100);
+  } else if (type === 'sixseven') {
+    playTone(600, 'square', 0.12, 0.15);  // „Six…“
+    setTimeout(() => playTone(700, 'square', 0.16, 0.15), 160); // „…seven!“
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);
