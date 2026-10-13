@@ -5,7 +5,17 @@
 // Alle Bomben, die gerade durch die Luft fliegen.
 let fallingBodies = [];
 
+// Alle Figuren-Kategorien außer `actor` (für den collisionFilter der Bombe).
+function everyoneExcept(actor) {
+  let mask = 0;
+  for (const name in actors) {
+    if (name !== actor) mask |= actors[name].category;
+  }
+  return mask;
+}
+
 // Eine angeklickte Figur wirft eine Bombe zu ihrem Ziel (siehe `target` in actors.js).
+// Unterwegs trifft die Bombe aber jede Figur, die im Weg steht!
 function shootBomb(actor) {
   if (!isPlaying || document.hidden) return;
   if (!isAlive(actor)) return;
@@ -26,7 +36,8 @@ function shootBomb(actor) {
     restitution: 0,
     frictionAir: 0,
     label: 'characterBomb',
-    collisionFilter: { category: 2, mask: 1 | target.collisionFilter.category },
+    // Trifft JEDE Figur im Weg – nur nicht die, die geworfen hat
+    collisionFilter: { category: 2, mask: 1 | everyoneExcept(actor) },
     customData: {
       emoji: GAME_CONFIG[`${actor}Bomb`] || GAME_CONFIG.bombEmoji,
       size: GAME_CONFIG.bombSize,

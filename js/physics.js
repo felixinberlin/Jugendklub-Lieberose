@@ -35,7 +35,8 @@ function initPhysics() {
         : bodyB.customData?.isPlayerBomb ? bodyB : null;
       if (!bomb || bomb.exploded) continue;
       const other = bomb === bodyA ? bodyB : bodyA;
-      if (other.label === bomb.customData.target) {
+      // Getroffen wird jede lebende Figur – nicht nur das Ziel (nur der Werfer nicht)
+      if (isAlive(other.label) && other.label !== bomb.customData.shooter) {
         actors[other.label].wiggle = 1;
         actors[other.label].hitsTaken++;
         if (bomb.customData.shooter && actors[bomb.customData.shooter]) {

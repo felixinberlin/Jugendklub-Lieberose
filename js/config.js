@@ -36,7 +36,7 @@ const GAME_CONFIG = {
   bombEmoji: '💣',
   bombSize: 36,
   // Eigene Wurfsachen pro Figur? z. B. katzeBomb: '🐟', cornBomb: '🍿', koboldBomb: '🪨'
-  maxHits: 100, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
+  maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)
