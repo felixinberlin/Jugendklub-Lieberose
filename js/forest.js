@@ -228,7 +228,8 @@ function drawDaySky(now) {
   ctx.fillText(GAME_CONFIG.sunEmoji || '☀️', 0, 0);
   ctx.restore();
 
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+  // Regenwolken sind grau, sonst weiß
+  ctx.fillStyle = GAME_CONFIG.rain ? 'rgba(203, 213, 225, 0.95)' : 'rgba(255, 255, 255, 0.9)';
   for (const c of forestData.clouds) {
     c.x += c.speed;
     if (c.x > width + 80) c.x = -80;

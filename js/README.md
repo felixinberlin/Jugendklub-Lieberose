@@ -12,6 +12,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | ⚙️ [`config.js`](config.js) | Die **Stellschrauben**: Emojis, Größen, Schwerkraft | ⭐ Fang hier an! |
 | 🔊 [`audio.js`](audio.js) | Alle **Töne** – ohne eine einzige Sounddatei | ⭐⭐ |
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
+| 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken – und unten **wachsen Bäume** | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
 | 🧌🌽🐱 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais** und **Katze** | ⭐⭐⭐ |
@@ -33,10 +34,12 @@ flowchart TD
     bombs["💣 bombs.js<br/>Bomben"]
     forest["🌲 forest.js<br/>Zauberwald"]
     particles["✨ particles.js<br/>Funken"]
+    weather["🌧️ weather.js<br/>Regen + Bäume"]
     audio["🔊 audio.js<br/>Töne"]
 
     game -->|"baut die Welt"| physics
     game -->|"malt den Wald"| forest
+    game -->|"lässt es regnen"| weather
     game -->|"malt die Figuren"| actors
     game -->|"malt die Bomben"| bombs
     game -->|"malt die Funken"| particles
@@ -48,6 +51,8 @@ flowchart TD
     actors -->|"angetippt: wirf!"| bombs
     bombs -->|"Funken streuen"| particles
     bombs -->|"Wurf-Ton + BUMM"| audio
+    weather -->|"Spritzer"| particles
+    weather -->|"Wolken holen"| forest
 
     subgraph alle ["📦 Das benutzen alle"]
         config["⚙️ config.js<br/>Stellschrauben"]
@@ -69,6 +74,7 @@ Das passiert in `gameLoop()` in [`game.js`](game.js) – immer wieder, in dieser
 
 ```
 1. 🌲 Hintergrund malen        → drawForest()     (forest.js)
+   🌧️ Regen & Bäume malen      → drawWeather()    (weather.js)
 2. 🧌 Figuren malen           → drawActors()     (actors.js)
 3. 🧪 Physik weiterrechnen     → Engine.update()  (Matter.js)
 4. 💣 Bomben malen             → updateBombs()    (bombs.js)
@@ -109,6 +115,9 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `cornEmoji: '🌽'` → `'🥒'` | Aus Mais wird eine Spreewald-Gurke |
 | `katzeEmoji: '🐱'` → `'🦁'` | Aus der Katze wird ein Löwe |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
+| `rainAmount: 0.3` → `1` | Wolkenbruch! 🌧️ |
+| `treeChance: 0.02` → `0.2` | Turbo-Wald – überall sprießen Bäume 🌱 |
+| `treeEmojis` → `['🌻', '🌷']` | Statt Bäumen wachsen Blumen |
 | `bombEmoji: '💣'` → `'🍕'` | Pizza-Schlacht! |
 | `gravityY: 0.9` → `0.2` | Schwerkraft wie auf dem Mond – Bomben fliegen in hohem Bogen |
 | `gravityY: 0.9` → `2.5` | Riesen-Schwerkraft – Bomben sausen flach und schnell |

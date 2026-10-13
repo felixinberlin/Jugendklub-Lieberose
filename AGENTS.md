@@ -49,6 +49,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── audio.js      #   🔊 Web Audio Synthesizer
 │   ├── forest.js     #   🌲 Hintergrund (Zauberwald)
 │   ├── particles.js  #   ✨ Partikel
+│   ├── weather.js    #   🌧️ Regen & wachsende Bäume
 │   ├── actors.js     #   🧌🌽🐱 Figuren-Liste `actors`: Bodies, Bewegen, Eingabe, Zeichnen
 │   ├── bombs.js      #   💣 Werfen, Explodieren, Aufräumen
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
@@ -72,6 +73,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `koboldEmoji` / `cornEmoji` / `katzeEmoji` + `…Size` – Aussehen der Figuren (`<name>Emoji`, `<name>Size`)
 - `bombEmoji`, `bombSize` – was geworfen wird; `<name>Bomb` (z. B. `katzeBomb: '🐟'`) gibt einer einzelnen Figur ein eigenes Wurfgeschoss
 - `gravityY`, `restitution`, `frictionAir` – Physik (0.2 = Mond, 2.5 = Riesen-Schwerkraft)
+- `rain`, `rainAmount`, `treeChance`, `treeGrowSeconds`, `treeMaxSize`, `maxGrowingTrees`, `treeEmojis` – Regen & wachsende Bäume
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
 
@@ -198,10 +200,11 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `boom`; Ton-Schalter |
 | `js/forest.js` | `FOREST_COLORS` (night/day), `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
+| `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `spawnRain()`, `landRaindrop()`, `drawWeather(now)` – Regen aus `forestData.clouds`, Tropfen am Boden pflanzt manchmal 🌱→🌿→🌳 (nur bei `dayMode`) |
 | `js/actors.js` | `actors` (Liste: `kobold`, `corn`, `katze` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `shootBomb(actor)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
 | `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `characterBomb`; Treffer → `actors[label].wiggle = 1`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
-| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawActors` → `Engine.update` → `updateBombs` → `drawParticles`), Initialisierung |
+| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateBombs` → `drawParticles`), Initialisierung |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 

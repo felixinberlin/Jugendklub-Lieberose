@@ -29,5 +29,14 @@ const GAME_CONFIG = {
   forestTheme: true,
   dayMode: true,        // true = ☀️ Tag, false = 🌙 Nacht
   moonEmoji: '🌙',
-  sunEmoji: '☀️'
+  sunEmoji: '☀️',
+
+  // 🌧️ Regen & wachsende Bäume (nur bei Tag)
+  rain: true,
+  rainAmount: 0.3,          // 0.05 = Nieselregen, 1 = Wolkenbruch!
+  treeChance: 0.02,         // Wie oft ein Tropfen einen Samen pflanzt (0.2 = Turbo-Wald)
+  treeGrowSeconds: 12,      // So lange braucht ein Samen bis zum großen Baum
+  treeMaxSize: 64,
+  maxGrowingTrees: 14,
+  treeEmojis: ['🌳', '🌲', '🌴', '🍄']
 };

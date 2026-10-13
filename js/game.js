@@ -10,6 +10,7 @@
  *   audio.js     🔊 Töne
  *   forest.js    🌲 Hintergrund
  *   particles.js ✨ Funken
+ *   weather.js   🌧️ Regen und wachsende Bäume
  *   actors.js    🧌🌽🐱 Kobold, Mais und Katze
  *   bombs.js     💣 Bomben
  *   physics.js   🧪 Physik-Welt und Zusammenstöße
@@ -41,8 +42,9 @@ function gameLoop(now) {
   const dt = Math.min((now - lastTime), 100);
   lastTime = now;
 
-  // 1. Hintergrund und Figuren malen
+  // 1. Hintergrund, Regen & Bäume und Figuren malen
   drawForest(now);
+  drawWeather(now);
   drawActors(now);
 
   if (isPlaying) {
