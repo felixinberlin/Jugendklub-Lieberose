@@ -24,6 +24,7 @@ function startGame() {
   scoreEl.textContent = score;
 
   removeClones(); // Alte Gegner-Kopien weg (teams.js)
+  resetSpecials(); // ⚡ Mini-Kobolde weg, Wirbel aus (specials.js)
   clearAllBodies();
   particles = [];
   resetActors();
@@ -54,6 +55,7 @@ function gameLoop(now) {
   drawForest(now);
   drawWeather(now);
   drawActors(now);
+  drawSpecials(now); // 🧌🌪️ Mini-Kobolde & Wirbelwolken (specials.js)
 
   if (isPlaying) {
     // 2. Matter.js Physik-Schritt
@@ -62,6 +64,7 @@ function gameLoop(now) {
     // 3. Fußballer dribbeln lassen, Bomben malen & aufräumen
     updateFootballers();
     updateCpu(now); // 🤖 Computer-Figuren werfen (cpu.js)
+    updateSpecials(now); // ⚡ Riesenball lenken, Minis, Katzensprung (specials.js)
     updateBombs(now);
   }
 

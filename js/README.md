@@ -16,6 +16,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
+| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Figur 2× antippen): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️ | ⭐⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
@@ -133,6 +134,10 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `levels` → `huntPlayer: 0.5` → `1` | In dem Level zielen ALLE nur auf dich 🎯 |
 | `teamLevels` → bei Level 8 `enemies: 10` → `20` | 20 Gegner auf einmal! 😱 |
 | `hitChoices: [5, 10, 20, 50]` → `[1, 100]` | Andere Auswahl auf dem Startbildschirm 💀 |
+| `bigBall` → `damage: 3` → `10` | Musialas Riesenball haut alles um ⚽💥 |
+| `miniKobolds` → `count: 3` → `8` | Eine ganze Mini-Kobold-Armee 🧌🧌🧌 |
+| `catStunSeconds: 4` → `10` | Die Wirbelwolke hält 10 Sekunden 🌪️ |
+| `specialCooldownMs: 8000` → `1000` | Spezialkräfte im Sekundentakt ⚡ |
 | `maxHits: 20` → `5` | Schnelles Spiel – nach 5 Treffern ist eine Figur raus 💀 |
 | `dayMode: true` → `false` | Tag ☀️ wird Nacht 🌙 (Sterne, Mond, Glühwürmchen) |
 | `rain: false` → `true` | Alle Wolken regnen immer 🌧️ |

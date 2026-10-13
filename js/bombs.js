@@ -22,6 +22,7 @@ function everyoneExcept(actor) {
 function shootBomb(actor, forcedTarget) {
   if (!isPlaying || document.hidden) return;
   if (!isAlive(actor)) return;
+  if (isStunned(actor) || actors[actor].jump) return; // 🌪️ Im Wirbel / im Sprung wird nicht geworfen (specials.js)
   // Kleine Pause zwischen zwei Würfen, sonst gewinnt, wer am schnellsten tippt
   const now = performance.now();
   if (now - (actors[actor].lastThrow || 0) < GAME_CONFIG.throwCooldownMs) return;
@@ -31,7 +32,8 @@ function shootBomb(actor, forcedTarget) {
     : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
   const source = actors[actor].body;
-  const target = actors[targetName].body;
+  // 🧌 Hat das Ziel Mini-Kobolde? Dann fliegt die Bombe zum Lockvogel (specials.js)
+  const target = decoyFor(targetName, source.position, 42) || actors[targetName].body; // 42 = Flugzeit in Bildern
   const dx = target.position.x - source.position.x;
   const dy = target.position.y - source.position.y;
   const distance = Math.hypot(dx, dy);
@@ -46,13 +48,13 @@ function shootBomb(actor, forcedTarget) {
     frictionAir: 0,
     label: 'characterBomb',
     // Trifft JEDE Figur im Weg – nur nicht die, die geworfen hat
-    collisionFilter: { category: 2, mask: 1 | everyoneExcept(actor) },
+    collisionFilter: { category: 2, mask: 1 | everyoneExcept(actor) | MINI_BIT }, // + Mini-Kobolde fangen ab
     customData: {
       emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
       size: GAME_CONFIG.bombSize,
       isPlayerBomb: true,
       shooter: actor,
-      target: target.label,
+      target: targetName,
       born: performance.now()
     }
   });
@@ -104,7 +106,7 @@ function updateBombs(now) {
     }
 
     // Bombe nach 4 s ohne Treffer: leise verpuffen
-    if (data.isPlayerBomb && now - data.born > 4000) {
+    if (data.isPlayerBomb && now - data.born > (data.lifeMs || 4000)) {
       spawnParticles(pos.x, pos.y, '#9ca3af', 8);
       Composite.remove(engine.world, b);
       fallingBodies.splice(i, 1);

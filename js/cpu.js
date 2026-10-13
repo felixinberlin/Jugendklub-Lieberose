@@ -48,6 +48,11 @@ function updateCpu(now) {
     if (!isCpu(name) || !isAlive(name)) continue;
     if (cpuNextThrow[name] === undefined) cpuNextThrow[name] = now + 2000 + Math.random() * cpuThrowMs(); // Neue Gegner-Kopie
     if (now >= cpuNextThrow[name]) {
+      // ⚡ Manchmal benutzen auch Computer ihre Spezialkraft (specials.js)
+      if (Math.random() < GAME_CONFIG.cpuSpecialChance && trySpecial(name)) {
+        cpuNextThrow[name] = now + cpuThrowMs() * (0.6 + Math.random() * 0.8);
+        continue;
+      }
       if (teamMode) {
         // ⚔️ Gegner werfen auf eine zufällige Figur aus deinem Team
         const targets = playerTeam.filter(isAlive);

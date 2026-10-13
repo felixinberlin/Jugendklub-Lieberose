@@ -57,6 +57,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── physics.js    #   🧪 Engine, Wände, collisionStart, resizeCanvas
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
 │   ├── teams.js      #   ⚔️ Team-Modus: mehrere Figuren, rote Gegner-Kopien, 8 Level
+│   ├── specials.js   #   ⚡ Spezialkräfte (2× tippen): Riesenball, Mini-Kobolde, Wirbelsprung
 │   ├── levels.js     #   🏅 5 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)
@@ -83,6 +84,7 @@ Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
 - `maxHits` / `hitChoices` – Startwert und Auswahl (💀 5·10·20·50 auf dem Startbildschirm, gebaut in `knockout.js`, setzt `GAME_CONFIG.maxHits` zur Laufzeit) – so viele Treffer hält eine Figur aus, dann ist sie raus (letzte Figur gewinnt)
 - `teamLevels` – 8 Team-Level `{ title, enemies, throwMs }`. Schaden wächst ~ enemies² / throwMs, darum throwMs mit der Gegnerzahl erhöhen. Bot-Simulation (3er-Team, Bot tippt alle 300 ms reihum): L1–5 locker, L6–7 knapp gewonnen, L8 knapp verloren
 - `levels` – 5 Level `{ title, throwMs, huntPlayer }` (Wurf-Tempo der Computer; Anteil der Würfe, die auf DICH zielen). Anzahl beliebig, alles liest `levels.length`. Balance per Bot-Simulation (Bot wirft alle 300 ms, weicht NIE aus): L1–2 gewinnt, L3–4 ~50 %, L5 verliert knapp. Kinder fanden `throwMs 1250 / huntPlayer 0.5` zu schwer – nicht härter als L5 machen
+- `doubleTapMs`, `specialCooldownMs`, `cpuSpecialChance`, `bigBall { size, damage, speed, seconds }`, `miniKobolds { count, seconds }`, `catStunSeconds` – ⚡ Spezialkräfte
 - `cpuThrowMs` (Fallback ohne Level), `throwCooldownMs` (Mindestpause zwischen Würfen, gegen Dauertippen)
 - `dragThreshold` – ab wie vielen Pixeln Antippen zu Ziehen wird
 - `dayMode` (true = ☀️ Tag mit Sonne/Wolken/🦋, false = 🌙 Nacht mit Sternen/Glühwürmchen), `sunEmoji`, `moonEmoji` – Hintergrund. Farben beider Varianten in `FOREST_COLORS` (`js/forest.js`)
@@ -201,6 +203,7 @@ btn.addEventListener('click', async () => {
 21. **CSS-Reihenfolge bei `@media`:** Eine Media-Query, die VOR der normalen Regel im CSS steht, wird von ihr überschrieben (gleiche Spezifität, spätere gewinnt). Querformat-Regeln für neue Elemente deshalb ans Dateiende von `style.css`.
 22. **Playwright & rennende Figuren:** `page.click()` wartet, bis ein Element stillsteht – bei Musiala nie. In Tests `{ force: true }` oder `shootBomb(name)` per `evaluate` nutzen. Computer-Figuren werfen von allein – vor Eingabe-Tests `cpuNextThrow[n] = Infinity` setzen.
 23. **Gegner-Kopien (Team-Modus):** Figuren können zur Laufzeit dazukommen (`actors['katze_3']` mit `kind: 'katze'`). Deshalb NIE `GAME_CONFIG[`${name}…`]` oder `getElementById(`${name}Btn`)` direkt – immer `actorCfg(name, 'Emoji')` und `actorBtn(name)` (kann `null` sein). `for (const name in actors)` erwischt Kopien automatisch.
+24. **Bewegte Ziele & Flugzeit:** Bomben fliegen 42 Bilder lang. Kreist/rennt das Ziel weiter, landet die Bombe dort, wo es VORHER war. Lösung: Zielposition vorausberechnen (`decoyFor(..., 42)`). Ohne das fingen die Mini-Kobolde nur 7/12 Bomben, mit 12/12.
 
 ---
 
@@ -212,7 +215,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 |---|---|
 | `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
-| `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `rain`, `night`, `day`, `sixseven`, `boom`; Ton-Schalter |
+| `js/audio.js` | `initAudio()`, `playTone(freq,type,dur,gain)`, `playSound(type)` – Typen: `point`, `gem`, `hit`, `bounce`, `throw`, `rain`, `night`, `day`, `sixseven`, `bigball`, `minis`, `jump`, `whirl`, `boom`; Ton-Schalter |
 | `js/forest.js` | `FOREST_COLORS` (night/day), `skyLightPos()`, `forestData`, `initForest()`, `drawForest(now)` → `drawDaySky`/`drawNightSky`, `drawTreeLayers`, `drawButterflies`/`drawFireflies` |
 | `js/particles.js` | `particles`, `spawnParticles(x, y, color, count)`, `drawParticles()` |
 | `js/weather.js` | `raindrops`, `growingTrees`, `groundY()`, `isRaining(cloud, now)`, `spawnRain(now)`, `landRaindrop()`, `drawWeather(now)`, **Himmel-Antippen** `handleSkyTap(x, y)` (Canvas-`pointerdown`: Wolke → `rainUntil`, Sonne/Mond via `skyLightPos()` → `dayMode` umschalten + `initForest()`) |
@@ -220,11 +223,12 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/knockout.js` | `isAlive(name)`, `targetOf(name)` (Ziel – oder nächstes lebendes im Kreis), `checkKnockout(name)` (aus `physics.js` nach jedem Treffer; bei `hitsTaken >= maxHits` Explosion, Body raus, Knopf weg), `endGame(winner)` (Game-Over-Bildschirm mit `winnerMsg`: „DU GEWINNST“ / „Du bist raus“ / „X gewinnt“, Highscore; eigene Figur raus = sofort Ende), `reviveActors()` (aus `resetActors`), `drawLifeBar(actor)` |
 | `js/actors.js` | `kindOf(name)`, `actorCfg(name, key)`, `actorBtn(name)` (Kopien-sicher!), `actors` (Liste: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala` je mit `body`, `wiggle`, `target`, `start()`), `createActors()`, `moveActor(name, x, y)`, `resetActors()`, **Eingabe** (Pointer-Events: Ziehen = bewegen, Antippen = werfen), `drawActors(now)` |
 | `js/bombs.js` | `fallingBodies`, `everyoneExcept(actor)` (Kollisionsmaske: alle Figuren außer Werfer), `shootBomb(actor, forcedTarget?)`, `explodeBomb()`, `clearAllBodies()`, `updateBombs(now)` – Muster für „Figur wirft etwas“ |
-| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer = JEDE lebende Figur außer dem Werfer (`customData.shooter`), nicht nur das Ziel → `wiggle`, `hitsTaken`, `checkKnockout`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
+| `js/physics.js` | `initPhysics()` inkl. **`collisionStart`-Handler** (Labels: `kobold`, `corn`, `katze`, `maus`, `goblin`, `musiala`, `characterBomb`; Treffer = JEDE lebende Figur außer dem Werfer (`customData.shooter`), nicht nur das Ziel → `wiggle`, `hitsTaken += customData.damage || 1`, `checkKnockout`; `miniKobold` → `blockByMini`), `resizeCanvas()` (Figuren per `moveActor` neu setzen!) |
 | `js/cpu.js` | `playerActor` (eigene Figur, `null` = „Alle zusammen“), `isCpu(name)`, `chooseAndStart(name)`, `setupPlayers()` (aus `startGame`: Knöpfe der Computer-Figuren bekommen Klasse `cpu` = nicht antippbar), `updateCpu(now)` (Computer wirft alle `level().throwMs` ±40 %, mit Wahrscheinlichkeit `huntPlayer` per `shootBomb(name, playerActor)` auf dich), `drawPlayerMarker()`. Baut beim Laden die Auswahl-Kacheln `#pickGrid` aus `actors` (neue Figuren erscheinen automatisch). Muss NACH `actors.js` laden |
 | `js/levels.js` | `currentLevel`, `nextLevel`, `level()` (Einstellungen aus `GAME_CONFIG.levels`), `startLevel()` (aus `startGame`), `finishLevel(won)` (aus `endGame`: Text + Knopf „WEITER ZU LEVEL n“ / „NOCHMAL LEVEL n“ / „ALLE n GESCHAFFT“), `drawLevelBanner(now)` |
 | `js/teams.js` | `teamMode`, `chosenTeam`, `TEAM_COLORS` (🔵 mine / 🔴 enemy), `TEAM_BITS` (Physik-Kategorien 256/512 – kein Eigentor), `teamOf(name)`, `enemiesOf`, `nearestEnemy` (Ziel im Team-Modus), `removeClones()`, `setupTeams()` (nicht gewählte Figuren setzen aus, Gegner = Kopien `kind_i` mit `kind`-Feld, Aufstellung in Reihen), `teamScale()`, `drawTeamAura(name)`, `teamResult()`. Baut `#teamGrid`. Lädt nach `levels.js` |
-| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
+| `js/specials.js` | `SPECIALS` (`musiala` → `bigBall`, `kobold` → `spawnMinis`, `katze` → `catJump`; per `kindOf`, gilt also auch für Gegner-Kopien), `trySpecial(name)`, `registerSpecialTap(name)` (Doppeltipp aus dem click-Handler), `specialReady`, `isStunned(name)` (blockiert Werfen, Ziehen, Dribbeln), `steerBalls()` (Riesenball: eigener folgt dem Finger `steer`, Computer-Ball zielsucht; keine Schwerkraft), Minis = Sensor-Bodies `miniKobold` (Kategorie `MINI_BIT` 1024, alle Bomben-Masken enthalten sie) + `decoyFor(target, from, frames)` (Bomben auf den Kobold zielen auf die vorausberechnete Mini-Position), `blockByMini()` (aus `physics.js`), `updateSpecials`, `drawSpecials`, `drawSpecialBadge` (⚡), `resetSpecials()` (aus `startGame`). Computer nutzen Kräfte mit `cpuSpecialChance` |
+| `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `drawSpecials` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateSpecials` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 
@@ -238,6 +242,7 @@ Immer danach: `for f in js/*.js; do node -c "$f"; done` → lokal testen mit `./
 - **Neuer Sound:** neuen `else if (type === 'xyz')` in `playSound()` mit 1–2 `playTone()`-Aufrufen (≤ 300 ms, gain ≤ 0.3). Aufruf dort, wo es passiert.
 - **Neue Geste (Doppeltippen, Wischen, Schütteln):** in den Eingabe-Block (`for (const name in actors)` in `js/actors.js`). Doppeltippen NICHT mit `dblclick` (iOS unzuverlässig), sondern Zeitstempel vergleichen (2 Taps < 300 ms). Nur reagieren wenn `isPlaying`. Cooldown in `GAME_CONFIG` ablegen.
 - **Neue Wurf-Art (z. B. Bumerang, Laser):** `shootBomb(actor)` kopieren. Prinzip: `Bodies.circle` an `actors[name].body.position`, `Body.setVelocity`, `customData` mit eigenem Flag, `collisionFilter.mask` = `1 | everyoneExcept(name)`, in `fallingBodies` pushen (wird off-screen entfernt). Treffer im `collisionStart`-Handler prüfen; `Composite.remove` + `spawnParticles` + `playSound`; `actors[name].wiggle = 1`.
+- **Neue Spezialkraft:** Eintrag in `SPECIALS` (`js/specials.js`) mit `use(name)`-Funktion (gibt `false` zurück, wenn es nicht geht). Doppeltippen, ⚡-Anzeige, Abklingzeit und Computer-Nutzung laufen automatisch. Wer Bewegung/Werfen verhindern will: `stunnedUntil` setzen.
 - **Neue Figur:** Eintrag in `actors` (`js/actors.js`, neue `category` = nächste Zweierpotenz, `target`, `start()`), `<name>Emoji`/`<name>Size` in `GAME_CONFIG`, `<button id="<name>Btn" class="actor-btn">` in `index.html` + Startposition in `style.css`. Rest (Physik, Ziehen, Werfen, Zeichnen, Resize) läuft automatisch.
 - **Mehr/weniger Chaos:** `gravityY`, `restitution`, `frictionAir` in `GAME_CONFIG`.
 - **Etwas im Hintergrund antippbar machen:** in `handleSkyTap()` (`js/weather.js`) einen Treffertest ergänzen (Abstand Finger ↔ Objekt). Der Canvas bekommt alle Taps, die nicht auf einer Figur landen.

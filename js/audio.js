@@ -62,6 +62,19 @@ function playSound(type) {
   } else if (type === 'sixseven') {
     playTone(600, 'square', 0.12, 0.15);  // „Six…“
     setTimeout(() => playTone(700, 'square', 0.16, 0.15), 160); // „…seven!“
+  } else if (type === 'bigball') {
+    playTone(150, 'square', 0.2, 0.25);  // Wumms!
+    setTimeout(() => playTone(300, 'square', 0.15, 0.2), 80);
+  } else if (type === 'minis') {
+    playTone(900, 'triangle', 0.06, 0.12);
+    setTimeout(() => playTone(1100, 'triangle', 0.06, 0.12), 60);
+    setTimeout(() => playTone(1300, 'triangle', 0.06, 0.12), 120);
+  } else if (type === 'jump') {
+    playTone(400, 'sine', 0.1, 0.15);
+    setTimeout(() => playTone(800, 'sine', 0.12, 0.15), 70);
+  } else if (type === 'whirl') {
+    playTone(250, 'sawtooth', 0.25, 0.12);
+    setTimeout(() => playTone(350, 'sawtooth', 0.2, 0.1), 90);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);

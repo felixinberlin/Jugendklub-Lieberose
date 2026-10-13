@@ -102,6 +102,7 @@ for (const name in actors) {
   let suppressClick = false;
   button.addEventListener('pointerdown', (event) => {
     if (!isPlaying || drag || event.button !== 0) return;
+    if (isStunned(name) || actors[name].jump) return; // 🌪️ Im Wirbel / im Sprung: nicht ziehen (specials.js)
     initAudio();
     const body = actors[name].body;
     actors[name].dragging = true;
@@ -135,6 +136,7 @@ for (const name in actors) {
   button.addEventListener('click', (event) => {
     if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
     initAudio();
+    if (registerSpecialTap(name)) return; // 👆👆 Doppeltippen = Spezialkraft ⚡ (specials.js)
     shootBomb(name);
   });
 }
@@ -178,6 +180,7 @@ function drawActors(now) {
     ctx.fillText(statsText, 0, 56);
     drawLifeBar(actor); // ❤️ (knockout.js)
     drawPlayerMarker(name, now); // ⭐ DU (cpu.js)
+    drawSpecialBadge(name, now); // ⚡ Spezialkraft bereit? (specials.js)
     ctx.restore();
 
     // Wiggle-Dämpfung

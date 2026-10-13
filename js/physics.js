@@ -35,13 +35,16 @@ function initPhysics() {
         : bodyB.customData?.isPlayerBomb ? bodyB : null;
       if (!bomb || bomb.exploded) continue;
       const other = bomb === bodyA ? bodyB : bodyA;
+      // 🧌 Mini-Kobold fängt die Bombe ab (specials.js)
+      if (other.label === 'miniKobold') { blockByMini(bomb, other); continue; }
+      const damage = bomb.customData.damage || 1; // Riesenball zählt mehr
       // Getroffen wird jede lebende Figur – nicht nur das Ziel (nur der Werfer nicht)
       if (isAlive(other.label) && other.label !== bomb.customData.shooter) {
         actors[other.label].wiggle = 1;
-        actors[other.label].hitsTaken++;
+        actors[other.label].hitsTaken += damage;
         if (bomb.customData.shooter && actors[bomb.customData.shooter]) {
           const shooter = actors[bomb.customData.shooter];
-          shooter.hitsGiven++;
+          shooter.hitsGiven += damage;
           // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
           const shirt = actorCfg(bomb.customData.shooter, 'Shirt');
           if (shirt && shirt.sixSeven) {
@@ -51,7 +54,7 @@ function initPhysics() {
         }
         // TREFFER oben zählt nur deine eigenen (bei „Alle zusammen“: alle)
         if (playerTeam === null || playerTeam.includes(bomb.customData.shooter)) {
-          score++;
+          score += damage;
           scoreEl.textContent = score;
         }
         explodeBomb(bomb);
