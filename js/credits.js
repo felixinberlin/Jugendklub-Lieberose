@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.22';
+const GAME_VERSION = '2.24';
 
 const WISHES = [
   { workshop: '🎪 Workshop 1 · 8.–9. Oktober' },
@@ -42,7 +42,9 @@ const WISHES = [
   { v: '2.19', text: 'Spezialkraft-Knopf – lädt mit 20 Treffern auf' },
   { v: '2.20', text: 'Popcorn-Attacke 🍿 und Feuerspeer 🔥' },
   { v: '2.21', text: 'Goldsack 💰 mit Goldmünzen 🪙, Maiskörner und Fische 🐟' },
-  { v: '2.22', text: 'Turbo 🚀 bei vielen Figuren – und dieser Abspann 🎬' }
+  { v: '2.22', text: 'Turbo 🚀 bei vielen Figuren – und dieser Abspann 🎬' },
+  { v: '2.23', text: 'Abspann-Knopf auch auf dem Startbildschirm 🎬' },
+  { v: '2.24', text: 'Die Maus kann sich verstecken 🐭🕳️ – 6 Sekunden kein Schaden' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
@@ -77,5 +79,6 @@ function hideCredits() {
 
 buildCredits();
 creditsBtn.addEventListener('click', showCredits);
+document.getElementById('creditsStartBtn').addEventListener('click', showCredits); // Auch auf dem Startbildschirm
 creditsScreen.addEventListener('click', hideCredits); // Antippen = zurück
 creditsRoll.addEventListener('animationend', hideCredits); // Ende = zurück

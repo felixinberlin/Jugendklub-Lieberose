@@ -9,6 +9,8 @@
  *  🐱 Katze:   WIRBELSPRUNG – springt auf einen Gegner (Schaden!), 🌪️ Wirbelwolke:
  *             Der Gegner kann sich 4 Sekunden nicht bewegen und nicht werfen.
  *  🌽 Mais:    POPCORN – poppt 10 Popcorn 🍿 im Bogen auf verschiedene Gegner.
+ *  🐭 Maus:    VERSTECKEN – verschwindet 6 Sekunden im Mauseloch 🕳️:
+ *             Alles fliegt durch sie durch, sie bekommt KEINEN Schaden.
  *  👺 Goblin:  FEUERSPEER – fliegt gerade DURCH alle Gegner durch und
  *             lässt sie brennen 🔥 (3 Sekunden lang Schaden).
  *
@@ -30,7 +32,8 @@ const SPECIALS = {
   kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis },
   katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump },
   corn: { name: 'POPCORN', icon: '🍿', use: popcorn },
-  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear }
+  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear },
+  maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse }
 };
 
 function hasSpecial(name) {
@@ -348,6 +351,7 @@ function drawSpear(b, now) {
 
 // 🔥 Brennen: alle `burnEveryMs` einen Schaden, `burnSeconds` lang
 function startBurn(victim, shooter) {
+  if (isHidden(victim)) return; // 🐭🕳️ Im Mauseloch brennt nichts
   const cfg = GAME_CONFIG.fireSpear;
   const now = performance.now();
   actors[victim].burn = { shooter, until: now + cfg.burnSeconds * 1000, next: now + cfg.burnEveryMs };
@@ -368,6 +372,33 @@ function updateBurns(now) {
   }
 }
 
+// ---------- 🐭 Maus: Verstecken ----------
+// Versteckt? Dann gibt es keinen Schaden (physics.js fragt das in applyHit).
+function isHidden(name) {
+  return actors[name] && actors[name].hiddenUntil > performance.now();
+}
+
+function hideMouse(name) {
+  const actor = actors[name];
+  actor.hiddenUntil = performance.now() + GAME_CONFIG.hideSeconds * 1000;
+  actor.body.collisionFilter.mask = 0; // Kollidiert mit gar nichts mehr – alles fliegt durch
+  actor.burn = null;                   // Im Loch geht das Feuer aus
+  spawnParticles(actor.body.position.x, actor.body.position.y, '#a8a29e', 20);
+  playSound('hide');
+}
+
+// Wieder auftauchen, wenn die Zeit um ist
+function updateHiding(now) {
+  for (const name in actors) {
+    const actor = actors[name];
+    if (actor.hiddenUntil && now > actor.hiddenUntil) {
+      actor.hiddenUntil = 0;
+      actor.body.collisionFilter.mask = 0xFFFFFFFF; // Wieder treffbar
+      spawnParticles(actor.body.position.x, actor.body.position.y, '#fde68a', 15);
+    }
+  }
+}
+
 // ---------- Jedes Bild ----------
 function updateSpecials(now) {
   steerBalls();
@@ -375,6 +406,7 @@ function updateSpecials(now) {
   updateMinis(now);
   updateJumps(now);
   updateBurns(now);
+  updateHiding(now);
 }
 
 // Malt Mini-Kobolde und Wirbelwolken (nach den Figuren, damit sie obendrauf sind)
@@ -428,6 +460,8 @@ function resetSpecials() {
     actors[name].stunnedUntil = 0;
     actors[name].jump = null;
     actors[name].burn = null;
+    actors[name].hiddenUntil = 0;
+    actors[name].body.collisionFilter.mask = 0xFFFFFFFF;
   }
 }
 

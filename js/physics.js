@@ -59,6 +59,7 @@ function initPhysics() {
 // `special` = kam von einer Spezialattacke (die lädt die Spezialkraft nicht auf).
 function applyHit(victim, shooterName, damage, special) {
   if (!isAlive(victim)) return;
+  if (isHidden(victim)) return; // 🐭🕳️ Versteckt = kein Schaden (specials.js)
   actors[victim].wiggle = 1;
   actors[victim].hitsTaken += damage;
   const shooter = actors[shooterName];

@@ -18,7 +18,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |
 | ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
-| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥 | ⭐⭐⭐ |
+| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️ | ⭐⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |

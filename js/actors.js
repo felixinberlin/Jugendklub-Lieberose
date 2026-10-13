@@ -157,6 +157,13 @@ function drawActors(now) {
     }
     if (shirt) {
       drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ Figur im Trikot (footballer.js)
+    } else if (isHidden(name)) {
+      // 🐭🕳️ Versteckt: Mauseloch, die Figur guckt nur ganz blass heraus
+      drawEmoji('🕳️', 0, 18, actorSize(name) * 0.9);
+      ctx.globalAlpha = 0.3;
+      drawEmoji(actorEmoji(name), 0, 4, actorSize(name) * 0.7);
+      ctx.globalAlpha = 1;
+      drawLabel(`🙈 ${Math.ceil((actor.hiddenUntil - now) / 1000)}`, 0, -28, { size: 14, fill: '#ffffff', stroke: '#111827', lineWidth: 3 });
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }
