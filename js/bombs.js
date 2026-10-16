@@ -25,9 +25,11 @@ function shootBomb(actor, forcedTarget) {
   if (!isPlaying || document.hidden) return;
   if (!isAlive(actor)) return;
   if (isStunned(actor) || actors[actor].jump) return; // 🌪️ Im Wirbel / im Sprung wird nicht geworfen (specials.js)
-  // Kleine Pause zwischen zwei Würfen, sonst gewinnt, wer am schnellsten tippt
+  // Individuelle Angriffs-Pause je nach Charakter (z. B. Goat = alle 1.2s, Mais = alle 0.6s)
   const now = performance.now();
-  if (now - (actors[actor].lastThrow || 0) < GAME_CONFIG.throwCooldownMs) return;
+  const cdSec = getCharStat(actor, 'attackCooldown') || 1.2;
+  const cooldownMs = cdSec * 1000;
+  if (now - (actors[actor].lastThrow || 0) < cooldownMs) return;
   actors[actor].lastThrow = now;
   const targetName = (forcedTarget && isAlive(forcedTarget) && forcedTarget !== actor)
     ? forcedTarget
@@ -36,12 +38,14 @@ function shootBomb(actor, forcedTarget) {
   const isScratch = Boolean(actorCfg(actor, 'Scratch'));
   const isBolt = Boolean(actorCfg(actor, 'Bolt'));
   const scale = GAME_CONFIG.mapScale || 0.76;
+  const dmg = getCharStat(actor, 'attackDamage') || 4;
   launchArc(actor, targetName, {
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
     size: Math.round((actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize) * scale),
     trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
     scratch: isScratch,
-    bolt: isBolt
+    bolt: isBolt,
+    damage: dmg
   });
   actors[actor].wiggle = 1;
   playAttackSound(actor);

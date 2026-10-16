@@ -33,7 +33,10 @@ function targetOf(name) {
 // Wird in physics.js nach jedem Treffer aufgerufen.
 function checkKnockout(name) {
   const actor = actors[name];
-  if (!isAlive(name) || actor.hitsTaken < GAME_CONFIG.maxHits) return;
+  if (!isAlive(name)) return;
+  const maxHp = actor.maxHp || (GAME_CONFIG.maxHits * 5);
+  const hp = typeof actor.hp === 'number' ? actor.hp : (maxHp - actor.hitsTaken);
+  if (hp > 0 && actor.hitsTaken < maxHp) return;
 
   // 💥 Raus!
   actor.alive = false;
@@ -97,6 +100,10 @@ function reviveActors() {
     const actor = actors[name];
     actor.alive = true;
     actor.sixSevenUntil = 0;
+    if (typeof actor.maxHp === 'number') {
+      actor.hp = actor.maxHp;
+      actor.hitsTaken = 0;
+    }
     if (!Composite.get(engine.world, actor.body.id, 'body')) {
       Composite.add(engine.world, actor.body);
     }
@@ -105,15 +112,19 @@ function reviveActors() {
   }
 }
 
-// ❤️ Lebensleiste unter einer Figur malen (wird in drawActors aufgerufen).
+// ❤️ Lebensleiste unter einer Figur malen (mit genauen Lebenspunkten z. B. 84 ❤️)
 function drawLifeBar(actor) {
-  const life = Math.max(0, 1 - actor.hitsTaken / GAME_CONFIG.maxHits);
-  const w = 44;
-  ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
-  ctx.fillRect(-w / 2 - 1, 63, w + 2, 6);
+  const maxHp = actor.maxHp || 100;
+  const hp = Math.max(0, typeof actor.hp === 'number' ? actor.hp : (maxHp - actor.hitsTaken));
+  const life = Math.max(0, Math.min(1, hp / maxHp));
+  const w = 48;
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+  ctx.fillRect(-w / 2 - 1, 63, w + 2, 7);
   // Grün → Gelb → Rot, je weniger Leben übrig ist
   ctx.fillStyle = life > 0.5 ? '#4ade80' : life > 0.2 ? '#facc15' : '#ef4444';
-  ctx.fillRect(-w / 2, 64, w * life, 4);
+  ctx.fillRect(-w / 2, 64, w * life, 5);
+  // 💖 Zahl anzeigen: z. B. 84 ❤️
+  drawLabel(`${Math.ceil(hp)} ❤️`, 0, 77, { size: 9, weight: '900', fill: '#f8fafc', stroke: '#0f172a', lineWidth: 2 });
 }
 
 // 💀 Auf dem Startbildschirm auswählen, wie viele Treffer eine Figur aushält

@@ -77,7 +77,7 @@ function buildSpecialsInfo() {
     html += `<p class="sp-row"><b>${actorEmoji(name)} ${actors[name].name} · ${sp.icon} ${sp.name}</b><br>${sp.desc()}</p>`;
   }
   if (typeof COMBO_PAIRS !== 'undefined') {
-    html += `<p class="sp-how" style="margin-top:14px">🤝 <b>ALLE ${COMBO_PAIRS.length} TEAM-COMBOS (20 Treffer gemeinsam im Team!):</b></p>`;
+    html += `<p class="sp-how" style="margin-top:14px">🤝 <b>ALLE ${COMBO_PAIRS.length} TEAM-COMBOS (${GAME_CONFIG.comboChargeHits} Treffer gemeinsam im Team!):</b></p>`;
     for (const c of COMBO_PAIRS) {
       const nameA = actors[c.a] ? actors[c.a].name : c.a.toUpperCase();
       const nameB = actors[c.b] ? actors[c.b].name : c.b.toUpperCase();

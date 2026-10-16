@@ -94,10 +94,15 @@ function setupTeams() {
     perKind[kind] = (perKind[kind] || 1) + 1;
     const name = `${kind}_${i}`;
     const base = actors[kind];
+    const baseHp = getCharStat(kind, 'hp') || 100;
+    const scale = (typeof trophyMode !== 'undefined' && trophyMode)
+      ? (GAME_CONFIG.trophyLives / 20)
+      : (GAME_CONFIG.maxHits / 20);
+    const cloneMaxHp = Math.round(baseHp * scale);
     actors[name] = {
       kind, name: `${base.name} ${perKind[kind]}`, color: TEAM_COLORS.enemy,
       category: TEAM_BITS.enemy, target: null, sway: base.sway, body: null,
-      wiggle: 0, hitsGiven: 0, hitsTaken: 0, alive: true, start: base.start
+      wiggle: 0, hitsGiven: 0, hitsTaken: 0, maxHp: cloneMaxHp, hp: cloneMaxHp, alive: true, start: base.start
     };
     actors[name].body = Bodies.circle(width / 2, height / 3, Math.round(34 * mapScale()), {
       isStatic: true, label: name, restitution: 1.05,
@@ -165,6 +170,20 @@ for (const name in actors) {
   btn.innerHTML = `<span class="pick-emoji">${actorEmoji(name)}</span>${actors[name].name}`;
   btn.addEventListener('click', () => {
     if (chosenTeam.includes(name)) return; // Schon fest im Team!
+    // ⚡ Level 7 (currentLevel === 6): Hier kann man NUR Zeus auswählen!
+    if (currentLevel === 6 && name !== 'zeus') {
+      initAudio();
+      playSound('hit');
+      teamHintText.textContent = '⚡ In Level 7 kannst du nur ZEUS auswählen (oder direkt ohne Auswahl starten)!';
+      return;
+    }
+    // In Level 1–6 wird Zeus für Level 7 aufgehoben
+    if (currentLevel < 6 && name === 'zeus') {
+      initAudio();
+      playSound('hit');
+      teamHintText.textContent = '⚡ ZEUS wartet als Bonus-Wahl in Level 7 auf dich!';
+      return;
+    }
     if (!isActorUnlocked(name)) {
       initAudio();
       playSound('hit');
@@ -183,19 +202,32 @@ refreshUnlockTiles();
 function refreshTeamGrid() {
   refreshUnlockTiles();
   const lvNr = currentLevel + 1;
-  const isSixthOrMore = currentLevel >= 5;
+  const isLevel7 = currentLevel === 6;
+  const zeusUnlocked = isActorUnlocked('zeus');
+
   for (const btn of teamGrid.children) {
     const n = btn.dataset.name;
     const inTeam = chosenTeam.includes(n);
     const isPicked = pendingTeamPick === n;
     btn.classList.toggle('in-team', inTeam);
     btn.classList.toggle('selected', inTeam || isPicked);
+    // In Level 7 sind alle außer Zeus ausgegraut; in Level 1–6 ist Zeus für Level 7 reserviert
+    const disabledForLevel = (isLevel7 && n !== 'zeus') || (!isLevel7 && n === 'zeus');
+    btn.style.opacity = disabledForLevel && !inTeam ? '0.35' : '';
   }
+
+  // Bei Level 7 ohne freigeschalteten Zeus muss man niemanden auswählen!
+  if (isLevel7 && !zeusUnlocked) {
+    teamGoBtn.disabled = false;
+    teamGoBtn.textContent = `OHNE AUSWAHL IN LEVEL 7 STARTEN! 🔥`;
+    return;
+  }
+
   teamGoBtn.disabled = !pendingTeamPick;
   if (!pendingTeamPick) {
-    teamGoBtn.textContent = `Wähle deine ${chosenTeam.length + 1}. Figur 👆`;
-  } else if (isSixthOrMore) {
-    teamGoBtn.textContent = `MIT ALLEN IN LEVEL ${lvNr}! 🔥`;
+    teamGoBtn.textContent = isLevel7
+      ? 'Wähle ZEUS für Level 7 👆'
+      : `Wähle deine ${chosenTeam.length + 1}. Figur 👆`;
   } else {
     teamGoBtn.textContent = `MIT ${actors[pendingTeamPick].name} IN LEVEL ${lvNr}! ⚔️`;
   }
@@ -207,17 +239,29 @@ function openTeamPickForLevel(keepCharge = false) {
   pendingTeamKeepCharge = keepCharge;
   pendingTeamPick = null;
   const lvNr = currentLevel + 1;
+  const comboNote = areCombosEnabled()
+    ? '🤝 Kombos & Fähigkeiten ab 15 Treffern!'
+    : 'ℹ️ Im normalen Modus sind Kombos nur bei 20 & 50 Leben aktiv!';
   const modeBadge = trophyMode ? `🏆 POKALE (${GAME_CONFIG.trophyLives} ❤️)` : `🎮 NORMAL (${normalLives} ❤️)`;
   teamScreenHeading.textContent = `⚔️ TEAM · LEVEL ${lvNr} · ${modeBadge}`;
   if (currentLevel === 0) {
     teamPickTitle.textContent = 'Level 1: Wähle deine 1. Figur! 👇';
-    teamHintText.textContent = 'Nach jedem Sieg wählst du 1 Figur dazu – ab Level 6 kämpfen ALLE zusammen bis zum letzten Level!';
+    teamHintText.textContent = `Level 1–6: Jedes Level 1 Figur dazu · Level 7: ZEUS (wenn freigeschaltet) · ${comboNote}`;
   } else if (currentLevel < 5) {
     teamPickTitle.textContent = `Level ${lvNr}: Wähle deine ${chosenTeam.length + 1}. Figur dazu! 👇`;
-    teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · Noch ${6 - lvNr} Level bis alle vereint sind!`;
-  } else {
-    teamPickTitle.textContent = `Level 6: Wähle deine letzte Figur – dann kämpfen ALLE! 👇`;
-    teamHintText.textContent = 'Ab jetzt ziehst du mit allen freigeschalteten Figuren gemeinsam bis zum letzten Level (Level 8)! 🔥';
+    teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · ${comboNote}`;
+  } else if (currentLevel === 5) {
+    teamPickTitle.textContent = `Level 6: Wähle deine 6. Figur! 👇`;
+    teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · Nächstes Level wartet ZEUS!`;
+  } else if (currentLevel === 6) {
+    if (isActorUnlocked('zeus')) {
+      pendingTeamPick = 'zeus';
+      teamPickTitle.textContent = 'Level 7: ZEUS ist freigeschaltet – wähle ZEUS! 🧔🏼‍♂️⚡';
+      teamHintText.textContent = 'In Level 7 kannst du exklusiv Donnergott ZEUS in dein Team holen!';
+    } else {
+      teamPickTitle.textContent = 'Level 7: Bereit für das nächste Match! 🔥';
+      teamHintText.textContent = `🔒 ZEUS ist noch nicht freigeschaltet (${GAME_CONFIG.zeusUnlockTrophies} 🏆) – du musst niemanden auswählen!`;
+    }
   }
   refreshTeamGrid();
   teamScreen.classList.add('active');
@@ -246,17 +290,13 @@ teamBackBtn.addEventListener('click', () => {
   }
 });
 teamGoBtn.addEventListener('click', () => {
-  if (!pendingTeamPick) return;
-  if (!chosenTeam.includes(pendingTeamPick)) chosenTeam.push(pendingTeamPick);
-  // Ab Level 6 (Index 5) sind alle freigeschalteten Figuren im Team und kämpfen gemeinsam bis Level 8!
-  if (currentLevel >= 5) {
-    for (const n of baseActorNames()) {
-      if (isActorUnlocked(n) && !chosenTeam.includes(n)) chosenTeam.push(n);
-    }
+  if (pendingTeamPick && !chosenTeam.includes(pendingTeamPick)) {
+    chosenTeam.push(pendingTeamPick);
   }
+  if (!chosenTeam.length) return;
   playerTeam = chosenTeam.slice();
-  // Du steuerst aktiv die gewählte Figur – deine anderen Team-Figuren werden von Bots gesteuert (und du kannst per Klick wechseln!)
-  playerActor = pendingTeamPick;
+  // Du steuerst aktiv die neu gewählte Figur (oder deine bisherige Hauptfigur)
+  playerActor = pendingTeamPick || playerActor || chosenTeam[0];
   teamScreen.classList.remove('active');
   startGame(pendingTeamKeepCharge);
 });

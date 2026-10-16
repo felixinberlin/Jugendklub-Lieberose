@@ -77,7 +77,7 @@ function popcorn(name) {
   playSound('popcorn');
 }
 
-// ---------- 👺 Goblin: Feuerspeer ----------
+// ---------- 👺 Goblin: Brennender Dreizack 🔱🔥 ----------
 function fireSpear(name) {
   const targetName = targetOf(name);
   if (!targetName) return false;
@@ -87,13 +87,13 @@ function fireSpear(name) {
   const d = Math.hypot(to.x - from.x, to.y - from.y) || 1;
   const vx = (to.x - from.x) / d * cfg.speed;
   const vy = (to.y - from.y) / d * cfg.speed;
-  const spear = Bodies.circle(from.x + vx / cfg.speed * 45, from.y + vy / cfg.speed * 45, 12, {
+  const spear = Bodies.circle(from.x + vx / cfg.speed * 45, from.y + vy / cfg.speed * 45, 14, {
     isSensor: true, frictionAir: 0, label: 'characterBomb',
     // Keine Wände (fliegt einfach raus), trifft alle Figuren außer dem Werfer
     collisionFilter: { category: 2, mask: everyoneExcept(name) | MINI_BIT },
     customData: {
       spear: true, pierce: true, burn: true, special: true, isPlayerBomb: true,
-      emoji: '🔥', size: 30, damage: cfg.damage, shooter: name, target: targetName,
+      emoji: '🔱', size: 32, damage: cfg.damage, shooter: name, target: targetName,
       born: performance.now(), lifeMs: 3000, vx, vy
     }
   });
@@ -104,37 +104,66 @@ function fireSpear(name) {
   playSound('spear');
 }
 
-// Der Speer fliegt schnurgerade (keine Schwerkraft) und zieht Funken hinter sich her
+// Der brennende Dreizack fliegt schnurgerade (keine Schwerkraft) und zieht Feuerfunken hinter sich her
 function updateSpears() {
   for (const b of fallingBodies) {
     const data = b.customData;
     if (!data.spear) continue;
     Body.setVelocity(b, { x: data.vx, y: data.vy });
-    if (Math.random() < 0.5) spawnParticles(b.position.x, b.position.y, '#f97316', 1);
+    if (Math.random() < 0.65) spawnParticles(b.position.x, b.position.y, '#f97316', 1);
   }
 }
 
-// Speer malen: Holzschaft, Spitze, Flamme vorn
+// 🔱🔥 Brennenden Dreizack malen: Schaft + 3 Zacken + lodernde Flammen an den Spitzen
 function drawSpear(b, now) {
   const data = b.customData;
   ctx.save();
   ctx.translate(b.position.x, b.position.y);
   ctx.rotate(Math.atan2(data.vy, data.vx));
   ctx.lineCap = 'round';
-  ctx.strokeStyle = '#7c4a1e';
+  ctx.lineJoin = 'round';
+  // Schaft
+  ctx.strokeStyle = '#b45309';
   ctx.lineWidth = 5;
   ctx.beginPath();
   ctx.moveTo(-40, 0);
-  ctx.lineTo(10, 0);
+  ctx.lineTo(8, 0);
   ctx.stroke();
-  ctx.fillStyle = '#d1d5db'; // Spitze
+
+  // Dreizack-Gabel (3 Zacken: oben, Mitte, unten)
+  ctx.strokeStyle = '#facc15';
+  ctx.lineWidth = 3.5;
   ctx.beginPath();
-  ctx.moveTo(22, 0);
-  ctx.lineTo(8, -7);
-  ctx.lineTo(8, 7);
-  ctx.closePath();
-  ctx.fill();
-  drawEmoji('🔥', 16, -4, 26 + Math.sin(now / 50) * 4);
+  // Querbügel
+  ctx.moveTo(6, -12);
+  ctx.lineTo(6, 12);
+  // Obere Zacke
+  ctx.moveTo(6, -12);
+  ctx.lineTo(22, -12);
+  // Mittlere Zacke
+  ctx.moveTo(6, 0);
+  ctx.lineTo(26, 0);
+  // Untere Zacke
+  ctx.moveTo(6, 12);
+  ctx.lineTo(22, 12);
+  ctx.stroke();
+
+  // 3 Spitzen
+  ctx.fillStyle = '#fef08a';
+  for (const [tx, ty] of [[25, -12], [29, 0], [25, 12]]) {
+    ctx.beginPath();
+    ctx.moveTo(tx, ty);
+    ctx.lineTo(tx - 6, ty - 3.5);
+    ctx.lineTo(tx - 6, ty + 3.5);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Flammen an den 3 Dreizack-Zacken
+  const fl = 20 + Math.sin(now / 50) * 3;
+  drawEmoji('🔥', 22, -12, fl * 0.85);
+  drawEmoji('🔥', 26, 0, fl);
+  drawEmoji('🔥', 22, 12, fl * 0.85);
   ctx.restore();
 }
 

@@ -61,7 +61,10 @@ function applyHit(victim, shooterName, damage, special) {
   if (!isAlive(victim)) return;
   if (isHidden(victim)) return; // 🐭🕳️ Versteckt = kein Schaden (specials.js)
   actors[victim].wiggle = 1;
-  actors[victim].hitsTaken += damage;
+  const currentMax = actors[victim].maxHp || 100;
+  if (typeof actors[victim].hp !== 'number') actors[victim].hp = currentMax;
+  actors[victim].hp = Math.max(0, actors[victim].hp - damage);
+  actors[victim].hitsTaken = currentMax - actors[victim].hp;
   const shooter = actors[shooterName];
   if (shooter) {
     shooter.hitsGiven += damage;

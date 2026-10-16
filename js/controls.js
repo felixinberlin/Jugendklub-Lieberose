@@ -17,6 +17,13 @@ const movePad = document.getElementById('movePad');
 const moveStick = document.getElementById('moveStick');
 const shootBtn = document.getElementById('shootBtn');
 const shootIconEl = document.getElementById('shootIcon');
+const shootLabelEl = document.getElementById('shootLabel') || document.querySelector('.shoot-label');
+const comboBtnRow = document.getElementById('comboBtnRow');
+const comboSquareBtn = document.getElementById('comboSquareBtn');
+const comboIconEl = document.getElementById('comboIcon');
+const comboFillEl = document.getElementById('comboFill');
+const comboCountEl = document.getElementById('comboCount');
+const abilityBtnRow = document.getElementById('abilityBtnRow');
 const abilityBtn = document.getElementById('abilityBtn');
 const abilityIconEl = document.getElementById('abilityIcon');
 const abilityFillEl = document.getElementById('abilityFill');
@@ -146,9 +153,15 @@ dismissRotateBtn.addEventListener('click', () => {
 // 🎯 Schießen auslösen (runder Knopf unten rechts oder linke Maustaste)
 function triggerPlayerShoot(aimX, aimY) {
   if (!isPlaying || isPaused) return;
-  initAudio();
   const mine = myControlledActors();
   if (!mine.length) return;
+  const lead = mine[0];
+  const cdSec = getCharStat(lead, 'attackCooldown') || 1.2;
+  const now = performance.now();
+  if (now - (actors[lead]?.lastThrow || 0) < cdSec * 1000) {
+    return; // ⏳ Noch im Cooldown!
+  }
+  initAudio();
 
   // Wenn mit der Maus in die Nähe eines Gegners geklickt wurde, dorthin zielen
   let aimedEnemy = null;
@@ -167,28 +180,30 @@ function triggerPlayerShoot(aimX, aimY) {
   }
   shootBtn.classList.add('pressed');
   setTimeout(() => shootBtn.classList.remove('pressed'), 110);
+  updateControlHud();
 }
 
-// ⚡ Fähigkeit auslösen (quadratischer Knopf über dem Schieß-Knopf oder Taste F)
+// ⚡ Fähigkeit auslösen (Taste F: löst Kombo aus wenn bereit, sonst aktive Fähigkeit)
 function triggerPlayerSpecial() {
   if (!isPlaying || isPaused) return;
   initAudio();
+  if (comboSquareBtn && !comboSquareBtn.hidden && comboSquareBtn.classList.contains('ready')) {
+    comboSquareBtn.click();
+    return true;
+  }
   const mine = myControlledActors();
   let usedAny = false;
   for (const name of mine) {
-    if (specialReady(name) && trySpecial(name)) usedAny = true;
+    if (specialReady(name) && trySpecialOnly(name)) usedAny = true;
   }
-  abilityBtn.classList.add('pressed');
-  setTimeout(() => abilityBtn.classList.remove('pressed'), 140);
   updateControlHud();
   return usedAny;
 }
 
-// 🔄 Aktualisiert das Aussehen vom runden Schieß-Knopf, dem quadratischen Fähigkeits-Knopf & dem Pause-Knopf
+// 🔄 Aktualisiert Schieß-Knopf (mit Cooldown-Anzeige), Extra-Kombo-Button und die Fähigkeiten nebeneinander!
 function updateControlHud() {
   document.body.classList.toggle('in-round', isPlaying);
   actionHud.hidden = !isPlaying || isPaused;
-  // ⏸️ Pause-Knopf NUR im normalen Modus sichtbar – NICHT im Ranglisten-/Pokal-Modus!
   if (pauseBtn) {
     pauseBtn.hidden = !isPlaying || trophyMode;
   }
@@ -200,26 +215,99 @@ function updateControlHud() {
   if (!mine.length) return;
 
   const lead = mine[0];
-  shootIconEl.textContent = actorCfg(lead, 'Bomb') || GAME_CONFIG.bombEmoji;
+  const now = performance.now();
 
-  // Beste / vollste Spezialkraft deiner gesteuerten Figuren auf dem quadratischen Knopf zeigen
-  const need = GAME_CONFIG.specialChargeHits;
-  let bestActor = lead;
-  let bestCharge = -1;
-  for (const name of mine) {
-    if (!hasSpecial(name)) continue;
-    const c = actors[name].specialCharge || 0;
-    if (c > bestCharge) { bestCharge = c; bestActor = name; }
+  // 1. 🎯 Runder Schieß-Knopf mit individuellem Cooldown & Schaden
+  if (actors[lead]) {
+    shootIconEl.textContent = actorCfg(lead, 'Bomb') || GAME_CONFIG.bombEmoji;
+    const cdSec = getCharStat(lead, 'attackCooldown') || 1.2;
+    const cdMs = cdSec * 1000;
+    const elapsed = now - (actors[lead].lastThrow || 0);
+    const remaining = Math.max(0, (cdMs - elapsed) / 1000);
+    const dmg = getCharStat(lead, 'attackDamage') || 4;
+
+    if (remaining > 0.05) {
+      shootBtn.classList.add('cooling');
+      shootLabelEl.textContent = `${remaining.toFixed(1)}s`;
+    } else {
+      shootBtn.classList.remove('cooling');
+      shootLabelEl.textContent = `${dmg} 💥`;
+    }
   }
-  const sp = SPECIALS[kindOf(bestActor)];
-  if (sp) {
-    const charge = actors[bestActor].specialCharge || 0;
-    const ready = specialReady(bestActor);
-    const hasCombo = typeof findComboPartner === 'function' && Boolean(findComboPartner(bestActor));
-    abilityIconEl.textContent = hasCombo ? '🤝' : sp.icon;
-    abilityFillEl.style.width = `${Math.min(100, (charge / need) * 100)}%`;
-    abilityCountEl.textContent = ready ? (hasCombo ? 'KOMBO!' : 'BEREIT!') : `${charge}/${need}`;
-    abilityBtn.classList.toggle('ready', ready);
+
+  const need = GAME_CONFIG.specialChargeHits;
+
+  // 2. 🤝 Extra-Kombo-Button: sitzt genau über den Fähigkeiten, selbe Form und Größe!
+  const comboPairs = (typeof getPlayerTeamComboPairs === 'function') ? getPlayerTeamComboPairs() : [];
+  if (teamMode && areCombosEnabled() && comboPairs.length > 0) {
+    const pair = comboPairs[0];
+    comboSquareBtn.hidden = false;
+    const charge = pair.charge || 0;
+    const ready = pair.ready;
+    comboIconEl.textContent = pair.spec?.icon || '🤝';
+    comboFillEl.style.width = `${Math.min(100, (charge / need) * 100)}%`;
+    comboCountEl.textContent = ready ? 'KOMBO!' : `${charge}/${need}`;
+    comboSquareBtn.classList.toggle('ready', ready);
+    comboSquareBtn.onclick = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      initAudio();
+      triggerTeamComboPair(pair.a, pair.b);
+      updateControlHud();
+    };
+  } else {
+    comboSquareBtn.hidden = true;
+  }
+
+  // 3. 🟦 Die Fähigkeits-Buttons: bei mehreren Charakteren NEBENEINANDER!
+  const teamList = teamMode ? chosenTeam : (playerTeam || [playerActor]);
+  const abilityActors = teamList.filter(n => isAlive(n) && hasSpecial(n));
+
+  // Buttons in abilityBtnRow synchronisieren
+  const currentButtons = Array.from(abilityBtnRow.children);
+  const currentNames = currentButtons.map(b => b.dataset.name).filter(Boolean);
+  const needRebuild = currentNames.length !== abilityActors.length ||
+    abilityActors.some((n, idx) => currentNames[idx] !== n);
+
+  if (needRebuild) {
+    abilityBtnRow.innerHTML = '';
+    abilityActors.forEach((name, idx) => {
+      const sp = SPECIALS[kindOf(name)];
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'ability-square-btn';
+      btn.dataset.name = name;
+      btn.setAttribute('aria-label', `${actors[name].name}: ${sp.name}`);
+      btn.innerHTML = `<span class="ab-icon">${sp.icon}</span>` +
+        `<span class="ab-bar"><i style="width:0%"></i></span>` +
+        `<span class="ab-count">0/${need}</span>` +
+        (abilityActors.length > 1 ? `<span class="ab-char">${actorEmoji(name)}</span>` : '') +
+        (idx === 0 ? `<span class="key-hint">F</span>` : '');
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        initAudio();
+        trySpecialOnly(name);
+        btn.classList.add('pressed');
+        setTimeout(() => btn.classList.remove('pressed'), 140);
+        updateControlHud();
+      });
+      abilityBtnRow.appendChild(btn);
+    });
+  }
+
+  // Werte der Buttons aktualisieren
+  for (const btn of abilityBtnRow.children) {
+    const name = btn.dataset.name;
+    if (!name || !actors[name]) continue;
+    const charge = actors[name].specialCharge || 0;
+    const ready = specialReady(name) && isAlive(name);
+    btn.classList.toggle('ready', ready);
+    btn.hidden = !isAlive(name);
+    const fill = btn.querySelector('.ab-bar i');
+    if (fill) fill.style.width = `${Math.min(100, (charge / need) * 100)}%`;
+    const count = btn.querySelector('.ab-count');
+    if (count) count.textContent = ready ? 'BEREIT!' : `${charge}/${need}`;
   }
 }
 
@@ -354,12 +442,13 @@ function updatePlayerControls() {
   if (mag < 0.05) return;
   if (mag > 1) { vx /= mag; vy /= mag; }
 
-  const speed = GAME_CONFIG.playerMoveSpeed || 4.2;
+  const baseSpeed = GAME_CONFIG.playerMoveSpeed || 4.2;
   const mine = myControlledActors();
   for (const name of mine) {
     const actor = actors[name];
     if (!actor || !actor.body || isStunned(name) || actor.jump) continue;
     if (Math.abs(vx) > 0.1) actor.runDir = vx < 0 ? -1 : 1;
+    const speed = baseSpeed * (getCharStat(name, 'speed') || 1.0);
     const nx = actor.body.position.x + vx * speed;
     const ny = actor.body.position.y + vy * speed;
     moveActor(name, nx, ny);

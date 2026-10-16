@@ -92,6 +92,23 @@ function setupPlayers() {
   if (teamMode && (!playerActor || !chosenTeam.includes(playerActor) || !isAlive(playerActor))) {
     playerActor = chosenTeam.find(isAlive) || chosenTeam[0] || null;
   }
+  // 🎯 Im Solo-Modus (Rangliste & Normal) gibt es nur noch 5 Gegner!
+  if (!teamMode && playerTeam !== null && playerActor) {
+    const maxFoes = GAME_CONFIG.soloEnemies || 5;
+    const allFoes = Object.keys(actors).filter(n => !actors[n].kind && n !== playerActor);
+    allFoes.forEach((n, idx) => {
+      if (idx >= maxFoes) {
+        actors[n].alive = false;
+        Composite.remove(engine.world, actors[n].body);
+        const b = actorBtn(n);
+        if (b) b.style.display = 'none';
+      }
+    });
+    const living = [playerActor, ...allFoes.slice(0, maxFoes)];
+    for (let i = 0; i < living.length; i++) {
+      actors[living[i]].target = living[(i + 1) % living.length];
+    }
+  }
   for (const name in actors) {
     const actor = actors[name];
     const btn = actorBtn(name);
@@ -157,7 +174,7 @@ function moveCpuActor(name, now) {
   const homeY = (actor.homeRy ?? pos.y / height) * height;
   const lv = Math.min(1, currentLevel / 4);
   const maxR = teamMode ? (48 + lv * 52) * teamScale() : (75 + lv * 95);
-  const speed = (1.65 + lv * 1.35) * (teamMode ? 0.88 : 1);
+  const speed = (1.65 + lv * 1.35) * (teamMode ? 0.88 : 1) * (getCharStat(name, 'speed') || 1.0);
 
   // ⚡🔴 Steht der Bot in einem roten Blitz-Kreis von Zeus? Sofort rausrennen!
   if (typeof zeusStorms !== 'undefined') {
@@ -227,9 +244,11 @@ function updateCpu(now) {
     if (!isCpu(name) || !isAlive(name)) continue;
     moveCpuActor(name, now);
 
-    // 🛡️ Schutz-Reflex: Maus (Mauseloch) & Kobold (Mini-Kobolde) nutzen ihre Kraft, wenn eine Bombe anfliegt!
+    const isMyTeamBot = teamMode && chosenTeam.includes(name);
+
+    // 🛡️ Schutz-Reflex für Gegner-Bots: Maus (Mauseloch) & Kobold (Mini-Kobolde)
     const kind = kindOf(name);
-    if ((kind === 'maus' || kind === 'kobold') && specialReady(name) && hasIncomingBomb(name)) {
+    if (!isMyTeamBot && (kind === 'maus' || kind === 'kobold') && specialReady(name) && hasIncomingBomb(name)) {
       if (trySpecial(name)) {
         cpuNextThrow[name] = Math.max(cpuNextThrow[name] || 0, now + 420);
         continue;
@@ -239,16 +258,18 @@ function updateCpu(now) {
     if (cpuNextThrow[name] === undefined) cpuNextThrow[name] = now + 900 + Math.random() * cpuThrowMs();
     if (now >= cpuNextThrow[name]) {
       const target = pickCpuTarget(name);
-      // 🤝⚡ Bots kennen die Combos! Wenn eine Team-Combo bereit ist, zünden sie die Combo sofort!
-      const hasComboReady = specialReady(name) && typeof findComboPartnerInfo === 'function' && Boolean(findComboPartnerInfo(name));
-      const specialChance = hasComboReady ? 0.92 : GAME_CONFIG.cpuSpecialChance;
-      if (target && !isHidden(target) && Math.random() < specialChance) {
-        actors[name].cpuAim = target;
-        const used = trySpecial(name);
-        actors[name].cpuAim = null;
-        if (used) {
-          cpuNextThrow[name] = now + cpuThrowMs() * (0.45 + Math.random() * 0.55);
-          continue;
+      // 🤝⚡ Gegner-Bots zünden Fähigkeiten & Combos automatisch; für DEIN Team entscheidest DU über die Fähigkeits- & Kombo-Knöpfe!
+      if (!isMyTeamBot) {
+        const hasComboReady = specialReady(name) && typeof findComboPartnerInfo === 'function' && Boolean(findComboPartnerInfo(name));
+        const specialChance = hasComboReady ? 0.92 : GAME_CONFIG.cpuSpecialChance;
+        if (target && !isHidden(target) && Math.random() < specialChance) {
+          actors[name].cpuAim = target;
+          const used = trySpecial(name);
+          actors[name].cpuAim = null;
+          if (used) {
+            cpuNextThrow[name] = now + cpuThrowMs() * (0.45 + Math.random() * 0.55);
+            continue;
+          }
         }
       }
       shootBomb(name, target);

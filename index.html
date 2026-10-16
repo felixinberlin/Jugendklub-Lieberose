@@ -150,7 +150,7 @@
       <div id="teamScreen" class="overlay-screen">
         <h2 id="teamScreenHeading">⚔️ TEAM-MODUS</h2>
         <p id="teamPickTitle" class="pick-title">Level 1: Wähle deine 1. Figur! 👇</p>
-        <p id="teamHintText" class="team-hint">🔵 In jedem Level wählst du 1 Figur dazu – mit YAMAL & GOAT im Team habt ihr die 20-Treffer-Kombo! 🤝⚽</p>
+        <p id="teamHintText" class="team-hint">🔵 In jedem Level wählst du 1 Figur dazu – mit YAMAL & GOAT im Team habt ihr die 15-Treffer-Kombo! 🤝⚽</p>
         <div id="teamGrid" class="pick-grid"></div>
         <button id="teamGoBtn" class="btn" disabled>Wähle deine Figur 👆</button>
         <button id="teamBackBtn" class="btn btn-small">⬅️ Zurück</button>
@@ -197,15 +197,28 @@
           <div id="moveStick" class="move-stick">🕹️</div>
         </div>
         <div class="right-controls">
-          <button id="abilityBtn" class="ability-square-btn" type="button" aria-label="Fähigkeit (Taste F)">
-            <span id="abilityIcon" class="ab-icon">⚡</span>
-            <span class="ab-bar"><i id="abilityFill"></i></span>
-            <span id="abilityCount" class="ab-count">0/20</span>
-            <span class="key-hint">F</span>
-          </button>
+          <!-- 🤝 Extra-Kombo-Button: sitzt GENAU ÜBER den Fähigkeits-Buttons, selbe Form und Größe! -->
+          <div id="comboBtnRow" class="combo-btn-row">
+            <button id="comboSquareBtn" class="ability-square-btn combo-square-btn" type="button" aria-label="Team-Kombo" hidden>
+              <span id="comboIcon" class="ab-icon">🤝</span>
+              <span class="ab-bar"><i id="comboFill"></i></span>
+              <span id="comboCount" class="ab-count">0/15</span>
+              <span class="key-hint">KOMBO</span>
+            </button>
+          </div>
+          <!-- 🟦 Die Fähigkeits-Buttons: bei mehreren Charakteren NEBENEINANDER! -->
+          <div id="abilityBtnRow" class="ability-btn-row">
+            <button id="abilityBtn" class="ability-square-btn" type="button" aria-label="Fähigkeit (Taste F)">
+              <span id="abilityIcon" class="ab-icon">⚡</span>
+              <span class="ab-bar"><i id="abilityFill"></i></span>
+              <span id="abilityCount" class="ab-count">0/15</span>
+              <span class="key-hint">F</span>
+            </button>
+          </div>
+          <!-- 🔴 Runder Schieß-Knopf mit Cooldown-Anzeige -->
           <button id="shootBtn" class="shoot-circle-btn" type="button" aria-label="Schießen (Linke Maustaste)">
             <span id="shootIcon" class="shoot-icon">🎯</span>
-            <span class="shoot-label">SCHUSS</span>
+            <span id="shootLabel" class="shoot-label">SCHUSS</span>
           </button>
         </div>
       </div>

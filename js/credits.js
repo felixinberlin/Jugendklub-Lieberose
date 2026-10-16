@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.36';
+const GAME_VERSION = '2.37';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -57,7 +57,8 @@ const WISHES = [
   { v: '2.33', text: 'GOAT #10 🐐, schlaue Pro-Bots 🤖, Pokal-Reset & Donnergott ZEUS ⚡ (40 🏆)' },
   { v: '2.34', text: 'Lamine Yamal #19 🌟 mit GOAT-Kombo (20 Treffer) 🤝⚽, edle Pro-Skins ✨, Vollbild ⛶, 7-Tage-Namenssperre ⚙️, Pause im Normal-Modus ⏸️ & 1-Match-Solo 🎯' },
   { v: '2.35', text: 'Team-Bots mit Klick-Wechsel 🤖👆 & 19 Mega-Combos (Kobold wirft Mais 🧌🌽, Drache+Goblin Brand-Aura 🐉👺🔥 uvm.!) 💥' },
-  { v: '2.36', text: 'Pokale 🏆 & Punkte 🎯 bleiben beim Neuladen im Browser gespeichert – mit „Auf 0 setzen“-Knopf 🔄' }
+  { v: '2.36', text: 'Pokale 🏆 & Punkte 🎯 bleiben beim Neuladen im Browser gespeichert – mit „Auf 0 setzen“-Knopf 🔄' },
+  { v: '2.37', text: 'Individuelle Werte für alle Figuren (Leben, Schaden, Cooldown & Tempo) 🎯, brennender Dreizack 🔱🔥, 5 Solo-Gegner, Zeus-Logo 🧔🏼‍♂️, 15-Treffer-Spells, Extra-Kombo-Button & Fähigkeiten nebeneinander ⚡🤝' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

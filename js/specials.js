@@ -37,8 +37,8 @@ const SPECIALS = {
     desc: () => `Springt auf einen Gegner (${GAME_CONFIG.catDamage} Schaden). Der ist ${GAME_CONFIG.catStunSeconds} Sek. im Wirbel gefangen.` },
   corn: { name: 'POPCORN', icon: '🍿', use: popcorn,
     desc: () => `${GAME_CONFIG.popcorn.count} Popcorn fliegen auf alle Gegner.` },
-  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear,
-    desc: () => `Durchbohrt alle in einer Reihe und lässt sie ${GAME_CONFIG.fireSpear.burnSeconds} Sek. brennen.` },
+  goblin: { name: 'FEUER-DREIZACK', icon: '🔱', use: fireSpear,
+    desc: () => `Wirft einen brennenden Dreizack 🔱 durch alle in einer Reihe und lässt sie ${GAME_CONFIG.fireSpear.burnSeconds} Sek. brennen.` },
   maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse,
     desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` },
   drache: { name: 'DRACHENBISS', icon: '🦷', use: dragonBite,
@@ -51,13 +51,13 @@ function hasSpecial(name) {
   return Boolean(SPECIALS[kindOf(name)]);
 }
 
-// Aufgeladen? (20 Treffer mit normalen Würfen – oder 20 Treffer GEMEINSAM mit einem Combo-Partner im selben Team!)
+// Aufgeladen? (15 Treffer mit normalen Würfen!)
 function specialReady(name) {
   return hasSpecial(name) && (actors[name].specialCharge || 0) >= GAME_CONFIG.specialChargeHits;
 }
 
-// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft / Team-Combo lädt auf.
-// 🤝 Wenn zwei Figuren im selben Team ein Combo-Paar bilden, zählen ihre 20 Treffer GEMEINSAM!
+// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft / Team-Combo lädt auf (15 Treffer).
+// 🤝 Wenn zwei Figuren im selben Team ein Combo-Paar bilden (und Kombos aktiv sind), zählen ihre Treffer GEMEINSAM!
 function chargeSpecial(name) {
   if (!hasSpecial(name)) return;
   const need = GAME_CONFIG.specialChargeHits;
@@ -67,10 +67,10 @@ function chargeSpecial(name) {
     const shared = Math.min(need, Math.max(actors[name].specialCharge || 0, actors[partner].specialCharge || 0) + 1);
     actors[name].specialCharge = shared;
     actors[partner].specialCharge = shared;
-    if (shared === need && (!isCpu(name) || !isCpu(partner))) playSound('ready');
+    if (shared === need && (!isCpu(name) || !isCpu(partner) || (teamMode && chosenTeam.includes(name)))) playSound('ready');
   } else {
     actors[name].specialCharge = Math.min(need, (actors[name].specialCharge || 0) + 1);
-    if (actors[name].specialCharge === need && !isCpu(name)) playSound('ready'); // 🔔 Bereit!
+    if (actors[name].specialCharge === need && (!isCpu(name) || (teamMode && chosenTeam.includes(name)))) playSound('ready'); // 🔔 Bereit!
   }
   updateSpecialBar();
 }
@@ -80,7 +80,19 @@ function isStunned(name) {
   return actors[name] && actors[name].stunnedUntil > performance.now();
 }
 
-// Kraft oder Team-Combo auslösen (wird sowohl vom Spieler als auch von den Bots genutzt!).
+// ⚡ Löst NUR die einzelne Spezialfähigkeit von `name` aus (für die Fähigkeits-Buttons nebeneinander!)
+function trySpecialOnly(name) {
+  if (!isPlaying || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
+  if (!specialReady(name)) return false;
+  const used = SPECIALS[kindOf(name)].use(name);
+  if (used === false) return false;
+  actors[name].specialCharge = 0;
+  actors[name].wiggle = 1;
+  updateSpecialBar();
+  return true;
+}
+
+// Kraft oder Team-Combo auslösen (für Bots oder allgemeinen Auslöser).
 function trySpecial(name) {
   if (!isPlaying || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
   if (!specialReady(name)) return false;

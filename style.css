@@ -641,21 +641,56 @@ h2 {
 
 .right-controls {
   position: absolute;
-  right: max(20px, env(safe-area-inset-right));
-  bottom: max(16px, env(safe-area-inset-bottom));
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(14px, env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   pointer-events: none;
+  max-width: 320px;
 }
 
-/* 🟦 Kleiner quadratischer Knopf für die Spezialfähigkeit (über dem Schieß-Knopf) */
+/* 🤝 Extra-Kombo-Button: sitzt genau über den Fähigkeits-Buttons, selbe Größe (62x62) und Form! */
+.combo-btn-row {
+  display: flex;
+  justify-content: center;
+  pointer-events: auto;
+}
+.ability-square-btn.combo-square-btn {
+  border-color: #f59e0b;
+  background: rgba(30, 27, 75, 0.88);
+}
+.ability-square-btn.combo-square-btn.ready {
+  border-color: #fde047;
+  background: linear-gradient(135deg, #d97706, #ec4899);
+  box-shadow: 0 0 22px rgba(253, 224, 71, 0.95);
+  animation: comboPulse 0.55s infinite alternate;
+}
+@keyframes comboPulse {
+  0% { transform: scale(1); box-shadow: 0 0 14px rgba(253, 224, 71, 0.8); }
+  100% { transform: scale(1.06); box-shadow: 0 0 24px rgba(236, 72, 153, 1); }
+}
+
+/* 🟦 Die Fähigkeits-Buttons: bei mehreren Charakteren NEBENEINANDER! */
+.ability-btn-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+  max-width: 300px;
+  flex-wrap: nowrap;
+}
+
+/* 🟦 Quadratischer Knopf für die Spezialfähigkeit */
 .ability-square-btn {
   pointer-events: auto;
   position: relative;
   width: 62px;
   height: 62px;
+  flex-shrink: 0;
   border-radius: 12px; /* Quadratisch mit leicht abgerundeten Ecken */
   border: 2.5px solid rgba(255, 255, 255, 0.4);
   background: rgba(15, 23, 42, 0.78);
@@ -674,6 +709,20 @@ h2 {
 .ability-square-btn .ab-bar { width: 46px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
 .ability-square-btn .ab-bar i { display: block; height: 100%; width: 0%; background: #facc15; }
 .ability-square-btn .ab-count { font-size: 0.72rem; font-weight: 900; }
+.ability-square-btn .ab-char {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  font-size: 0.8rem;
+  background: #0f172a;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+}
 .ability-square-btn .key-hint {
   position: absolute;
   top: -7px;
@@ -696,7 +745,7 @@ h2 {
 .ability-square-btn.ready .ab-icon { filter: none; }
 .ability-square-btn.pressed, .ability-square-btn:active { transform: scale(0.9); }
 
-/* 🔴 Großer runder Knopf zum Schießen unten rechts */
+/* 🔴 Großer runder Knopf zum Schießen unten rechts mit Cooldown */
 .shoot-circle-btn {
   pointer-events: auto;
   width: 92px;
@@ -713,9 +762,20 @@ h2 {
   cursor: pointer;
   touch-action: manipulation;
   box-shadow: 0 8px 22px rgba(220, 38, 38, 0.65);
+  transition: opacity 0.1s, filter 0.1s;
 }
 .shoot-circle-btn .shoot-icon { font-size: 2.1rem; line-height: 1; }
-.shoot-circle-btn .shoot-label { font-size: 0.72rem; font-weight: 900; letter-spacing: 0.5px; }
+.shoot-circle-btn .shoot-label { font-size: 0.76rem; font-weight: 900; letter-spacing: 0.5px; }
+.shoot-circle-btn.cooling {
+  opacity: 0.65;
+  filter: grayscale(0.5);
+  border-color: #94a3b8;
+  cursor: not-allowed;
+}
+.shoot-circle-btn.cooling .shoot-label {
+  color: #fde047;
+  font-size: 0.95rem;
+}
 .shoot-circle-btn.pressed, .shoot-circle-btn:active {
   transform: scale(0.9);
   box-shadow: 0 3px 10px rgba(220, 38, 38, 0.8);

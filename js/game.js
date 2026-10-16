@@ -59,12 +59,21 @@ restartBtn.addEventListener('click', () => {
       startNewTeamRun();
       return;
     }
-    // Neues Level im Team-Modus & noch nicht alle Figuren im Team → nächste Figur wählen!
-    if (nextOne && chosenTeam.length < baseActorNames().length) {
-      currentLevel = nextLevel;
-      gameOverScreen.classList.remove('active');
-      openTeamPickForLevel(true);
-      return;
+    if (nextOne) {
+      // Level 1–6 (Index 0–5): Jedes Level 1 Figur dazu wählen
+      if (nextLevel <= 5) {
+        currentLevel = nextLevel;
+        gameOverScreen.classList.remove('active');
+        openTeamPickForLevel(true);
+        return;
+      }
+      // Level 7 (Index 6): Nur Zeus auswählbar, WENN man ihn freigeschaltet hat! Sonst direkt starten ohne Auswahl!
+      if (nextLevel === 6 && isActorUnlocked('zeus') && !chosenTeam.includes('zeus')) {
+        currentLevel = nextLevel;
+        gameOverScreen.classList.remove('active');
+        openTeamPickForLevel(true);
+        return;
+      }
     }
   }
   currentLevel = nextLevel;
@@ -94,6 +103,7 @@ function gameLoop(now) {
     updateCpu(now); // 🤖 Computer-Figuren werfen (cpu.js)
     updateSpecials(now); // ⚡ Riesenball lenken, Minis, Katzensprung (specials.js)
     updateBombs(now);
+    if (typeof updateControlHud === 'function') updateControlHud(); // ⏱️ Schuss-Cooldown & Fähigkeiten auffrischen
   }
 
   // 4. Partikel malen

@@ -6,9 +6,10 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
-  // ✨ Coole, edle Pro-Skins (keine Monster, keine platte Kinder-Version – gleiche Figuren & Attacken!)
-  proSkins: true,
+  // 🙂 Normale Figuren-Ansicht überall in jedem Modus (wie am Anfang!)
+  proSkins: false,
   scarySkins: false,
+  soloEnemies: 5, // 🎯 Im Solo-Modus (Rangliste & Normal) gibt es immer genau 5 Gegner!
 
   // Charaktere auf beiden Seiten
   koboldEmoji: '🧌',
@@ -29,15 +30,15 @@ const GAME_CONFIG = {
   goblinSize: 68,
   goblinBomb: '🔥',      // 👺 Der Goblin wirft Feuer!
   musialaEmoji: '⚽',
-  // 👕 Musiala / GOAT trägt das Elite-Trikot mit der Nummer 10!
-  musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#1e293b', head: '⚽', stripe: true, sixSeven: false, skin: '#d99b66', hair: '#111827', headband: '#facc15' },
+  // 👕 Musiala / GOAT trägt das Trikot mit der Nummer 10!
+  musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#1e293b', head: '⚽', stripe: true, sixSeven: false },
   musialaRuns: true,     // 🏃 Dribbelt über das Feld
   musialaRunSpeed: 2.2,
   musialaSize: 66,
   musialaBomb: '⚽',
-  // ⚽🌟 NEU: Lamine Yamal (#19) – macht im Team mit Musiala die 20-Treffer-Kombo!
+  // ⚽🌟 Lamine Yamal (#19)
   yamalEmoji: '🌟',
-  yamalShirt: { color: '#dc2626', number: '19', numberColor: '#facc15', shorts: '#1d4ed8', head: '🌟', stripe: false, sixSeven: false, skin: '#c68642', hair: '#111827', headband: '#38bdf8' },
+  yamalShirt: { color: '#dc2626', number: '19', numberColor: '#facc15', shorts: '#1d4ed8', head: '🌟', stripe: false, sixSeven: false },
   yamalRuns: true,
   yamalRunSpeed: 2.35,
   yamalSize: 65,
@@ -47,15 +48,15 @@ const GAME_CONFIG = {
   dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
   dracheBombSize: 38,
   dracheScratch: true,   // Malt glühende Krallen-Kratzer in die Luft
-  zeusEmoji: '⚡',
+  zeusEmoji: '🧔🏼‍♂️',     // 🧔🏼‍♂️ Zeus hat jetzt ein echtes Zeus-Logo (kein Blitz als Figur)!
   zeusSize: 74,
   zeusBomb: '⚡',        // ⚡ Zeus schleudert gezackte Blitze!
   zeusBombSize: 38,
   zeusBolt: true,        // Malt echte leuchtende Zickzack-Blitze
   zeusUnlockTrophies: 40, // 🔒 Für Zeus braucht man 40 Pokale!
 
-  // 🤝KOMBO: Yamal + Musiala im gleichen Team (20 Treffer gemeinsam!)
-  comboChargeHits: 20,
+  // 🤝KOMBO: 15 Treffer im Team!
+  comboChargeHits: 15,
   yamalMusialaCombo: { balls: 14, damage: 3, size: 42 },
   yamalShot: { damage: 6, speed: 9.5, size: 54 },
 
@@ -85,20 +86,20 @@ const GAME_CONFIG = {
   cpuThrowMs: 1200,      // 🤖 Schnelleres Wurf-Tempo der Bots
   throwCooldownMs: 240,  // Mindestpause zwischen zwei Würfen derselben Figur
   playerMoveSpeed: 4.4,  // 🕹️ Bewegungs-Tempo mit Joystick / WASD
-  // ⚡ Spezialkräfte – specials.js
-  specialChargeHits: 20,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
+  // ⚡ Spezialkräfte – specials.js (15 Treffer statt 20!)
+  specialChargeHits: 15,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
   cpuSpecialChance: 0.68,    // Bots nutzen ihre Spezialkraft öfter!
-  bigBall: { size: 80, damage: 6, speed: 7.5, seconds: 5 }, // ⚽ Musiala/GOAT Riesenball
+  bigBall: { size: 80, damage: 10, speed: 7.5, seconds: 5 }, // ⚽ Musiala/GOAT Riesenball (10 Schaden!)
   miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
   catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen
-  catDamage: 4,                                              // 🐱 Schaden beim Draufspringen
+  catDamage: 12,                                            // 🐱 Schaden beim Katersprung
   hideSeconds: 6,                                           // 🐭🕳️ So lange ist die Maus versteckt
-  popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
-  fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
-  dragonBite: { damage: 6, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
-  zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 2 }, // ⚡🌩️ Zeus: 4 Sek. Blitz-Regen im roten Kreis!
-  maxHits: 20, // 💀 So viele Treffer hält eine Figur im normalen Modus aus
-  trophyLives: 50, // 🏆 Im Pokal-Modus hat jede Figur 50 Leben!
+  popcorn: { count: 10, damage: 2, size: 26 },              // 🌽🍿 Popcorn-Regen (je 2 Schaden)
+  fireSpear: { damage: 12, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔱 Brennender Dreizack
+  dragonBite: { damage: 14, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
+  zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 3 }, // ⚡🌩️ Zeus: 4 Sek. Blitz-Regen im roten Kreis!
+  maxHits: 20, // 💀 Basis-Treffer im normalen Modus (Goat = 100 Leben bei 20 Leben!)
+  trophyLives: 50, // 🏆 Im Pokal-Modus hat jede Figur 50 Leben (Goat = 250 Leben)!
   nameChangeCooldownDays: 7, // 🔒 Name erst nach 7 Tagen wieder änderbar!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
@@ -122,3 +123,92 @@ const GAME_CONFIG = {
   maxGrowingTrees: 14,
   treeEmojis: ['🌳', '🌲', '🌴', '🍄']
 };
+
+/**
+ * 📊 CHAR_STATS – Individuelle Werte für jeden Charakter!
+ * - hp: Basis-Leben (Goat = 100 Leben bei 20 Leben-Einstellung)
+ * - attackDamage: Schaden pro normalem Treffer
+ * - attackCooldown: Angriffs-Pause in Sekunden (wird auf dem Schieß-Knopf angezeigt!)
+ * - abilityDamage: Schaden der Spezialfähigkeit
+ * - speed: Bewegungs-Multiplikator (1.0 = normal)
+ */
+const CHAR_STATS = {
+  musiala: { // GOAT
+    name: 'GOAT',
+    hp: 100,
+    attackDamage: 4,
+    attackCooldown: 1.2, // alle 1.2 Sekunden schießen!
+    abilityDamage: 10,   // Riesenball: 10 Schaden
+    speed: 1.0           // normale Geschwindigkeit
+  },
+  kobold: {
+    name: 'Kobold',
+    hp: 110,
+    attackDamage: 3,
+    attackCooldown: 1.0, // alle 1.0s
+    abilityDamage: 8,
+    speed: 0.95
+  },
+  corn: {
+    name: 'Mais',
+    hp: 90,
+    attackDamage: 2,
+    attackCooldown: 0.6, // Schnellfeuer-Körner!
+    abilityDamage: 12,
+    speed: 0.9
+  },
+  katze: {
+    name: 'Katze',
+    hp: 85,
+    attackDamage: 4,
+    attackCooldown: 0.9,
+    abilityDamage: 12,
+    speed: 1.2          // flink & schnell!
+  },
+  maus: {
+    name: 'Maus',
+    hp: 75,
+    attackDamage: 3,
+    attackCooldown: 0.75,
+    abilityDamage: 0,   // Verstecken im Mauseloch
+    speed: 1.3          // schnellste Figur!
+  },
+  goblin: {
+    name: 'Goblin',
+    hp: 95,
+    attackDamage: 5,
+    attackCooldown: 1.3,
+    abilityDamage: 12,  // Brennender Dreizack + Brand
+    speed: 1.05
+  },
+  yamal: {
+    name: 'Yamal',
+    hp: 95,
+    attackDamage: 4,
+    attackCooldown: 1.1,
+    abilityDamage: 12,
+    speed: 1.15
+  },
+  drache: {
+    name: 'Drache',
+    hp: 130,            // Kräftiger Tank
+    attackDamage: 6,
+    attackCooldown: 1.6,
+    abilityDamage: 14,
+    speed: 0.85
+  },
+  zeus: {
+    name: 'Zeus',
+    hp: 140,            // Donnergott
+    attackDamage: 7,
+    attackCooldown: 1.5,
+    abilityDamage: 15,  // Donnersturm
+    speed: 1.0
+  }
+};
+
+function getCharStat(name, stat) {
+  const k = (typeof kindOf === 'function' ? kindOf(name) : name) || name;
+  const cfg = CHAR_STATS[k] || CHAR_STATS.musiala;
+  return cfg ? cfg[stat] : undefined;
+}

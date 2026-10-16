@@ -183,6 +183,17 @@ const COMBO_PAIRS = [
   }
 ];
 
+// 🔍 Prüft, ob Kombos in diesem Modus aktiviert sind:
+// - Nur im Team-Modus (oder „Alle zusammen“)
+// - Im normalen Team-Modus (!trophyMode) sind Kombos NUR bei 20 und 50 Leben aktiviert!
+function areCombosEnabled() {
+  if (!teamMode && playerTeam !== null) return false;
+  if (teamMode && !trophyMode) {
+    return GAME_CONFIG.maxHits === 20 || GAME_CONFIG.maxHits === 50;
+  }
+  return true;
+}
+
 // 🔍 Findet das passende Combo-Paar für zwei Figuren-Arten
 function getComboSpec(kind1, kind2) {
   for (const c of COMBO_PAIRS) {
@@ -194,7 +205,7 @@ function getComboSpec(kind1, kind2) {
 // 🤝 Sucht einen lebenden Team-Partner, mit dem `name` eine Combo machen kann!
 // Bevorzugt Partner, die schon viele Treffer gesammelt haben.
 function findComboPartnerInfo(name) {
-  if (!isAlive(name)) return null;
+  if (!areCombosEnabled() || !isAlive(name)) return null;
   const myKind = kindOf(name);
   let best = null;
   let bestCharge = -1;
@@ -222,6 +233,54 @@ function findComboPartnerInfo(name) {
 function findComboPartner(name) {
   const info = findComboPartnerInfo(name);
   return info ? info.partner : null;
+}
+
+// 📋 Gibt alle aktiven Combo-Paare in deinem aktuellen Team zurück (für den Extra-Kombo-Button über den Fähigkeits-Buttons!)
+function getPlayerTeamComboPairs() {
+  if (!areCombosEnabled()) return [];
+  const teamList = (teamMode ? chosenTeam : Object.keys(actors).filter(n => !actors[n].kind)).filter(isAlive);
+  if (teamList.length < 2) return [];
+  const need = GAME_CONFIG.specialChargeHits;
+  const pairs = [];
+  for (let i = 0; i < teamList.length; i++) {
+    for (let j = i + 1; j < teamList.length; j++) {
+      const a = teamList[i];
+      const b = teamList[j];
+      const spec = getComboSpec(kindOf(a), kindOf(b));
+      if (!spec) continue;
+      const charge = Math.max(actors[a].specialCharge || 0, actors[b].specialCharge || 0);
+      pairs.push({
+        a,
+        b,
+        spec,
+        charge,
+        ready: charge >= need,
+        involvesActive: a === playerActor || b === playerActor
+      });
+    }
+  }
+  // Kombos mit deiner aktuell gesteuerten Figur oder voller Ladung zuerst
+  pairs.sort((x, y) => (Number(y.ready) - Number(x.ready)) || (Number(y.involvesActive) - Number(x.involvesActive)) || (y.charge - x.charge));
+  return pairs;
+}
+
+// 💥 Löst gezielt die Team-Combo zwischen `a` und `b` aus (über den Extra-Kombo-Button!)
+function triggerTeamComboPair(a, b) {
+  if (!isPlaying || isPaused || !areCombosEnabled()) return false;
+  if (!isAlive(a) || !isAlive(b)) return false;
+  const spec = getComboSpec(kindOf(a), kindOf(b));
+  if (!spec) return false;
+  const need = GAME_CONFIG.specialChargeHits;
+  const charge = Math.max(actors[a].specialCharge || 0, actors[b].specialCharge || 0);
+  if (charge < need) return false;
+  const ok = spec.trigger(a, b);
+  if (!ok) return false;
+  actors[a].specialCharge = 0;
+  actors[b].specialCharge = 0;
+  actors[a].wiggle = 1;
+  actors[b].wiggle = 1;
+  updateSpecialBar();
+  return true;
 }
 
 // 📣 Fügt den goldenen Verbindungsstrahl + Combo-Titel zwischen den beiden Partnern hinzu

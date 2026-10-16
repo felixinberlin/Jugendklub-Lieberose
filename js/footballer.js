@@ -22,7 +22,7 @@ function updateFootballers() {
     if (isSixSeven(actor)) continue; // Beim Jubeln bleibt er stehen
     if (!actor.runDir) actor.runDir = 1;
 
-    const speed = (actorCfg(name, 'RunSpeed') || 1.5) * (teamMode ? 0.65 : 1);
+    const speed = (actorCfg(name, 'RunSpeed') || 1.5) * (teamMode ? 0.65 : 1) * (getCharStat(name, 'speed') || 1.0);
     const homeX = (actor.homeRx ?? 0.5) * width;
     const left = teamMode ? Math.max(46, homeX - 28) : width * 0.15;
     const right = teamMode ? Math.min(width - 46, homeX + 28) : width * 0.85;
