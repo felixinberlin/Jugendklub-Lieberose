@@ -360,29 +360,110 @@ function yamalMusialaCombo(name, partnerName) {
   return true;
 }
 
-// 🌟⚽ Yamals Solo-Spezialkraft (oder Kombo, wenn er mit Musiala/GOAT in einem Team ist!)
+let yamalStars = [];
+
+function clearYamalStars() {
+  yamalStars = [];
+}
+
+// 🌟💥 Lamine Yamal: Stern fliegt in die Mitte, explodiert dort und fügt einem zufälligen Spieler 12 Schaden zu!
 function yamalSpecial(name) {
-  const partner = findComboPartner(name);
-  if (partner) {
-    return yamalMusialaCombo(name, partner);
-  }
-  const targetName = targetOf(name);
-  if (!targetName) return false;
-  const cfg = GAME_CONFIG.yamalShot || { damage: 6, speed: 9.5, size: 54 };
-  // 3 schnelle goldene Winkel-Schüsse aufs Tor/Ziel!
-  for (let i = 0; i < 3; i++) {
-    launchArc(name, targetName, {
-      emoji: '⚽',
-      size: Math.round(cfg.size * (GAME_CONFIG.mapScale || 0.72)),
-      damage: Math.ceil(cfg.damage / 2),
-      special: true,
-      trail: '🌟',
-      flightFrames: 26 + i * 5
-    });
-  }
-  spawnParticles(actors[name].body.position.x, actors[name].body.position.y, '#facc15', 24);
+  const enemies = Object.keys(actors).filter(n => isAlive(n) && (teamMode ? teamOf(n) !== teamOf(name) : n !== name));
+  const victim = enemies.length ? enemies[Math.floor(Math.random() * enemies.length)] : targetOf(name);
+  if (!victim) return false;
+
+  const from = { ...actors[name].body.position };
+  const center = { x: width / 2, y: height / 2 };
+  const now = performance.now();
+
+  yamalStars.push({
+    shooter: name,
+    victim,
+    from,
+    center,
+    born: now,
+    exploded: false,
+    lifeMs: 1400
+  });
+
+  spawnParticles(from.x, from.y, '#facc15', 25);
   playSound('bigball');
   return true;
+}
+
+function updateYamalStars(now) {
+  for (let i = yamalStars.length - 1; i >= 0; i--) {
+    const s = yamalStars[i];
+    const elapsed = now - s.born;
+    if (elapsed > s.lifeMs) {
+      yamalStars.splice(i, 1);
+      continue;
+    }
+
+    // In der Mitte angekommen -> BUMM!
+    if (elapsed >= 360 && !s.exploded) {
+      s.exploded = true;
+      spawnParticles(s.center.x, s.center.y, '#facc15', 35);
+      spawnParticles(s.center.x, s.center.y, '#f59e0b', 25);
+      spawnParticles(s.center.x, s.center.y, '#ffffff', 20);
+      playSound('hit');
+
+      if (isAlive(s.victim) && !isHidden(s.victim)) {
+        applyHit(s.victim, s.shooter, 12, true); // 🌟💥 12 Schaden auf zufälligen Spieler!
+        const vPos = actors[s.victim].body.position;
+        spawnParticles(vPos.x, vPos.y, '#facc15', 25);
+        spawnParticles(vPos.x, vPos.y, '#ec4899', 15);
+      }
+    }
+  }
+}
+
+function drawYamalStars(now) {
+  for (const s of yamalStars) {
+    const elapsed = now - s.born;
+    ctx.save();
+    if (elapsed < 360) {
+      // 🌟 Stern fliegt in die Mitte
+      const p = elapsed / 360;
+      const curX = s.from.x + (s.center.x - s.from.x) * p;
+      const curY = s.from.y + (s.center.y - s.from.y) * p - Math.sin(p * Math.PI) * 45;
+      const starSize = 34 + p * 26;
+      ctx.translate(curX, curY);
+      ctx.rotate(elapsed * 0.02);
+      drawEmoji('🌟', 0, 0, starSize);
+      if (Math.random() < 0.6) spawnParticles(curX, curY, '#facc15', 1);
+    } else {
+      // 💥 Schockwelle und Laser-Strahl zum getroffenen Ziel
+      const post = (elapsed - 360) / (s.lifeMs - 360);
+      const alpha = Math.max(0, 1 - post);
+      ctx.globalAlpha = alpha;
+
+      // Goldener Schockwellen-Ring in der Mitte
+      const ringR = 25 + post * 90;
+      ctx.strokeStyle = '#facc15';
+      ctx.lineWidth = 4 * (1 - post);
+      ctx.beginPath();
+      ctx.arc(s.center.x, s.center.y, ringR, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Stern in der Mitte leuchtet kurz nach
+      if (post < 0.4) {
+        drawEmoji('💥', s.center.x, s.center.y, 60 * (1 - post * 1.5));
+      }
+
+      // Goldener Sternen-Blitzstrahl zum Ziel
+      if (isAlive(s.victim)) {
+        const vPos = actors[s.victim].body.position;
+        ctx.strokeStyle = '#fbbf24';
+        ctx.lineWidth = 4 * (1 - post);
+        ctx.beginPath();
+        ctx.moveTo(s.center.x, s.center.y);
+        ctx.lineTo(vPos.x, vPos.y);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
 }
 
 function drawComboEffects(now) {

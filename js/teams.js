@@ -94,11 +94,9 @@ function setupTeams() {
     perKind[kind] = (perKind[kind] || 1) + 1;
     const name = `${kind}_${i}`;
     const base = actors[kind];
-    const baseHp = getCharStat(kind, 'hp') || 100;
-    const scale = (typeof trophyMode !== 'undefined' && trophyMode)
-      ? (GAME_CONFIG.trophyLives / 20)
-      : (GAME_CONFIG.maxHits / 20);
-    const cloneMaxHp = Math.round(baseHp * scale);
+    const cloneMaxHp = (typeof trophyMode !== 'undefined' && trophyMode)
+      ? (getCharStat(kind, 'hp') || 100)
+      : GAME_CONFIG.maxHits;
     actors[name] = {
       kind, name: `${base.name} ${perKind[kind]}`, color: TEAM_COLORS.enemy,
       category: TEAM_BITS.enemy, target: null, sway: base.sway, body: null,

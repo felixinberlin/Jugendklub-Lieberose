@@ -89,17 +89,18 @@ const GAME_CONFIG = {
   // ⚡ Spezialkräfte – specials.js (15 Treffer statt 20!)
   specialChargeHits: 15,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
   cpuSpecialChance: 0.68,    // Bots nutzen ihre Spezialkraft öfter!
-  bigBall: { size: 80, damage: 10, speed: 7.5, seconds: 5 }, // ⚽ Musiala/GOAT Riesenball (10 Schaden!)
-  miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
-  catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen
-  catDamage: 12,                                            // 🐱 Schaden beim Katersprung
-  hideSeconds: 6,                                           // 🐭🕳️ So lange ist die Maus versteckt
-  popcorn: { count: 10, damage: 2, size: 26 },              // 🌽🍿 Popcorn-Regen (je 2 Schaden)
-  fireSpear: { damage: 12, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔱 Brennender Dreizack
+  bigBall: { size: 80, damage: 10, speed: 7.5, seconds: 5 }, // ⚽ Fußballer/GOAT: Großerball 10 Schaden
+  miniKobolds: { count: 3, seconds: 5 },                    // 🧌 3 kleine Kobolde bleiben 5 Sekunden um ihn
+  catStunSeconds: 4,                                        // 🐱🌪️ Katze: Wirbelsturm betäubt Gegner 4 Sekunden
+  catDamage: 5,                                             // 🐱 Wirbelsturm macht 5 Schaden
+  hideSeconds: 6,                                           // 🐭🕳️ Maus: Versteckt sich im Loch für 6 Sekunden
+  popcorn: { count: 5, damage: 4, size: 28 },               // 🌽🍿 Mais: Schmeißt 5 Popcorn, pro Popcorn 4 Schaden
+  fireSpear: { damage: 10, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔱 Goblin: Dreizack macht 10 Schaden
   dragonBite: { damage: 14, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
-  zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 3 }, // ⚡🌩️ Zeus: 4 Sek. Blitz-Regen im roten Kreis!
-  maxHits: 20, // 💀 Basis-Treffer im normalen Modus (Goat = 100 Leben bei 20 Leben!)
-  trophyLives: 50, // 🏆 Im Pokal-Modus hat jede Figur 50 Leben (Goat = 250 Leben)!
+  zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 5 }, // ⚡🌩️ Zeus: Blitzregen pro Treffer 5 Schaden!
+  yamalStar: { damage: 12, speed: 8.5, size: 48 },          // 🌟💥 Yamal: Stern explodiert in der Mitte & fügt zufälligem Spieler 12 Schaden zu
+  maxHits: 20, // 💀 Treffer im normalen Modus (wenn benutzerdefiniert angepasst)
+  trophyLives: 50, // 🏆 Pokal-Modus nutzt die exakten Charakter-Leben!
   nameChangeCooldownDays: 7, // 🔒 Name erst nach 7 Tagen wieder änderbar!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
@@ -126,84 +127,84 @@ const GAME_CONFIG = {
 
 /**
  * 📊 CHAR_STATS – Individuelle Werte für jeden Charakter!
- * - hp: Basis-Leben (Goat = 100 Leben bei 20 Leben-Einstellung)
+ * - hp: Basis-Leben im Ranglisten-/Pokal-Modus
  * - attackDamage: Schaden pro normalem Treffer
- * - attackCooldown: Angriffs-Pause in Sekunden (wird auf dem Schieß-Knopf angezeigt!)
+ * - attackCooldown: Angriffs-Pause in Sekunden (auf Schieß-Knopf angezeigt!)
  * - abilityDamage: Schaden der Spezialfähigkeit
- * - speed: Bewegungs-Multiplikator (1.0 = normal)
+ * - speed: Bewegungs-Tempo
  */
 const CHAR_STATS = {
-  musiala: { // GOAT
-    name: 'GOAT',
+  musiala: { // Fußballer / GOAT
+    name: 'Fußballer',
     hp: 100,
     attackDamage: 4,
-    attackCooldown: 1.2, // alle 1.2 Sekunden schießen!
-    abilityDamage: 10,   // Riesenball: 10 Schaden
-    speed: 1.0           // normale Geschwindigkeit
+    attackCooldown: 1.2, // 4/1.2s
+    abilityDamage: 10,   // Großerball: 10 Schaden
+    speed: 1.0           // 1.0 speed (normal schnell)
   },
   kobold: {
     name: 'Kobold',
-    hp: 110,
+    hp: 120,
     attackDamage: 3,
-    attackCooldown: 1.0, // alle 1.0s
-    abilityDamage: 8,
-    speed: 0.95
+    attackCooldown: 1.0, // 3/1.0s
+    abilityDamage: 8,    // 3 Mini-Kobolde
+    speed: 1.0           // 1.0 speed (normal schnell)
   },
   corn: {
     name: 'Mais',
-    hp: 90,
+    hp: 100,
     attackDamage: 2,
-    attackCooldown: 0.6, // Schnellfeuer-Körner!
-    abilityDamage: 12,
-    speed: 0.9
-  },
-  katze: {
-    name: 'Katze',
-    hp: 85,
-    attackDamage: 4,
-    attackCooldown: 0.9,
-    abilityDamage: 12,
-    speed: 1.2          // flink & schnell!
+    attackCooldown: 0.5, // 2/0.5s
+    abilityDamage: 20,   // 5 Popcorn je 4 Schaden
+    speed: 1.2           // 1.2 speed
   },
   maus: {
     name: 'Maus',
-    hp: 75,
+    hp: 105,
     attackDamage: 3,
-    attackCooldown: 0.75,
-    abilityDamage: 0,   // Verstecken im Mauseloch
-    speed: 1.3          // schnellste Figur!
+    attackCooldown: 0.9, // 3/0.9s
+    abilityDamage: 0,    // 6s im Loch
+    speed: 1.5           // 1.5 speed
+  },
+  katze: {
+    name: 'Katze',
+    hp: 110,
+    attackDamage: 5,
+    attackCooldown: 1.5, // 5/1.5s
+    abilityDamage: 5,    // Wirbelsturm: 5 Schaden + 4s Stun
+    speed: 1.2           // 1.2 speed
   },
   goblin: {
     name: 'Goblin',
-    hp: 95,
-    attackDamage: 5,
-    attackCooldown: 1.3,
-    abilityDamage: 12,  // Brennender Dreizack + Brand
-    speed: 1.05
+    hp: 100,
+    attackDamage: 4,
+    attackCooldown: 1.4, // 4/1.4s
+    abilityDamage: 10,   // Dreizack: 10 Schaden
+    speed: 1.4           // 1.4 speed
+  },
+  zeus: {
+    name: 'Zeus',
+    hp: 130,
+    attackDamage: 7,
+    attackCooldown: 2.3, // 7/2.3s
+    abilityDamage: 25,   // Blitzregen: pro Blitz 5 Schaden
+    speed: 1.5           // 1.5 speed
   },
   yamal: {
-    name: 'Yamal',
-    hp: 95,
+    name: 'Lamine Yamal',
+    hp: 105,
     attackDamage: 4,
-    attackCooldown: 1.1,
-    abilityDamage: 12,
-    speed: 1.15
+    attackCooldown: 1.4, // 4/1.4s
+    abilityDamage: 12,   // Sternen-Explosion in der Mitte: 12 Schaden
+    speed: 1.3           // 1.3 speed
   },
   drache: {
     name: 'Drache',
-    hp: 130,            // Kräftiger Tank
+    hp: 130,
     attackDamage: 6,
     attackCooldown: 1.6,
     abilityDamage: 14,
     speed: 0.85
-  },
-  zeus: {
-    name: 'Zeus',
-    hp: 140,            // Donnergott
-    attackDamage: 7,
-    attackCooldown: 1.5,
-    abilityDamage: 15,  // Donnersturm
-    speed: 1.0
   }
 };
 

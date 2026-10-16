@@ -27,24 +27,24 @@
 // Welche Figuren haben eine Spezialkraft?
 // `desc` = Erklärung für den Startbildschirm (mit den echten Zahlen aus config.js)
 const SPECIALS = {
-  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall,
-    desc: () => `Riesiger Fußball (${GAME_CONFIG.bigBall.damage} Treffer). Du lenkst ihn mit dem Finger!` },
-  yamal: { name: 'GOLD-SCHUSS', icon: '🌟', use: yamalSpecial,
-    desc: () => `3 goldene Winkel-Schüsse aufs Ziel!` },
+  musiala: { name: 'GROSSER BALL', icon: '⚽', use: bigBall,
+    desc: () => `Riesiger Fußball (${GAME_CONFIG.bigBall.damage} Schaden). Du lenkst ihn mit dem Finger!` },
+  yamal: { name: 'STERNEN-EXPLOSION', icon: '🌟', use: yamalSpecial,
+    desc: () => `Stern explodiert in der Mitte und fügt einem zufälligen Spieler ${GAME_CONFIG.yamalStar.damage} Schaden zu!` },
   kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis,
     desc: () => `${GAME_CONFIG.miniKobolds.count} Mini-Kobolde fangen ${GAME_CONFIG.miniKobolds.seconds} Sek. lang Bomben ab.` },
-  katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump,
-    desc: () => `Springt auf einen Gegner (${GAME_CONFIG.catDamage} Schaden). Der ist ${GAME_CONFIG.catStunSeconds} Sek. im Wirbel gefangen.` },
+  katze: { name: 'WIRBELSTURM', icon: '🌪️', use: catJump,
+    desc: () => `Wirbelsturm auf einen Gegner: betäubt ihn ${GAME_CONFIG.catStunSeconds} Sek. und macht ${GAME_CONFIG.catDamage} Schaden!` },
   corn: { name: 'POPCORN', icon: '🍿', use: popcorn,
-    desc: () => `${GAME_CONFIG.popcorn.count} Popcorn fliegen auf alle Gegner.` },
+    desc: () => `Schmeißt ${GAME_CONFIG.popcorn.count} Popcorn auf die Gegner (pro Popcorn ${GAME_CONFIG.popcorn.damage} Schaden)!` },
   goblin: { name: 'FEUER-DREIZACK', icon: '🔱', use: fireSpear,
-    desc: () => `Wirft einen brennenden Dreizack 🔱 durch alle in einer Reihe und lässt sie ${GAME_CONFIG.fireSpear.burnSeconds} Sek. brennen.` },
+    desc: () => `Wirft einen brennenden Dreizack 🔱 mit ${GAME_CONFIG.fireSpear.damage} Schaden!` },
   maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse,
     desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` },
   drache: { name: 'DRACHENBISS', icon: '🦷', use: dragonBite,
     desc: () => `Fliegt zum Gegner und beißt kräftig zu (${GAME_CONFIG.dragonBite.damage} Schaden)!` },
   zeus: { name: 'BLITZ-REGEN', icon: '🌩️', use: zeusStorm,
-    desc: () => `Markiert einen roten Kreis und lässt ${GAME_CONFIG.zeusStorm.seconds} Sek. lang Blitze regnen (ab ${GAME_CONFIG.zeusUnlockTrophies} 🏆)!` }
+    desc: () => `Lässt einen Blitzregen niedergehen (pro Treffer ${GAME_CONFIG.zeusStorm.damage} Schaden)!` }
 };
 
 function hasSpecial(name) {
@@ -124,6 +124,7 @@ function updateSpecials(now) {
   updateBurns(now);
   updateHiding(now);
   updateStorms(now);
+  if (typeof updateYamalStars === 'function') updateYamalStars(now);
   if (typeof updateCombos === 'function') updateCombos(now);
 }
 
@@ -133,6 +134,7 @@ function drawSpecials(now) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   drawStorms(now); // 🔴⚡ Roter Blitz-Regen-Kreis von Zeus
+  if (typeof drawYamalStars === 'function') drawYamalStars(now); // 🌟💥 Yamals Sternen-Explosion in der Mitte!
   if (typeof drawCombos === 'function') drawCombos(now); // 🤝💥 Alle 19 Team-Combos!
   for (const m of minis) {
     ctx.save();
@@ -168,6 +170,7 @@ function drawSpecials(now) {
 function resetSpecials(keepCharge = false) {
   clearMinis();
   clearStorms();
+  if (typeof clearYamalStars === 'function') clearYamalStars();
   if (typeof clearCombos === 'function') clearCombos();
   for (const name in actors) {
     const mine = playerTeam === null || playerTeam.includes(name);

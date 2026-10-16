@@ -58,7 +58,7 @@ const WISHES = [
   { v: '2.34', text: 'Lamine Yamal #19 🌟 mit GOAT-Kombo (20 Treffer) 🤝⚽, edle Pro-Skins ✨, Vollbild ⛶, 7-Tage-Namenssperre ⚙️, Pause im Normal-Modus ⏸️ & 1-Match-Solo 🎯' },
   { v: '2.35', text: 'Team-Bots mit Klick-Wechsel 🤖👆 & 19 Mega-Combos (Kobold wirft Mais 🧌🌽, Drache+Goblin Brand-Aura 🐉👺🔥 uvm.!) 💥' },
   { v: '2.36', text: 'Pokale 🏆 & Punkte 🎯 bleiben beim Neuladen im Browser gespeichert – mit „Auf 0 setzen“-Knopf 🔄' },
-  { v: '2.37', text: 'Individuelle Werte für alle Figuren (Leben, Schaden, Cooldown & Tempo) 🎯, brennender Dreizack 🔱🔥, 5 Solo-Gegner, Zeus-Logo 🧔🏼‍♂️, 15-Treffer-Spells, Extra-Kombo-Button & Fähigkeiten nebeneinander ⚡🤝' }
+  { v: '2.37', text: 'Exakte Werte für alle 8 Figuren (Goat 100 HP 4/1.2s 1.0x, Kobold 120 HP 3/1.0s, Mais 100 HP 2/0.5s 1.2x, Maus 105 HP 3/0.9s 1.5x, Katze 110 HP 5/1.5s 1.2x, Goblin 100 HP 4/1.4s 1.4x, Zeus 130 HP 7/2.3s 1.5x, Yamal 105 HP 4/1.4s 1.3x) 📊, Yamals Sternen-Explosion in der Mitte (12 Schaden) 🌟💥, 5 Popcorn je 4 Schaden 🍿, Dreizack 10 Schaden 🔱, Blitzregen 5 Schaden 🌩️ & Wirbel 5 Schaden 🌪️' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
