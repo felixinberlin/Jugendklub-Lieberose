@@ -38,6 +38,7 @@ function updateSpecialBar() {
     btn.querySelector('.sp-bar i').style.width = `${(charge / need) * 100}%`;
     btn.querySelector('.sp-count').textContent = ready ? 'BEREIT!' : `${charge}/${need}`;
   }
+  if (typeof updateControlHud === 'function') updateControlHud();
 }
 
 // ⚡ Kleines Blitz-Zeichen an der Figur: leuchtet, wenn die Kraft bereit ist

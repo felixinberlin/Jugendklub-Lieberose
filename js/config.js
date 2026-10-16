@@ -71,6 +71,7 @@ const GAME_CONFIG = {
   ],
   cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
   throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
+  playerMoveSpeed: 4.2,  // 🕹️ Bewegungs-Tempo mit Joystick / WASD
   // ⚡ Spezialkräfte (Knopf unten links) – specials.js
   specialChargeHits: 20,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
   cpuSpecialChance: 0.5,     // Wenn aufgeladen: wie oft Computer statt zu werfen ihre Kraft nutzen

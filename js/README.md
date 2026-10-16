@@ -23,6 +23,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | ⚽ [`special-weapons.js`](special-weapons.js) | **Spezialwaffen**: Riesenball, Popcorn, Feuerspeer und Brennen | ⭐⭐⭐ |
 | 🧌 [`special-moves.js`](special-moves.js) | **Schutz & Bewegung**: Mini-Kobolde, Katzensprung, Drachenbiss und Mauseloch | ⭐⭐⭐ |
 | 👆 [`special-ui.js`](special-ui.js) | **Kraft-Knöpfe**, Erklärungen und Fingersteuerung | ⭐⭐ |
+| 🕹️ [`controls.js`](controls.js) | **Querformat-Steuerung**: Joystick unten links / WASD, runder Schieß-Knopf / Linksklick & quadratischer Fähigkeits-Knopf / Taste F | ⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |

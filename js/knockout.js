@@ -65,6 +65,7 @@ function checkKnockout(name) {
 // Spiel vorbei: Gewinner anzeigen.
 function endGame(winner) {
   isPlaying = false;
+  if (typeof updateControlHud === 'function') updateControlHud();
   finalScoreEl.textContent = score;
   if (teamMode) {
     finishLevel(teamResult() === true); // 🏅 levels.js

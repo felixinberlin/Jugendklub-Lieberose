@@ -408,8 +408,8 @@ h2 {
 
 .sound-btn {
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  top: max(12px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: white;
@@ -422,6 +422,11 @@ h2 {
   align-items: center;
   pointer-events: auto;
   cursor: pointer;
+  z-index: 6;
+}
+
+#hud {
+  padding-right: 72px; /* Platz für den Ton-Knopf oben rechts */
 }
 
 .actor-btn {
@@ -545,6 +550,163 @@ h2 {
   font-size: 0.62rem;
   font-weight: 900;
   color: #bbf7d0;
+}
+
+/* 🕹️ Action-Steuerung: Unten links Joystick, unten rechts runder Schieß-Knopf + quadratischer Fähigkeits-Knopf darüber */
+.action-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+}
+.move-pad {
+  position: absolute;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: 118px;
+  height: 118px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.82) 100%);
+  border: 3px solid rgba(148, 163, 184, 0.55);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: auto;
+  touch-action: none;
+  cursor: pointer;
+}
+.move-pad.active {
+  border-color: #38bdf8;
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.65);
+}
+.pad-arrow {
+  position: absolute;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+}
+.pad-arrow.up { top: 6px; }
+.pad-arrow.down { bottom: 6px; }
+.pad-arrow.left { left: 8px; }
+.pad-arrow.right { right: 8px; }
+.move-stick {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #38bdf8, #2563eb);
+  border: 2px solid #e0f2fe;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.35rem;
+  pointer-events: none;
+  transition: transform 0.04s linear;
+}
+
+.right-controls {
+  position: absolute;
+  right: max(20px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+/* 🟦 Kleiner quadratischer Knopf für die Spezialfähigkeit (über dem Schieß-Knopf) */
+.ability-square-btn {
+  pointer-events: auto;
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 12px; /* Quadratisch mit leicht abgerundeten Ecken */
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  background: rgba(15, 23, 42, 0.78);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+  opacity: 0.82;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.45);
+}
+.ability-square-btn .ab-icon { font-size: 1.55rem; line-height: 1; filter: grayscale(0.75); }
+.ability-square-btn .ab-bar { width: 46px; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.22); overflow: hidden; }
+.ability-square-btn .ab-bar i { display: block; height: 100%; width: 0%; background: #facc15; }
+.ability-square-btn .ab-count { font-size: 0.72rem; font-weight: 900; }
+.ability-square-btn .key-hint {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  background: #1e293b;
+  border: 1.5px solid #94a3b8;
+  color: #f8fafc;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 5px;
+}
+.ability-square-btn.ready {
+  opacity: 1;
+  border-color: #ffde59;
+  background: linear-gradient(135deg, #7c3aed, #ff5e7e);
+  box-shadow: 0 0 18px rgba(255, 222, 89, 0.95);
+  animation: pulse 0.6s infinite alternate;
+}
+.ability-square-btn.ready .ab-icon { filter: none; }
+.ability-square-btn.pressed, .ability-square-btn:active { transform: scale(0.9); }
+
+/* 🔴 Großer runder Knopf zum Schießen unten rechts */
+.shoot-circle-btn {
+  pointer-events: auto;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%; /* Runder Kreis-Button */
+  border: 4px solid #fef08a;
+  background: radial-gradient(circle at 35% 30%, #ff5e7e, #dc2626);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.65);
+}
+.shoot-circle-btn .shoot-icon { font-size: 2.1rem; line-height: 1; }
+.shoot-circle-btn .shoot-label { font-size: 0.72rem; font-weight: 900; letter-spacing: 0.5px; }
+.shoot-circle-btn.pressed, .shoot-circle-btn:active {
+  transform: scale(0.9);
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.8);
+}
+
+/* 📱🔄 Querformat-Hinweis im Hochformat */
+.rotate-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 17, 30, 0.95);
+  z-index: 30;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 28px;
+  gap: 12px;
+  pointer-events: auto;
+}
+.rotate-icon { font-size: 3.6rem; animation: pulse 0.8s infinite alternate; }
+@media (orientation: portrait) and (max-width: 650px) {
+  .rotate-overlay:not(.dismissed) {
+    display: flex;
+  }
 }
 
 /* 📱↔️ Handy quer: Figuren-Auswahl in EINER Reihe (steht am Ende, damit es gewinnt) */

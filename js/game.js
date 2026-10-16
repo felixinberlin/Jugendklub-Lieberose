@@ -33,7 +33,9 @@ function startGame(keepCharge = false) {
   setupTeams();   // ⚔️ Team-Modus aufstellen (teams.js)
   startLevel();   // 🏅 Level-Schild & Anzeige (levels.js)
   setupPlayers(); // Wer spielt wen? (cpu.js)
-  setupSpecialBar(); // ⚡ Knöpfe unten links (specials.js)
+  setupSpecialBar(); // ⚡ Knöpfe aktualisieren (specials.js)
+  tryLockLandscape(); // 🔄 Querformat auf dem Handy (controls.js)
+  updateControlHud(); // 🕹️ Joystick + Schuss- & Fähigkeits-Knopf einblenden (controls.js)
 
   startScreen.classList.remove('active');
   modeScreen.classList.remove('active');
@@ -83,7 +85,8 @@ function gameLoop(now) {
     // 2. Matter.js Physik-Schritt
     Engine.update(engine, dt);
 
-    // 3. Fußballer dribbeln lassen, Bomben malen & aufräumen
+    // 3. Eigene Steuerung (WASD / Joystick), Fußballer, Computer & Bomben
+    updatePlayerControls(); // 🕹️ WASD & Joystick-Bewegung (controls.js)
     updateFootballers();
     updateCpu(now); // 🤖 Computer-Figuren werfen (cpu.js)
     updateSpecials(now); // ⚡ Riesenball lenken, Minis, Katzensprung (specials.js)

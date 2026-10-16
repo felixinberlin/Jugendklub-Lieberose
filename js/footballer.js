@@ -17,6 +17,7 @@ function updateFootballers() {
   for (const name in actors) {
     const actor = actors[name];
     if (!actorCfg(name, 'Shirt') || !actorCfg(name, 'Runs')) continue;
+    if (!isCpu(name)) continue; // 🕹️ Eigene Figur steuerst du selbst mit WASD / Joystick!
     if (!isAlive(name) || actor.dragging || isStunned(name) || actor.jump) continue; // 🌪️ Im Wirbel / Sprung stillstehen
     if (isSixSeven(actor)) continue; // Beim Jubeln bleibt er stehen
     if (!actor.runDir) actor.runDir = 1;
