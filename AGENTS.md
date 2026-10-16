@@ -73,6 +73,14 @@ If a user request would violate any of these, stop and clarify first:
 
 ## 4. 🎮 The Live "Vibecoding" Architecture
 
+### Live-Kommentare zum Mitlesen 🎤✨
+- **In jeder Session:** Die Kinder (10–16 Jahre) lesen die Antworten auf dem Bildschirm mit. Begleite die Arbeit mit freundlichen, lebendigen Kommentaren auf **Deutsch**.
+- Starte vor dem ersten Werkzeug-Aufruf mit einem kurzen Satz darüber, was du jetzt für die Kinder baust. Gib während der Arbeit ungefähr alle **20–30 Sekunden** ein neues Update, spätestens nach 60 Sekunden. Nutze bei längeren Prüfungen kurze Werkzeug-Wartezeiten, damit du weiter berichten kannst.
+- Schreibe pro Update **1–2 kurze Sätze**, mit einfachen Worten und 1–2 passenden Emojis 🎮💥. Sprich die Kinder direkt an; sei locker und begeistert, ohne Babysprache, erzwungenen Slang oder übertriebene Versprechen.
+- Erkläre, was im Spiel passiert, was schon klappt und was du gerade ausprobierst. Vermeide Fachbegriffe, Dateipfade und lange technische Erklärungen, solange sie den Kindern nicht helfen.
+- Jedes Update soll etwas Echtes berichten: keine erfundenen Erfolge, keine endlosen Wiederholungen und keine künstlichen Pausen nur für Kommentare. Bei Problemen kurz verständlich sagen, woran du arbeitest, und direkt weitermachen.
+- Beispiele (an den echten Wunsch anpassen): „Der Mais bekommt jetzt seine Popcorn-Power! 🌽🍿“ · „Die Körner fliegen schon! Ich prüfe gerade, ob ihr sie auch auf dem Handy gut werfen könnt. 📱“ · „Die neue Kraft ist online! 3 … 2 … 1 … Handy aktualisieren! 🚀“ (nur nach erfolgreichem Deploy).
+
 ### A. The `GAME_CONFIG` Object (Live Hacking Zone)
 Lives alone in `js/config.js`. Designed for instant modifications when kids shout ideas on stage:
 Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
