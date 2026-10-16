@@ -255,7 +255,8 @@ teamGoBtn.addEventListener('click', () => {
     }
   }
   playerTeam = chosenTeam.slice();
-  playerActor = null;
+  // Du steuerst aktiv die gewählte Figur – deine anderen Team-Figuren werden von Bots gesteuert (und du kannst per Klick wechseln!)
+  playerActor = pendingTeamPick;
   teamScreen.classList.remove('active');
   startGame(pendingTeamKeepCharge);
 });

@@ -105,11 +105,18 @@ if (pauseHomeBtn) {
   });
 }
 
-// Welche Figuren steuerst DU gerade?
+// Welche Figur steuerst DU gerade?
+// Im Solo- und im Team-Modus steuerst du immer `playerActor` –
+// deine anderen Team-Figuren werden von Bots gesteuert, bis du sie anklickst!
 function myControlledActors() {
-  if (playerTeam && playerTeam.length) return playerTeam.filter(isAlive);
   if (playerActor && isAlive(playerActor)) return [playerActor];
-  // Bei „Alle zusammen“: die erste lebende Original-Figur (oder alle eigenen)
+  if (playerTeam && playerTeam.length) {
+    const aliveMate = playerTeam.find(isAlive);
+    if (aliveMate) {
+      playerActor = aliveMate;
+      return [aliveMate];
+    }
+  }
   const first = Object.keys(actors).find(n => !actors[n].kind && isAlive(n));
   return first ? [first] : [];
 }
@@ -313,13 +320,29 @@ window.addEventListener('blur', () => {
   clearInterval(shootHoldTimer);
 });
 
-// 🖱️ Linke Maustaste auf dem Spielfeld = Schießen!
+// 🖱️👆 Klick / Tipp auf das Spielfeld:
+// - Im Team-Modus: Wenn du auf eine andere Figur aus deinem Team klickst, übernimmst du sofort ihre Steuerung!
+// - Sonst mit linker Maustaste: Schießen!
 canvas.addEventListener('pointerdown', (event) => {
-  if (!isPlaying || isPaused || event.pointerType !== 'mouse' || event.button !== 0) return;
+  if (!isPlaying || isPaused) return;
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
-  triggerPlayerShoot(x, y);
+
+  if (teamMode) {
+    for (const mate of chosenTeam) {
+      if (mate === playerActor || !isAlive(mate)) continue;
+      const p = actors[mate].body.position;
+      if (Math.hypot(p.x - x, p.y - y) < 48) {
+        if (typeof switchActiveTeamActor === 'function') switchActiveTeamActor(mate);
+        return;
+      }
+    }
+  }
+
+  if (event.pointerType === 'mouse' && event.button === 0) {
+    triggerPlayerShoot(x, y);
+  }
 });
 
 // ---------- 🏃 In jedem Bild: Eigene Figur(en) mit WASD oder Joystick bewegen ----------

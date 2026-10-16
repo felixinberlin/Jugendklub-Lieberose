@@ -118,7 +118,11 @@ for (const name in actors) {
   let drag = null;
   let suppressClick = false;
   button.addEventListener('pointerdown', (event) => {
-    if (!isPlaying || drag || event.button !== 0) return;
+    if (!isPlaying || isPaused || drag || event.button !== 0) return;
+    // 👆 Im Team-Modus: Klick auf einen anderen Charakter deines Teams wechselt sofort zu ihm!
+    if (teamMode && chosenTeam.includes(name) && name !== playerActor) {
+      if (typeof switchActiveTeamActor === 'function') switchActiveTeamActor(name);
+    }
     if (isStunned(name) || actors[name].jump) return; // 🌪️ Im Wirbel / im Sprung: nicht ziehen (specials.js)
     initAudio();
     const body = actors[name].body;
@@ -155,6 +159,10 @@ for (const name in actors) {
   button.addEventListener('click', (event) => {
     if (suppressClick && event.detail !== 0) { suppressClick = false; return; }
     initAudio();
+    if (teamMode && chosenTeam.includes(name) && name !== playerActor) {
+      if (typeof switchActiveTeamActor === 'function') switchActiveTeamActor(name);
+      return;
+    }
     shootBomb(name);
   });
 }

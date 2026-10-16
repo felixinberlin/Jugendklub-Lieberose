@@ -15,9 +15,35 @@ function cpuThrowMs() {
   return level() ? level().throwMs : GAME_CONFIG.cpuThrowMs;
 }
 
-// Spielt der Computer diese Figur?
+// Spielt der Computer (Bot) diese Figur?
+// Im Solo- UND im Team-Modus steuerst du immer `playerActor` selbst –
+// alle anderen Figuren (auch deine restlichen Team-Kameraden!) werden von schlauen Bots gesteuert!
 function isCpu(name) {
-  return playerTeam !== null && !playerTeam.includes(name);
+  if (playerTeam === null) return false; // „Alle zusammen“
+  return name !== playerActor;
+}
+
+// 👆 Im Team-Modus auf einen anderen Charakter deines Teams klicken → sofort wechseln!
+// Der vorherige Charakter wird ab sofort automatisch vom Team-Bot weitergesteuert.
+function switchActiveTeamActor(name) {
+  if (!teamMode || !isPlaying || !chosenTeam.includes(name) || !isAlive(name)) return false;
+  if (playerActor === name) return false;
+  playerActor = name;
+  const pos = actors[name].body.position;
+  spawnParticles(pos.x, pos.y, '#38bdf8', 18);
+  spawnParticles(pos.x, pos.y, '#ffde59', 12);
+  playSound('point');
+  for (const n in actors) {
+    const btn = actorBtn(n);
+    if (btn) {
+      // Eigene Team-Figuren bleiben immer anklickbar zum Wechseln!
+      const lockBtn = isCpu(n) && !(teamMode && chosenTeam.includes(n));
+      btn.classList.toggle('cpu', lockBtn);
+    }
+  }
+  if (typeof updateControlHud === 'function') updateControlHud();
+  if (typeof setupSpecialBar === 'function') setupSpecialBar();
+  return true;
 }
 
 // Solo-Spiel nach der Modus-Auswahl (Pokale oder Normal) starten
@@ -25,7 +51,7 @@ function startSoloGame(name) {
   playerActor = name;
   playerTeam = [name];
   teamMode = false;
-  currentLevel = 0; // Immer bei Level 1 anfangen (levels.js)
+  currentLevel = 0;
   nextLevel = 0;
   startGame();
 }
@@ -58,32 +84,38 @@ function chooseAndStart(name) {
   openModeChoice({ type: 'solo', actor: name });
 }
 
-// Wird bei jedem Start aufgerufen: Knöpfe der Computer-Figuren sperren,
-// Startplatz merken und Computer-Würfe neu planen.
+// Wird bei jedem Start aufgerufen: Knöpfe der Gegner-Figuren sperren (eigene Team-Figuren bleiben anklickbar zum Wechseln!),
+// Startplatz merken und Bot-Würfe neu planen.
 function setupPlayers() {
   const now = performance.now();
   cpuNextThrow = {};
+  if (teamMode && (!playerActor || !chosenTeam.includes(playerActor) || !isAlive(playerActor))) {
+    playerActor = chosenTeam.find(isAlive) || chosenTeam[0] || null;
+  }
   for (const name in actors) {
     const actor = actors[name];
     const btn = actorBtn(name);
-    if (btn) btn.classList.toggle('cpu', isCpu(name));
+    if (btn) {
+      const lockBtn = isCpu(name) && !(teamMode && chosenTeam.includes(name));
+      btn.classList.toggle('cpu', lockBtn);
+    }
     actor.homeRx = actor.body.position.x / width;
     actor.homeRy = actor.body.position.y / height;
     actor.goalDx = 0;
     actor.goalDy = 0;
     actor.nextMove = now + 450 + Math.random() * 600;
     actor.cpuAim = null;
-    cpuNextThrow[name] = now + 1100 + Math.random() * cpuThrowMs() * 0.7;
+    cpuNextThrow[name] = now + 900 + Math.random() * cpuThrowMs() * 0.7;
   }
 }
 
-// 🎯 Wen greift die Computer-Figur an? Überspringt versteckte Mäuse im Mauseloch,
-// zielt in höheren Leveln öfter auf dich und wechselt im Team-Modus die Ziele durch.
+// 🎯 Wen greift die Bot-Figur an?
+// Im Team-Modus greifen deine Team-Bots die roten Gegner an und Gegner-Bots dein Team!
 function pickCpuTarget(name) {
   if (teamMode) {
-    const alive = playerTeam.filter(isAlive);
-    const visible = alive.filter(n => !isHidden(n));
-    const pool = visible.length ? visible : alive;
+    const foes = enemiesOf(name);
+    const visible = foes.filter(n => !isHidden(n));
+    const pool = visible.length ? visible : foes;
     if (!pool.length) return null;
     if (Math.random() < 0.65) return nearestEnemy(name);
     return pool[Math.floor(Math.random() * pool.length)];
@@ -117,15 +149,15 @@ function hasIncomingBomb(name) {
 // und weichen anfliegenden Geschossen und Zeus-Gewitterkreisen aktiv aus!
 function moveCpuActor(name, now) {
   const actor = actors[name];
-  if (actorCfg(name, 'Shirt') && actorCfg(name, 'Runs')) return; // GOAT dribbelt in footballer.js
+  if (actorCfg(name, 'Shirt') && actorCfg(name, 'Runs')) return; // GOAT & Yamal dribbeln in footballer.js
   if (actor.dragging || isStunned(name) || actor.jump || isHidden(name)) return;
 
   const pos = actor.body.position;
   const homeX = (actor.homeRx ?? pos.x / width) * width;
   const homeY = (actor.homeRy ?? pos.y / height) * height;
-  const lv = Math.min(1, currentLevel / 4); // 0 in Level 1 → 1 ab Level 5
-  const maxR = teamMode ? (42 + lv * 48) * teamScale() : (75 + lv * 95);
-  const speed = (1.65 + lv * 1.35) * (teamMode ? 0.85 : 1);
+  const lv = Math.min(1, currentLevel / 4);
+  const maxR = teamMode ? (48 + lv * 52) * teamScale() : (75 + lv * 95);
+  const speed = (1.65 + lv * 1.35) * (teamMode ? 0.88 : 1);
 
   // ⚡🔴 Steht der Bot in einem roten Blitz-Kreis von Zeus? Sofort rausrennen!
   if (typeof zeusStorms !== 'undefined') {
@@ -152,11 +184,9 @@ function moveCpuActor(name, now) {
     const dy = pos.y - b.position.y;
     const dist = Math.hypot(dx, dy);
     if (dist > 0 && dist < 175) {
-      // Quer zur Flugrichtung der Bombe ausweichen (Sidestep)
       const vx = b.velocity.x || 1;
       const vy = b.velocity.y || 0;
       const vLen = Math.hypot(vx, vy) || 1;
-      // Normalenvektor quer zur Schusslinie
       let sx = -vy / vLen;
       let sy = vx / vLen;
       if (sx * dx + sy * dy < 0) { sx = -sx; sy = -sy; }
@@ -186,11 +216,11 @@ function moveCpuActor(name, now) {
     const step = Math.min(dist, speed);
     moveActor(name, pos.x + (dx / dist) * step, pos.y + (dy / dist) * step);
   } else {
-    actor.nextMove = now; // Sofort nächstes Ziel wählen, nie lange stillstehen!
+    actor.nextMove = now;
   }
 }
 
-// 🤖 In jedem Bild: Computer-Figuren bewegen sich, wehren ab und werfen schnell.
+// 🤖 In jedem Bild: Alle Bot-Figuren (auch deine KI-Teamkollegen!) bewegen sich, nutzen Combos und werfen.
 function updateCpu(now) {
   if (playerTeam === null) return;
   for (const name in actors) {
@@ -206,11 +236,13 @@ function updateCpu(now) {
       }
     }
 
-    if (cpuNextThrow[name] === undefined) cpuNextThrow[name] = now + 1100 + Math.random() * cpuThrowMs();
+    if (cpuNextThrow[name] === undefined) cpuNextThrow[name] = now + 900 + Math.random() * cpuThrowMs();
     if (now >= cpuNextThrow[name]) {
       const target = pickCpuTarget(name);
-      // ⚡ Spezialkraft nutzen – aber nicht verschwenden, wenn das Ziel im Mauseloch versteckt ist
-      if (target && !isHidden(target) && Math.random() < GAME_CONFIG.cpuSpecialChance) {
+      // 🤝⚡ Bots kennen die Combos! Wenn eine Team-Combo bereit ist, zünden sie die Combo sofort!
+      const hasComboReady = specialReady(name) && typeof findComboPartnerInfo === 'function' && Boolean(findComboPartnerInfo(name));
+      const specialChance = hasComboReady ? 0.92 : GAME_CONFIG.cpuSpecialChance;
+      if (target && !isHidden(target) && Math.random() < specialChance) {
         actors[name].cpuAim = target;
         const used = trySpecial(name);
         actors[name].cpuAim = null;
@@ -220,18 +252,21 @@ function updateCpu(now) {
         }
       }
       shootBomb(name, target);
-      // Nach jedem Schuss direkt weiterbewegen (Strafe wie echte Spieler)
       actors[name].nextMove = Math.min(actors[name].nextMove || Infinity, now + 140);
       cpuNextThrow[name] = now + cpuThrowMs() * (0.45 + Math.random() * 0.55);
     }
   }
 }
 
-// ⭐ „DU“-Markierung über der eigenen Figur (wird in drawActors aufgerufen).
+// ⭐ „DU“-Markierung über der aktuell gesteuerten Figur – und „🤖 BOT · KLICK“ über deinen anderen Team-Kameraden!
 function drawPlayerMarker(name, now) {
-  if (name !== playerActor) return;
-  const y = -52 + Math.sin(now / 200) * 3;
-  drawLabel('⭐ DU ⭐', 0, y, { size: 14, weight: '900', fill: '#ffde59', stroke: '#111827', lineWidth: 4 });
+  if (name === playerActor) {
+    const y = -52 + Math.sin(now / 200) * 3;
+    drawLabel('⭐ DU ⭐', 0, y, { size: 14, weight: '900', fill: '#ffde59', stroke: '#111827', lineWidth: 4 });
+  } else if (teamMode && chosenTeam.includes(name)) {
+    const y = -50 + Math.sin(now / 240) * 2;
+    drawLabel('🤖 BOT · KLICK', 0, y, { size: 10, weight: '800', fill: '#93c5fd', stroke: '#0f172a', lineWidth: 3 });
+  }
 }
 
 // 👇 Auswahl-Knöpfe auf dem Startbildschirm bauen – eine Kachel pro Figur.

@@ -68,13 +68,21 @@ for (const type of ['pointerup', 'pointercancel']) {
   });
 }
 
-// 📖 Startbildschirm: Spezialkräfte erklären + kleines Symbol auf jeder Figur-Kachel
+// 📖 Startbildschirm: Spezialkräfte & alle 19 Team-Combos erklären
 function buildSpecialsInfo() {
   const list = document.getElementById('specialsList');
-  let html = `<p class="sp-how">🎯 Triff ${GAME_CONFIG.specialChargeHits}-mal → der Knopf unten links leuchtet → antippen!</p>`;
+  let html = `<p class="sp-how">🎯 Triff ${GAME_CONFIG.specialChargeHits}-mal → Fähigkeit auf <b>F</b> / 🟦⚡ bereit!</p>`;
   for (const name in SPECIALS) {
     const sp = SPECIALS[name];
     html += `<p class="sp-row"><b>${actorEmoji(name)} ${actors[name].name} · ${sp.icon} ${sp.name}</b><br>${sp.desc()}</p>`;
+  }
+  if (typeof COMBO_PAIRS !== 'undefined') {
+    html += `<p class="sp-how" style="margin-top:14px">🤝 <b>ALLE ${COMBO_PAIRS.length} TEAM-COMBOS (20 Treffer gemeinsam im Team!):</b></p>`;
+    for (const c of COMBO_PAIRS) {
+      const nameA = actors[c.a] ? actors[c.a].name : c.a.toUpperCase();
+      const nameB = actors[c.b] ? actors[c.b].name : c.b.toUpperCase();
+      html += `<p class="sp-row"><b>${c.icon} ${nameA} + ${nameB} → ${c.name}</b><br>${c.desc}</p>`;
+    }
   }
   list.innerHTML = html;
   for (const tile of document.querySelectorAll('#pickGrid .pick-btn, #teamGrid .pick-btn')) {

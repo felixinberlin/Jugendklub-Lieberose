@@ -47,8 +47,14 @@ function checkKnockout(name) {
   if (btn) btn.style.display = 'none';
   updateSpecialBar(); // ⚡ Knopf der Figur verschwindet (specials.js)
 
-  // ⚔️ Team-Modus: Ist ein ganzes Team raus?
+  // ⚔️ Team-Modus: Ist deine gerade gesteuerte Figur raus, übernimmst du sofort die nächste lebende Team-Figur!
   if (teamMode) {
+    if (name === playerActor) {
+      const nextMate = chosenTeam.find(isAlive);
+      if (nextMate && typeof switchActiveTeamActor === 'function') {
+        switchActiveTeamActor(nextMate);
+      }
+    }
     const result = teamResult();
     if (result !== null) endGame(result ? chosenTeam.find(isAlive) : null);
     return;

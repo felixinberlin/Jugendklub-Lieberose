@@ -27,13 +27,10 @@
 // Welche Figuren haben eine Spezialkraft?
 // `desc` = Erklärung für den Startbildschirm (mit den echten Zahlen aus config.js)
 const SPECIALS = {
-  musiala: { name: 'RIESENBALL / KOMBO', icon: '⚽', use: (name) => {
-      const partner = findComboPartner(name);
-      return partner ? yamalMusialaCombo(name, partner) : bigBall(name);
-    },
-    desc: () => `Riesiger Fußball (${GAME_CONFIG.bigBall.damage} Treffer) – oder im Team mit YAMAL nach 20 gemeinsamen Treffern die MEGA-KOMBO 🤝⚽!` },
-  yamal: { name: 'GOLD-SCHUSS / KOMBO', icon: '🌟', use: yamalSpecial,
-    desc: () => `Goldene Traumtor-Salve – und im gleichen Team mit GOAT/Musiala (20 Treffer gemeinsam): DOPPELPASS-KOMBO 🤝⚽🌟!` },
+  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall,
+    desc: () => `Riesiger Fußball (${GAME_CONFIG.bigBall.damage} Treffer). Du lenkst ihn mit dem Finger!` },
+  yamal: { name: 'GOLD-SCHUSS', icon: '🌟', use: yamalSpecial,
+    desc: () => `3 goldene Winkel-Schüsse aufs Ziel!` },
   kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis,
     desc: () => `${GAME_CONFIG.miniKobolds.count} Mini-Kobolde fangen ${GAME_CONFIG.miniKobolds.seconds} Sek. lang Bomben ab.` },
   katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump,
@@ -54,18 +51,19 @@ function hasSpecial(name) {
   return Boolean(SPECIALS[kindOf(name)]);
 }
 
-// Aufgeladen? (20 Treffer mit normalen Würfen – oder 20 Treffer GEMEINSAM bei Yamal + Musiala im Team!)
+// Aufgeladen? (20 Treffer mit normalen Würfen – oder 20 Treffer GEMEINSAM mit einem Combo-Partner im selben Team!)
 function specialReady(name) {
   return hasSpecial(name) && (actors[name].specialCharge || 0) >= GAME_CONFIG.specialChargeHits;
 }
 
-// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft lädt auf.
-// 🤝 Wenn Yamal & Musiala im selben Team sind, zählen ihre 20 Treffer GEMEINSAM!
+// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft / Team-Combo lädt auf.
+// 🤝 Wenn zwei Figuren im selben Team ein Combo-Paar bilden, zählen ihre 20 Treffer GEMEINSAM!
 function chargeSpecial(name) {
   if (!hasSpecial(name)) return;
   const need = GAME_CONFIG.specialChargeHits;
-  const partner = typeof findComboPartner === 'function' ? findComboPartner(name) : null;
-  if (partner && actors[partner]) {
+  const comboInfo = typeof findComboPartnerInfo === 'function' ? findComboPartnerInfo(name) : null;
+  if (comboInfo && actors[comboInfo.partner]) {
+    const partner = comboInfo.partner;
     const shared = Math.min(need, Math.max(actors[name].specialCharge || 0, actors[partner].specialCharge || 0) + 1);
     actors[name].specialCharge = shared;
     actors[partner].specialCharge = shared;
@@ -82,18 +80,24 @@ function isStunned(name) {
   return actors[name] && actors[name].stunnedUntil > performance.now();
 }
 
-// Kraft auslösen. Gibt true zurück, wenn es geklappt hat.
+// Kraft oder Team-Combo auslösen (wird sowohl vom Spieler als auch von den Bots genutzt!).
 function trySpecial(name) {
-  if (!isPlaying || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
+  if (!isPlaying || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
   if (!specialReady(name)) return false;
-  const partner = typeof findComboPartner === 'function' ? findComboPartner(name) : null;
-  const used = SPECIALS[kindOf(name)].use(name);
+  const comboInfo = typeof findComboPartnerInfo === 'function' ? findComboPartnerInfo(name) : null;
+  let used = false;
+  if (comboInfo && actors[comboInfo.partner]) {
+    used = tryTriggerCombo(name);
+    if (used) {
+      actors[comboInfo.partner].specialCharge = 0;
+      actors[comboInfo.partner].wiggle = 1;
+    }
+  }
+  if (!used) {
+    used = SPECIALS[kindOf(name)].use(name);
+  }
   if (used === false) return false;
   actors[name].specialCharge = 0; // Wieder von vorn aufladen
-  if (partner && actors[partner]) {
-    actors[partner].specialCharge = 0; // Gemeinsame Kombo-Ladung verbraucht
-    actors[partner].wiggle = 1;
-  }
   actors[name].wiggle = 1;
   updateSpecialBar();
   return true;
@@ -108,15 +112,16 @@ function updateSpecials(now) {
   updateBurns(now);
   updateHiding(now);
   updateStorms(now);
+  if (typeof updateCombos === 'function') updateCombos(now);
 }
 
-// Malt Mini-Kobolde und Wirbelwolken (nach den Figuren, damit sie obendrauf sind)
+// Malt Mini-Kobolde, Wirbelwolken & alle 19 Team-Combos
 function drawSpecials(now) {
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   drawStorms(now); // 🔴⚡ Roter Blitz-Regen-Kreis von Zeus
-  drawComboEffects(now); // 🤝⚽🌟 Doppelpass-Kombo von Yamal & GOAT
+  if (typeof drawCombos === 'function') drawCombos(now); // 🤝💥 Alle 19 Team-Combos!
   for (const m of minis) {
     ctx.save();
     ctx.translate(m.body.position.x, m.body.position.y);
@@ -151,7 +156,7 @@ function drawSpecials(now) {
 function resetSpecials(keepCharge = false) {
   clearMinis();
   clearStorms();
-  activeComboLinks = [];
+  if (typeof clearCombos === 'function') clearCombos();
   for (const name in actors) {
     const mine = playerTeam === null || playerTeam.includes(name);
     if (!keepCharge || !mine) actors[name].specialCharge = 0;
