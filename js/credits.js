@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.27';
+const GAME_VERSION = '2.28';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -48,7 +48,8 @@ const WISHES = [
   { v: '2.24', text: 'Die Maus kann sich verstecken 🐭🕳️ – 6 Sekunden kein Schaden' },
   { v: '2.25', text: 'Spezialkraft-Treffer bleiben fürs nächste Level ⚡➡️' },
   { v: '2.26', text: 'Spezialkräfte werden am Anfang erklärt 📖⚡' },
-  { v: '2.27', text: 'Link zum Code für Eltern 👨‍👩‍👧' }
+  { v: '2.27', text: 'Link zum Code für Eltern 👨‍👩‍👧' },
+  { v: '2.28', text: 'Schlaue Computer-Gegner 🤖 – bewegen sich, wehren ab & flüchten vor dem Riesenball ⚽' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
