@@ -20,6 +20,7 @@
 // keepCharge = true: Deine Spezialkraft-Ladung bleibt (beim Weiter ins nächste Level)
 function startGame(keepCharge = false) {
   initAudio();
+  applyModeLives(); // 🏆 100 Leben im Pokal-Modus, sonst die gewählten Leben (trophies.js)
   isPlaying = true;
   score = 0;
   scoreEl.textContent = score;
@@ -35,7 +36,9 @@ function startGame(keepCharge = false) {
   setupSpecialBar(); // ⚡ Knöpfe unten links (specials.js)
 
   startScreen.classList.remove('active');
+  modeScreen.classList.remove('active');
   teamScreen.classList.remove('active');
+  hideLeaderboard();
   hideCredits();
   gameOverScreen.classList.remove('active');
   newRecordMsgEl.style.display = 'none';
@@ -44,6 +47,21 @@ function startGame(keepCharge = false) {
 // NOCHMAL / WEITER: startet das Level, das finishLevel() ausgesucht hat
 restartBtn.addEventListener('click', () => {
   const nextOne = nextLevel > currentLevel; // „WEITER“ ins nächste Level?
+  if (teamMode) {
+    // Nach Level 8 komplett neu starten → wieder bei Level 1 mit 1. Figur anfangen
+    if (nextLevel === 0 && currentLevel > 0) {
+      gameOverScreen.classList.remove('active');
+      startNewTeamRun();
+      return;
+    }
+    // Neues Level im Team-Modus & noch nicht alle Figuren im Team → nächste Figur wählen!
+    if (nextOne && chosenTeam.length < baseActorNames().length) {
+      currentLevel = nextLevel;
+      gameOverScreen.classList.remove('active');
+      openTeamPickForLevel(true);
+      return;
+    }
+  }
   currentLevel = nextLevel;
   startGame(nextOne); // ⚡ Beim Weiter bleiben deine gesammelten Treffer für die Spezialkraft
 });

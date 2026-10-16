@@ -17,6 +17,7 @@
       <div id="hud">
         <div class="hud-item">TREFFER: <span id="score">0</span></div>
         <div id="levelHud" class="hud-item" hidden>LEVEL <span id="level">1</span></div>
+        <div id="trophyHud" class="hud-item trophy-hud">🏆 <span id="trophies">0</span></div>
         <div class="hud-item" hidden>REKORD: <span id="highScore">0</span></div>
       </div>
 
@@ -38,10 +39,40 @@
         <p class="pick-title">Wen spielst DU? 👇 (Solo, 5 Level)</p>
         <div id="pickGrid" class="pick-grid"></div>
         <button id="teamModeBtn" class="btn">⚔️ TEAM-MODUS</button>
+        <button id="leaderboardStartBtn" class="btn btn-trophy">🏆 RANGLISTE</button>
         <button id="startBtn" class="btn btn-small">👥 ALLE ZUSAMMEN</button>
         <button id="creditsStartBtn" class="btn btn-small">🎬 ABSPANN</button>
         <p class="parents-link">👨‍👩‍👧 Für Eltern: So ist das Spiel gebaut –
           <a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">den ganzen Code ansehen ↗</a></p>
+      </div>
+
+      <!-- 🏆 Modus-Auswahl: Mit Pokalen (100 Leben) oder Normal (Leben einstellbar) -->
+      <div id="modeScreen" class="overlay-screen">
+        <h2 id="modeScreenTitle">WIE WILLST DU SPIELEN?</h2>
+        <p id="modeScreenSub" class="team-hint"></p>
+        <div class="mode-card trophy-card">
+          <h3>🏆 MIT POKALEN</h3>
+          <p>Immer <b>💀 100 Leben</b> · Sammle Pokale für die Rangliste!</p>
+          <button id="playTrophyBtn" class="btn btn-trophy">🏆 MIT POKALEN (100 ❤️)</button>
+        </div>
+        <div class="mode-card normal-card">
+          <h3>🎮 NORMAL</h3>
+          <p>Stell selbst ein, wie viele Leben jede Figur hat:</p>
+          <div class="hits-row mode-hits-row">
+            <span class="hits-label">💀 Leben:</span>
+            <div id="modeHitsChoice" class="hits-choice"></div>
+          </div>
+          <button id="playNormalBtn" class="btn">🎮 NORMAL SPIELEN</button>
+        </div>
+        <button id="modeBackBtn" class="btn btn-small">⬅️ Zurück</button>
+      </div>
+
+      <!-- 🏆 Rangliste (trophies.js) -->
+      <div id="leaderboardScreen" class="overlay-screen">
+        <h2>🏆 POKAL-RANGLISTE 🏆</h2>
+        <div id="myTrophyBanner" class="trophy-banner"></div>
+        <div id="leaderboardList" class="leaderboard-list"></div>
+        <button id="leaderboardBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
       <!-- 🎬 Abspann (credits.js) – antippen = zurück -->
@@ -52,11 +83,11 @@
 
       <!-- ⚔️ Team-Auswahl (teams.js) -->
       <div id="teamScreen" class="overlay-screen">
-        <h2>⚔️ TEAM-MODUS</h2>
-        <p class="pick-title">Wähle dein Team – so viele du willst! 👇</p>
-        <p class="team-hint">🔵 Dein Team gegen 🔴 rote Gegner. Jedes Level: mehr Gegner!</p>
+        <h2 id="teamScreenHeading">⚔️ TEAM-MODUS</h2>
+        <p id="teamPickTitle" class="pick-title">Level 1: Wähle deine 1. Figur! 👇</p>
+        <p id="teamHintText" class="team-hint">🔵 In jedem Level wählst du 1 Figur dazu – ab Level 6 kämpfen ALLE zusammen bis zum Ende!</p>
         <div id="teamGrid" class="pick-grid"></div>
-        <button id="teamGoBtn" class="btn" disabled>Wähle dein Team 👆</button>
+        <button id="teamGoBtn" class="btn" disabled>Wähle deine Figur 👆</button>
         <button id="teamBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
@@ -64,9 +95,11 @@
       <div id="gameOverScreen" class="overlay-screen">
         <h2>BUMM! 💥</h2>
         <p id="winnerMsg" class="winner-msg"></p>
+        <p id="trophyRewardMsg" class="trophy-reward-msg" hidden></p>
         <p>Treffer: <span id="finalScore">0</span></p>
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
+        <button id="leaderboardOverBtn" class="btn btn-trophy btn-small">🏆 RANGLISTE</button>
         <button id="changeBtn" class="btn btn-small">🎭 Andere Figur</button>
         <button id="creditsBtn" class="btn btn-small">🎬 ABSPANN</button>
       </div>
@@ -100,6 +133,7 @@
   <script src="js/actors.js"></script>
   <script src="js/bombs.js"></script>
   <script src="js/physics.js"></script>
+  <script src="js/trophies.js"></script>
   <script src="js/cpu.js"></script>
   <script src="js/levels.js"></script>
   <script src="js/teams.js"></script>

@@ -8,10 +8,17 @@
  */
 
 let teamMode = false;  // Läuft gerade der Team-Modus?
-let chosenTeam = [];   // Deine Figuren (Namen aus actors)
+let chosenTeam = [];   // Deine bisherigen Figuren im Team (Namen aus actors)
+let pendingTeamPick = null; // Welche neue Figur hast du für dieses Level angetippt?
+let pendingTeamKeepCharge = false;
 
 const TEAM_COLORS = { mine: '#3b82f6', enemy: '#ef4444' };
 const TEAM_BITS = { mine: 1 << 20, enemy: 1 << 21 }; // Eigene Bits weit oben, damit neue Figuren (256, 512, …) frei bleiben
+
+// Alle echten Figuren (ohne rote Gegner-Kopien)
+function baseActorNames() {
+  return Object.keys(actors).filter(n => !actors[n].kind);
+}
 
 // Zu welchem Team gehört die Figur? 'mine' oder 'enemy'
 function teamOf(name) {
@@ -105,10 +112,10 @@ function setupTeams() {
   const perRow = Math.max(4, Math.floor(width / 100));
   if (height < 500) {
     placeInRows(enemyNames, [0.18, 0.42], perRow);
-    placeInRows(chosenTeam, [0.68], 6); // Platz lassen für die ⚡-Knöpfe unten
+    placeInRows(chosenTeam, [0.68], 7); // Platz lassen für die ⚡-Knöpfe unten
   } else {
     placeInRows(enemyNames, [0.2, 0.34, 0.48], perRow);
-    placeInRows(chosenTeam, [0.62, 0.76], Math.max(3, Math.floor(width / 120))); // Platz für ⚡-Knöpfe
+    placeInRows(chosenTeam, [0.62, 0.76], Math.max(4, Math.floor(width / 110))); // Platz für ⚡-Knöpfe
   }
 }
 
@@ -144,38 +151,101 @@ function teamResult() {
   return null;
 }
 
-// 👇 Team-Auswahl: Kacheln an- und abwählen, dann „LOS!“
+// 👇 Team-Auswahl: Level 1 = 1. Figur, Level 2 = 2. Figur, … bis Level 6 (ab dann kämpfen ALLE!)
 const teamGrid = document.getElementById('teamGrid');
+const teamScreenHeading = document.getElementById('teamScreenHeading');
+const teamPickTitle = document.getElementById('teamPickTitle');
+const teamHintText = document.getElementById('teamHintText');
+
 for (const name in actors) {
   const btn = document.createElement('button');
   btn.className = 'pick-btn';
   btn.type = 'button';
+  btn.dataset.name = name;
   btn.innerHTML = `<span class="pick-emoji">${actorEmoji(name)}</span>${actors[name].name}`;
   btn.addEventListener('click', () => {
-    btn.classList.toggle('selected');
-    chosenTeam = [...teamGrid.querySelectorAll('.selected')].map(b => b.dataset.name);
-    teamGoBtn.disabled = chosenTeam.length === 0;
-    teamGoBtn.textContent = chosenTeam.length ? `LOS MIT ${chosenTeam.length}! ⚔️` : 'Wähle dein Team 👆';
+    if (chosenTeam.includes(name)) return; // Schon fest im Team!
+    pendingTeamPick = name;
+    refreshTeamGrid();
   });
-  btn.dataset.name = name;
   teamGrid.appendChild(btn);
 }
 
-teamModeBtn.addEventListener('click', () => {
-  startScreen.classList.remove('active');
+function refreshTeamGrid() {
+  const lvNr = currentLevel + 1;
+  const isSixthOrMore = currentLevel >= 5;
+  for (const btn of teamGrid.children) {
+    const n = btn.dataset.name;
+    const inTeam = chosenTeam.includes(n);
+    const isPicked = pendingTeamPick === n;
+    btn.classList.toggle('in-team', inTeam);
+    btn.classList.toggle('selected', inTeam || isPicked);
+  }
+  teamGoBtn.disabled = !pendingTeamPick;
+  if (!pendingTeamPick) {
+    teamGoBtn.textContent = `Wähle deine ${chosenTeam.length + 1}. Figur 👆`;
+  } else if (isSixthOrMore) {
+    teamGoBtn.textContent = `MIT ALLEN IN LEVEL ${lvNr}! 🔥`;
+  } else {
+    teamGoBtn.textContent = `MIT ${actors[pendingTeamPick].name} IN LEVEL ${lvNr}! ⚔️`;
+  }
+}
+
+// Öffnet die Figuren-Auswahl vor einem Team-Level
+function openTeamPickForLevel(keepCharge = false) {
+  removeClones();
+  pendingTeamKeepCharge = keepCharge;
+  pendingTeamPick = null;
+  const lvNr = currentLevel + 1;
+  const modeBadge = trophyMode ? `🏆 POKALE (${GAME_CONFIG.trophyLives} ❤️)` : `🎮 NORMAL (${normalLives} ❤️)`;
+  teamScreenHeading.textContent = `⚔️ TEAM · LEVEL ${lvNr} · ${modeBadge}`;
+  if (currentLevel === 0) {
+    teamPickTitle.textContent = 'Level 1: Wähle deine 1. Figur! 👇';
+    teamHintText.textContent = 'Nach jedem Sieg wählst du 1 Figur dazu – ab Level 6 kämpfen ALLE zusammen bis zum letzten Level!';
+  } else if (currentLevel < 5) {
+    teamPickTitle.textContent = `Level ${lvNr}: Wähle deine ${chosenTeam.length + 1}. Figur dazu! 👇`;
+    teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · Noch ${6 - lvNr} Level bis alle vereint sind!`;
+  } else {
+    teamPickTitle.textContent = `Level 6: Wähle deine letzte Figur – dann kämpfen ALLE! 👇`;
+    teamHintText.textContent = 'Ab jetzt ziehst du mit allen Figuren gemeinsam bis zum letzten Level (Level 8)! 🔥';
+  }
+  refreshTeamGrid();
   teamScreen.classList.add('active');
-});
-teamBackBtn.addEventListener('click', () => {
-  teamScreen.classList.remove('active');
-  startScreen.classList.add('active');
-});
-teamGoBtn.addEventListener('click', () => {
-  if (!chosenTeam.length) return;
+}
+
+// Startet einen ganz neuen Team-Durchlauf bei Level 1
+function startNewTeamRun() {
   teamMode = true;
-  playerTeam = chosenTeam.slice();
+  chosenTeam = [];
+  playerTeam = [];
   playerActor = null;
   currentLevel = 0;
   nextLevel = 0;
+  openTeamPickForLevel(false);
+}
+
+teamModeBtn.addEventListener('click', () => {
+  openModeChoice({ type: 'team' });
+});
+teamBackBtn.addEventListener('click', () => {
   teamScreen.classList.remove('active');
-  startGame();
+  if (currentLevel > 0 && chosenTeam.length > 0) {
+    gameOverScreen.classList.add('active');
+  } else {
+    startScreen.classList.add('active');
+  }
+});
+teamGoBtn.addEventListener('click', () => {
+  if (!pendingTeamPick) return;
+  if (!chosenTeam.includes(pendingTeamPick)) chosenTeam.push(pendingTeamPick);
+  // Ab Level 6 (Index 5) sind alle Figuren freigeschaltet und kämpfen gemeinsam bis Level 8!
+  if (currentLevel >= 5) {
+    for (const n of baseActorNames()) {
+      if (!chosenTeam.includes(n)) chosenTeam.push(n);
+    }
+  }
+  playerTeam = chosenTeam.slice();
+  playerActor = null;
+  teamScreen.classList.remove('active');
+  startGame(pendingTeamKeepCharge);
 });

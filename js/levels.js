@@ -29,13 +29,18 @@ function startLevel() {
 function finishLevel(won) {
   const nr = currentLevel + 1;
   const last = currentLevel === levelList().length - 1;
+  awardLevelTrophies(won); // 🏆 Pokale vergeben, falls im Pokal-Modus gespielt wurde (trophies.js)
   if (!won) {
     winnerMsgEl.textContent = teamMode ? `😵 Dein Team ist raus! (Level ${nr})` : `😵 Du bist raus! (Level ${nr})`;
     restartBtn.textContent = `NOCHMAL LEVEL ${nr} 🔄`;
     nextLevel = currentLevel;
   } else if (!last) {
     winnerMsgEl.textContent = `🎉 LEVEL ${nr} GESCHAFFT! 🎉`;
-    restartBtn.textContent = `WEITER ZU LEVEL ${nr + 1} ➡️`;
+    if (teamMode && chosenTeam.length < baseActorNames().length) {
+      restartBtn.textContent = `FIGUR FÜR LEVEL ${nr + 1} WÄHLEN ➡️`;
+    } else {
+      restartBtn.textContent = `WEITER ZU LEVEL ${nr + 1} ➡️`;
+    }
     nextLevel = currentLevel + 1;
   } else {
     winnerMsgEl.textContent = `🏆 ALLE ${nr} LEVEL GESCHAFFT! 🏆`;
@@ -70,11 +75,12 @@ function drawLevelBanner(now) {
   ctx.fillStyle = '#ffffff';
   ctx.strokeText(lv.title, 0, 44);
   ctx.fillText(lv.title, 0, 44);
-  if (teamMode) { // ⚔️ Wie viele Gegner?
+  if (teamMode) { // ⚔️ Wie viele Figuren gegen wie viele Gegner?
     ctx.font = '800 18px -apple-system, sans-serif';
     ctx.fillStyle = TEAM_COLORS.enemy;
-    ctx.strokeText(`${lv.enemies} Gegner!`, 0, 76);
-    ctx.fillText(`${lv.enemies} Gegner!`, 0, 76);
+    const sub = `${chosenTeam.length} gegen ${lv.enemies} Gegner!`;
+    ctx.strokeText(sub, 0, 76);
+    ctx.fillText(sub, 0, 76);
   }
   ctx.restore();
 }

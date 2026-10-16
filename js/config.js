@@ -57,18 +57,17 @@ const GAME_CONFIG = {
     { title: 'Richtig schwer 😤',  throwMs: 1800, huntPlayer: 0.3 },
     { title: 'Alle gegen dich 💀', throwMs: 1700, huntPlayer: 0.34 }
   ],
-  // ⚔️ Team-Modus: eigene Level, jedes mit MEHR Gegnern
+  // ⚔️ Team-Modus: Level 1 startet mit 1 Figur, jedes Level kommt 1 dazu (ab Level 6 alle!)
   // enemies = Anzahl Gegner, throwMs = so oft wirft JEDER Gegner.
-  // Viele Gegner werfen zusammen sehr oft – darum wird throwMs mit mehr Gegnern größer.
   teamLevels: [
-    { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 1300 },
-    { title: 'Zu dritt 🙂',         enemies: 3,  throwMs: 1700 },
-    { title: 'Vier gewinnt? 🔥',    enemies: 4,  throwMs: 2300 },
-    { title: 'Die Bande 😤',        enemies: 5,  throwMs: 3000 },
-    { title: 'Übermacht 😱',        enemies: 6,  throwMs: 3500 },
-    { title: 'Riesen-Armee 🪖',     enemies: 7,  throwMs: 3900 },
-    { title: 'Chaos pur 🌪️',        enemies: 8,  throwMs: 4400 },
-    { title: 'Endboss-Horde 💀',    enemies: 10, throwMs: 6000 }
+    { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 2200 },
+    { title: 'Zu zweit 🙂',        enemies: 3,  throwMs: 2000 },
+    { title: 'Zu dritt 🔥',        enemies: 4,  throwMs: 2300 },
+    { title: 'Vierer-Bande 😤',    enemies: 5,  throwMs: 2800 },
+    { title: 'Fünf Freunde 😱',    enemies: 6,  throwMs: 3200 },
+    { title: 'Alle zusammen! 🪖',  enemies: 7,  throwMs: 3600 },
+    { title: 'Chaos pur 🌪️',        enemies: 8,  throwMs: 4000 },
+    { title: 'Endboss-Horde 💀',    enemies: 10, throwMs: 5000 }
   ],
   cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
   throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
@@ -83,8 +82,9 @@ const GAME_CONFIG = {
   popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
   fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
   dragonBite: { damage: 6, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
-  maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
-  hitChoices: [5, 10, 20, 50], // Zum Auswählen auf dem Startbildschirm
+  maxHits: 20, // 💀 So viele Treffer hält eine Figur im normalen Modus aus
+  trophyLives: 100, // 🏆 Im Pokal-Modus hat jede Figur immer 100 Leben!
+  hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte (3 = schärfer, aber langsamer)
   maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.

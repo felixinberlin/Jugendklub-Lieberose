@@ -17,7 +17,8 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |
-| ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
+| 🏆 [`trophies.js`](trophies.js) | **Pokal-Modus** (immer 100 Leben) vs. **Normal** (Leben frei wählbar) + **Rangliste** 🥇 | ⭐⭐ |
+| ⚔️ [`teams.js`](teams.js) | **Team-Modus**: In Level 1 wählst du die 1. Figur, jedes Level kommt 1 dazu – ab Level 6 kämpfen alle zusammen! | ⭐⭐⭐ |
 | ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️, 🐉 Drachenbiss 🦷 | ⭐⭐⭐ |
 | ⚽ [`special-weapons.js`](special-weapons.js) | **Spezialwaffen**: Riesenball, Popcorn, Feuerspeer und Brennen | ⭐⭐⭐ |
 | 🧌 [`special-moves.js`](special-moves.js) | **Schutz & Bewegung**: Mini-Kobolde, Katzensprung, Drachenbiss und Mauseloch | ⭐⭐⭐ |

@@ -20,14 +20,31 @@ function isCpu(name) {
   return playerTeam !== null && !playerTeam.includes(name);
 }
 
-// Figur auswählen und los geht's!
-function chooseAndStart(name) {
+// Solo-Spiel nach der Modus-Auswahl (Pokale oder Normal) starten
+function startSoloGame(name) {
   playerActor = name;
-  playerTeam = name === null ? null : [name];
+  playerTeam = [name];
   teamMode = false;
   currentLevel = 0; // Immer bei Level 1 anfangen (levels.js)
   nextLevel = 0;
   startGame();
+}
+
+// Figur auswählen → erst fragen: Mit Pokalen (100 Leben) oder Normal?
+function chooseAndStart(name) {
+  if (name === null) {
+    trophyMode = false;
+    applyModeLives();
+    updateTrophyHud();
+    playerActor = null;
+    playerTeam = null;
+    teamMode = false;
+    currentLevel = 0;
+    nextLevel = 0;
+    startGame();
+    return;
+  }
+  openModeChoice({ type: 'solo', actor: name });
 }
 
 // Wird bei jedem Start aufgerufen: Knöpfe der Computer-Figuren sperren,
