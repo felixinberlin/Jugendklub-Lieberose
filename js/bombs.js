@@ -4,6 +4,8 @@
 
 // Alle Bomben, die gerade durch die Luft fliegen.
 let fallingBodies = [];
+// 🐾 Kratzspuren, die beim Treffer kurz am Gegner nachleuchten
+let scratchMarks = [];
 
 // Alle Figuren-Kategorien außer `actor` (für den collisionFilter der Bombe).
 function everyoneExcept(actor) {
@@ -31,13 +33,15 @@ function shootBomb(actor, forcedTarget) {
     ? forcedTarget
     : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
+  const isScratch = Boolean(actorCfg(actor, 'Scratch'));
   launchArc(actor, targetName, {
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
     size: actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize,
-    trail: actorCfg(actor, 'Trail') // z. B. 🪙 Goldmünzen aus dem Goldsack
+    trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
+    scratch: isScratch
   });
   actors[actor].wiggle = 1;
-  playSound('throw');
+  playSound(isScratch ? 'scratch' : 'throw');
 }
 
 // 🎯 Ein Geschoss im Bogen von `actor` zu `targetName` werfen.
@@ -67,6 +71,7 @@ function launchArc(actor, targetName, opts) {
       damage: opts.damage || 1,
       special: Boolean(opts.special),
       trail: opts.trail,
+      scratch: Boolean(opts.scratch),
       isPlayerBomb: true,
       shooter: actor,
       target: targetName,
@@ -85,9 +90,16 @@ function launchArc(actor, targetName, opts) {
 function explodeBomb(bomb) {
   bomb.exploded = true;
   const { x, y } = bomb.position;
-  playSound('boom');
-  spawnParticles(x, y, '#ff9f1c', 30);
-  spawnParticles(x, y, '#ffde59', 16);
+  if (bomb.customData && bomb.customData.scratch) {
+    scratchMarks.push({ x, y, angle: Math.atan2(bomb.velocity.y, bomb.velocity.x), born: performance.now() });
+    playSound('scratch');
+    spawnParticles(x, y, '#ef4444', 24);
+    spawnParticles(x, y, '#fef08a', 14);
+  } else {
+    playSound('boom');
+    spawnParticles(x, y, '#ff9f1c', 30);
+    spawnParticles(x, y, '#ffde59', 16);
+  }
 
   // Entfernen (nach der Schleife, damit das Array stabil bleibt)
   fallingBodies = fallingBodies.filter(b => {
@@ -101,10 +113,48 @@ function clearAllBodies() {
     Composite.remove(engine.world, b);
   }
   fallingBodies = [];
+  scratchMarks = [];
+}
+
+// 🐾 Malt 3 glühende Drachen-Krallenspuren (beim Fliegen und beim Treffer)
+function drawClawLines(size, alpha = 1) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.lineCap = 'round';
+  for (const offset of [-11, 0, 11]) {
+    // Äußeres rotes Glühen
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.55, offset - 5);
+    ctx.quadraticCurveTo(0, offset - 1, size * 0.55, offset + 5);
+    ctx.stroke();
+    // Heller gelb-weißer Kern der Kralle
+    ctx.strokeStyle = '#fef08a';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.moveTo(-size * 0.48, offset - 4);
+    ctx.quadraticCurveTo(0, offset - 1, size * 0.48, offset + 4);
+    ctx.stroke();
+  }
+  ctx.restore();
 }
 
 // Malt alle fliegenden Bomben und räumt verlorene Bomben weg.
 function updateBombs(now) {
+  // Nachleuchtende Kratzspuren an getroffenen Gegnern malen
+  for (let i = scratchMarks.length - 1; i >= 0; i--) {
+    const m = scratchMarks[i];
+    const age = now - m.born;
+    if (age > 520) { scratchMarks.splice(i, 1); continue; }
+    const p = age / 520;
+    ctx.save();
+    ctx.translate(m.x, m.y);
+    ctx.rotate(m.angle - 0.35);
+    drawClawLines(48 + p * 18, 1 - p);
+    ctx.restore();
+  }
+
   for (let i = fallingBodies.length - 1; i >= 0; i--) {
     const b = fallingBodies[i];
     const pos = b.position;
@@ -128,6 +178,17 @@ function updateBombs(now) {
 
     // 🔥 Feuerspeer wird extra gemalt (specials.js)
     if (data.spear) { drawSpear(b, now); continue; }
+
+    // 🐾 Kratzspur des Drachen: 3 glühende Krallen-Striche + Funken
+    if (data.scratch) {
+      if (Math.random() < 0.45) spawnParticles(pos.x, pos.y, '#f87171', 1);
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      ctx.rotate(Math.atan2(b.velocity.y, b.velocity.x));
+      drawClawLines(data.size || 38, 0.95);
+      ctx.restore();
+      continue;
+    }
 
     // 🪙 Spur: Beim Fliegen purzelt etwas heraus (z. B. Goldmünzen)
     if (data.trail && Math.random() < 0.3) spawnEmojiParticle(pos.x, pos.y, data.trail);

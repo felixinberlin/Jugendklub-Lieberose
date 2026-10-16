@@ -83,7 +83,7 @@ function clearMinis() {
   minis = [];
 }
 
-// ---------- 🐱 Katze: Wirbelsprung ----------
+// ---------- 🐱 Katze: Wirbelsprung & 🐉 Drache: Drachenbiss ----------
 function catJump(name) {
   const victim = targetOf(name);
   if (!victim) return false;
@@ -92,14 +92,62 @@ function catJump(name) {
   playSound('jump');
 }
 
+function dragonBite(name) {
+  const victim = targetOf(name);
+  if (!victim) return false;
+  const from = { ...actors[name].body.position };
+  actors[name].jump = { type: 'bite', victim, from, start: performance.now(), landed: false, chomps: 0 };
+  playSound('jump');
+}
+
 function updateJumps(now) {
-  const T = 450; // ms pro Sprung (hin und zurück je 450 ms)
+  const T = 450; // ms pro Sprung-Abschnitt
   for (const name in actors) {
     const actor = actors[name];
     const j = actor.jump;
     if (!j) continue;
     if (!isAlive(name)) { actor.jump = null; continue; }
     const victimPos = isAlive(j.victim) ? actors[j.victim].body.position : j.from;
+
+    // 🐉🦷 Tobis Drachenbiss: Hinfliegen, 3-mal kräftig zubeißen, zurückfliegen
+    if (j.type === 'bite') {
+      const goal = { x: victimPos.x, y: victimPos.y - 12 };
+      const elapsed = now - j.start;
+      if (elapsed < 320) {
+        const p = elapsed / 320;
+        const hop = Math.sin(p * Math.PI) * 45;
+        moveActor(name, j.from.x + (goal.x - j.from.x) * p, j.from.y + (goal.y - j.from.y) * p - hop);
+      } else if (elapsed < 1050) {
+        // Direkt am Gegner festhalten und zubeißen!
+        const shake = Math.sin(elapsed / 28) * 7;
+        moveActor(name, goal.x + shake, goal.y);
+        const chompStep = Math.floor((elapsed - 320) / 230) + 1;
+        if (chompStep > j.chomps && chompStep <= 3) {
+          j.chomps = chompStep;
+          playSound('bite');
+          actor.wiggle = 1.2;
+          if (isAlive(j.victim) && !isHidden(j.victim)) {
+            actors[j.victim].wiggle = 1.4;
+            spawnParticles(victimPos.x, victimPos.y, '#ef4444', 18);
+            spawnParticles(victimPos.x, victimPos.y, '#fef08a', 12);
+            if (chompStep === 1) {
+              const cfg = GAME_CONFIG.dragonBite;
+              actors[j.victim].stunnedUntil = Math.max(actors[j.victim].stunnedUntil || 0, now + cfg.stunSeconds * 1000);
+              applyHit(j.victim, name, cfg.damage, true); // 💥🦷 Kräftiger Drachenbiss!
+            }
+          }
+        }
+      } else if (elapsed < 1400) {
+        const p = (elapsed - 1050) / 350;
+        const hop = Math.sin(p * Math.PI) * 45;
+        moveActor(name, goal.x + (j.from.x - goal.x) * p, goal.y + (j.from.y - goal.y) * p - hop);
+      } else {
+        moveActor(name, j.from.x, j.from.y);
+        actor.jump = null;
+      }
+      continue;
+    }
+
     const goal = { x: victimPos.x, y: victimPos.y - 45 };
     const t = (now - j.start) / T;
     let a, b, p;
@@ -118,6 +166,51 @@ function updateJumps(now) {
     } else { moveActor(name, j.from.x, j.from.y); actor.jump = null; continue; }
     const hop = Math.sin(p * Math.PI) * 70; // Bogen nach oben
     moveActor(name, a.x + (b.x - a.x) * p, a.y + (b.y - a.y) * p - hop);
+  }
+}
+
+// 🦷 Malt das riesige schnappende Drachengebiss über dem gebissenen Gegner
+function drawDragonBites(now) {
+  for (const name in actors) {
+    const j = actors[name].jump;
+    if (!j || j.type !== 'bite' || !isAlive(j.victim)) continue;
+    const elapsed = now - j.start;
+    if (elapsed < 240 || elapsed > 1100) continue;
+    const pos = actors[j.victim].body.position;
+    // Kiefer schnappen 3-mal auf und zu
+    const snap = Math.abs(Math.sin((elapsed - 240) / 230 * Math.PI));
+    const gap = 4 + snap * 26;
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    // Roter Rachen-Schein
+    ctx.fillStyle = 'rgba(239, 68, 68, 0.28)';
+    ctx.beginPath();
+    ctx.arc(0, 0, 42, 0, Math.PI * 2);
+    ctx.fill();
+    // Obere und untere Zahnreihe (je 5 spitze weiße Drachenzähne)
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#991b1b';
+    ctx.lineWidth = 2.5;
+    for (let i = -2; i <= 2; i++) {
+      const tx = i * 13;
+      // Oberkiefer-Zahn (zeigt nach unten)
+      ctx.beginPath();
+      ctx.moveTo(tx - 6, -gap - 14);
+      ctx.lineTo(tx + 6, -gap - 14);
+      ctx.lineTo(tx, -gap + 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      // Unterkiefer-Zahn (zeigt nach oben)
+      ctx.beginPath();
+      ctx.moveTo(tx - 6, gap + 14);
+      ctx.lineTo(tx + 6, gap + 14);
+      ctx.lineTo(tx, gap - 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    ctx.restore();
   }
 }
 

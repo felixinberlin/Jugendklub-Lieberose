@@ -86,6 +86,12 @@ function playSound(type) {
   } else if (type === 'whirl') {
     playTone(250, 'sawtooth', 0.25, 0.12);
     setTimeout(() => playTone(350, 'sawtooth', 0.2, 0.1), 90);
+  } else if (type === 'scratch') {
+    playTone(950, 'sawtooth', 0.06, 0.14);  // 🐾 Scharfer Krallen-Hieb!
+    setTimeout(() => playTone(620, 'sawtooth', 0.08, 0.14), 40);
+  } else if (type === 'bite') {
+    playTone(140, 'sawtooth', 0.14, 0.24);  // 🦷 Schnapp!
+    playTone(95, 'square', 0.16, 0.2);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);

@@ -164,8 +164,8 @@ h2 {
 
 .pick-grid {
   display: grid;
-  grid-template-columns: repeat(3, 92px);
-  gap: 10px;
+  grid-template-columns: repeat(4, 78px);
+  gap: 8px;
   margin-bottom: 16px;
 }
 
@@ -444,6 +444,7 @@ h2 {
 #mausBtn { left: 50%; top: 72%; }
 #goblinBtn { left: 25%; top: 32%; }
 #musialaBtn { left: 75%; top: 34%; }
+#dracheBtn { left: 25%; top: 72%; }
 .actor-btn:focus-visible { outline: 3px solid #ffde59; }
 .actor-btn:active { cursor: grabbing; background: rgba(255, 222, 89, 0.15); }
 .instructions { font-size: 16px; line-height: 1.6; }
@@ -453,7 +454,7 @@ h2 {
   h1 { font-size: 1.5rem; }
   .instructions { font-size: 0.85rem; }
   .pick-title { margin-bottom: 6px; }
-  .pick-grid { grid-template-columns: repeat(6, 84px); gap: 8px; margin-bottom: 4px; }
+  .pick-grid { grid-template-columns: repeat(7, 74px); gap: 8px; margin-bottom: 4px; }
   .pick-btn { min-height: 66px; }
   .pick-emoji { font-size: 1.8rem; }
   .btn-small { margin-top: 6px; padding: 8px 20px; }

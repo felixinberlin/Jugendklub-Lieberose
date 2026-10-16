@@ -38,7 +38,9 @@ const SPECIALS = {
   goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear,
     desc: () => `Durchbohrt alle in einer Reihe und lässt sie ${GAME_CONFIG.fireSpear.burnSeconds} Sek. brennen.` },
   maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse,
-    desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` }
+    desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` },
+  drache: { name: 'DRACHENBISS', icon: '🦷', use: dragonBite,
+    desc: () => `Fliegt zum Gegner und beißt kräftig zu (${GAME_CONFIG.dragonBite.damage} Schaden)!` }
 };
 
 function hasSpecial(name) {
@@ -116,6 +118,7 @@ function drawSpecials(now) {
     ctx.restore();
     drawEmoji('💫', p.x + Math.cos(now / 200) * 30, p.y - 40 + Math.sin(now / 200) * 6, 18);
   }
+  drawDragonBites(now); // 🐉🦷 Schnappendes Drachengebiss
   ctx.restore();
 }
 

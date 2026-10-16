@@ -18,15 +18,15 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |
 | ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
-| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️ | ⭐⭐⭐ |
+| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️, 🐉 Drachenbiss 🦷 | ⭐⭐⭐ |
 | ⚽ [`special-weapons.js`](special-weapons.js) | **Spezialwaffen**: Riesenball, Popcorn, Feuerspeer und Brennen | ⭐⭐⭐ |
-| 🧌 [`special-moves.js`](special-moves.js) | **Schutz & Bewegung**: Mini-Kobolde, Katzensprung und Mauseloch | ⭐⭐⭐ |
+| 🧌 [`special-moves.js`](special-moves.js) | **Schutz & Bewegung**: Mini-Kobolde, Katzensprung, Drachenbiss und Mauseloch | ⭐⭐⭐ |
 | 👆 [`special-ui.js`](special-ui.js) | **Kraft-Knöpfe**, Erklärungen und Fingersteuerung | ⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
-| 🧌🌽🐱🐭👺⚽ [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais**, **Katze**, **Maus**, **Goblin** und **Musiala** | ⭐⭐⭐ |
+| 🧌🌽🐱🐭👺⚽🐉 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais**, **Katze**, **Maus**, **Goblin**, **Musiala** und **Drache** | ⭐⭐⭐ |
 | 🌲 [`forest.js`](forest.js) | Der **Zauberwald** im Hintergrund | ⭐⭐⭐ |
 | 🧪 [`physics.js`](physics.js) | Die **Physik-Welt**: Wände und Zusammenstöße | ⭐⭐⭐ |
 | 🧠 [`state.js`](state.js) | Das **Gedächtnis**: Punkte, Spielfeldgröße, … | ⭐ (kurz, aber wichtig) |

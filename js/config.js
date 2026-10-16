@@ -31,6 +31,11 @@ const GAME_CONFIG = {
   musialaRunSpeed: 1.5,  // 0.5 = gemütlich, 4 = Turbo-Sprint!
   musialaSize: 64,
   musialaBomb: '⚽', // Musiala schießt Fußbälle!
+  dracheEmoji: '🐉',
+  dracheSize: 72,
+  dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
+  dracheBombSize: 38,
+  dracheScratch: true,   // Malt glühende Krallen-Kratzer in die Luft
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
@@ -77,6 +82,7 @@ const GAME_CONFIG = {
   hideSeconds: 6,                                           // 🐭🕳️ So lange ist die Maus versteckt
   popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
   fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
+  dragonBite: { damage: 6, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
   hitChoices: [5, 10, 20, 50], // Zum Auswählen auf dem Startbildschirm
   maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte (3 = schärfer, aber langsamer)
