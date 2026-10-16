@@ -19,7 +19,8 @@ function targetOf(name) {
   if (teamMode) return nearestEnemy(name); // ⚔️ teams.js
   let next = actors[name].target;
   let fallback = null;
-  for (let i = 0; i < Object.keys(actors).length; i++) {
+  const maxSteps = Object.keys(actors).length;
+  for (let i = 0; i < maxSteps; i++) {
     if (next === name) break; // Einmal rum
     if (isAlive(next)) {
       if (!isHidden(next)) return next;
@@ -138,7 +139,8 @@ for (const hits of GAME_CONFIG.hitChoices) {
   btn.addEventListener('click', () => {
     GAME_CONFIG.maxHits = hits;
     for (const b of hitsChoice.children) b.classList.toggle('selected', b === btn);
-    document.getElementById('hitsText').textContent = hits;
+    const ht = document.getElementById('hitsText');
+    if (ht) ht.textContent = hits;
   });
   hitsChoice.appendChild(btn);
 }

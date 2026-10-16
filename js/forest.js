@@ -187,18 +187,32 @@ function initForest() {
   });
 }
 
+let cachedSkyGrad = null;
+let cachedSkyHeight = 0;
+let cachedSkyDay = null;
+
+function getSkyGradient(colors, day) {
+  if (cachedSkyGrad && cachedSkyHeight === height && cachedSkyDay === day) {
+    return cachedSkyGrad;
+  }
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
+  skyGrad.addColorStop(0.0, colors.sky[0]);  // Oben
+  skyGrad.addColorStop(0.45, colors.sky[1]);
+  skyGrad.addColorStop(0.8, colors.sky[2]);  // Horizont über den Wipfeln
+  skyGrad.addColorStop(1.0, colors.sky[3]);  // Waldboden
+  cachedSkyGrad = skyGrad;
+  cachedSkyHeight = height;
+  cachedSkyDay = day;
+  return skyGrad;
+}
+
 // Malt den ganzen Hintergrund – von hinten (Himmel) nach vorne (Glühwürmchen).
 function drawForest(now) {
   const colors = forestColors();
   const day = GAME_CONFIG.dayMode;
 
   // Himmel (nachts dunkel, tagsüber blau)
-  const skyGrad = ctx.createLinearGradient(0, 0, 0, height);
-  skyGrad.addColorStop(0.0, colors.sky[0]);  // Oben
-  skyGrad.addColorStop(0.45, colors.sky[1]);
-  skyGrad.addColorStop(0.8, colors.sky[2]);  // Horizont über den Wipfeln
-  skyGrad.addColorStop(1.0, colors.sky[3]);  // Waldboden
-  ctx.fillStyle = skyGrad;
+  ctx.fillStyle = getSkyGradient(colors, day);
   ctx.fillRect(0, 0, width, height);
 
   if (day) drawDaySky(now);

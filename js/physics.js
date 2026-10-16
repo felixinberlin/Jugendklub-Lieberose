@@ -90,6 +90,9 @@ function resizeCanvas() {
   // Höchstens 2-fache Pixeldichte: Bei 3 müsste das Handy 2,25-mal so viele Pixel malen,
   // ohne dass man den Unterschied sieht. Das spart viel Tempo!
   const dpr = Math.min(window.devicePixelRatio || 1, GAME_CONFIG.maxPixelRatio);
+  if (renderDpr !== dpr && typeof spriteCache !== 'undefined') {
+    spriteCache.clear();
+  }
   renderDpr = dpr; // Für den Bilder-Speicher (sprites.js)
   const oldWidth = width;
   const oldHeight = height;

@@ -202,10 +202,14 @@ function triggerPlayerSpecial() {
 
 // 🔄 Aktualisiert Schieß-Knopf (mit Cooldown-Anzeige), Extra-Kombo-Button und die Fähigkeiten nebeneinander!
 function updateControlHud() {
-  document.body.classList.toggle('in-round', isPlaying);
-  actionHud.hidden = !isPlaying || isPaused;
+  if (document.body.classList.contains('in-round') !== isPlaying) {
+    document.body.classList.toggle('in-round', isPlaying);
+  }
+  const shouldHideAction = !isPlaying || isPaused;
+  if (actionHud.hidden !== shouldHideAction) actionHud.hidden = shouldHideAction;
   if (pauseBtn) {
-    pauseBtn.hidden = !isPlaying || trophyMode;
+    const shouldHidePause = !isPlaying || trophyMode;
+    if (pauseBtn.hidden !== shouldHidePause) pauseBtn.hidden = shouldHidePause;
   }
   if (!isPlaying) {
     tryUnlockOrientation();
@@ -219,7 +223,8 @@ function updateControlHud() {
 
   // 1. 🎯 Runder Schieß-Knopf mit individuellem Cooldown & Schaden
   if (actors[lead]) {
-    shootIconEl.textContent = actorCfg(lead, 'Bomb') || GAME_CONFIG.bombEmoji;
+    const bombEmoji = actorCfg(lead, 'Bomb') || GAME_CONFIG.bombEmoji;
+    if (shootIconEl.textContent !== bombEmoji) shootIconEl.textContent = bombEmoji;
     const cdSec = getCharStat(lead, 'attackCooldown') || 1.2;
     const cdMs = cdSec * 1000;
     const elapsed = now - (actors[lead].lastThrow || 0);
@@ -227,11 +232,13 @@ function updateControlHud() {
     const dmg = getCharStat(lead, 'attackDamage') || 4;
 
     if (remaining > 0.05) {
-      shootBtn.classList.add('cooling');
-      shootLabelEl.textContent = `${remaining.toFixed(1)}s`;
+      if (!shootBtn.classList.contains('cooling')) shootBtn.classList.add('cooling');
+      const text = `${remaining.toFixed(1)}s`;
+      if (shootLabelEl.textContent !== text) shootLabelEl.textContent = text;
     } else {
-      shootBtn.classList.remove('cooling');
-      shootLabelEl.textContent = `${dmg} 💥`;
+      if (shootBtn.classList.contains('cooling')) shootBtn.classList.remove('cooling');
+      const text = `${dmg} 💥`;
+      if (shootLabelEl.textContent !== text) shootLabelEl.textContent = text;
     }
   }
 
@@ -241,12 +248,15 @@ function updateControlHud() {
   const comboPairs = (typeof getPlayerTeamComboPairs === 'function') ? getPlayerTeamComboPairs() : [];
   if (teamMode && areCombosEnabled() && comboPairs.length > 0) {
     const pair = comboPairs[0];
-    comboSquareBtn.hidden = false;
+    if (comboSquareBtn.hidden) comboSquareBtn.hidden = false;
     const charge = pair.charge || 0;
     const ready = pair.ready;
-    comboIconEl.textContent = pair.spec?.icon || '🤝';
-    comboFillEl.style.width = `${Math.min(100, (charge / need) * 100)}%`;
-    comboCountEl.textContent = ready ? 'KOMBO!' : `${charge}/${need}`;
+    const icon = pair.spec?.icon || '🤝';
+    if (comboIconEl.textContent !== icon) comboIconEl.textContent = icon;
+    const barW = `${Math.min(100, (charge / need) * 100)}%`;
+    if (comboFillEl.style.width !== barW) comboFillEl.style.width = barW;
+    const countText = ready ? 'KOMBO!' : `${charge}/${need}`;
+    if (comboCountEl.textContent !== countText) comboCountEl.textContent = countText;
     comboSquareBtn.classList.toggle('ready', ready);
     comboSquareBtn.onclick = (e) => {
       e.preventDefault();
@@ -256,18 +266,24 @@ function updateControlHud() {
       updateControlHud();
     };
   } else {
-    comboSquareBtn.hidden = true;
+    if (!comboSquareBtn.hidden) comboSquareBtn.hidden = true;
   }
 
   // 3. 🟦 Die Fähigkeits-Buttons: bei mehreren Charakteren NEBENEINANDER!
   const teamList = teamMode ? chosenTeam : (playerTeam || [playerActor]);
   const abilityActors = teamList.filter(n => isAlive(n) && hasSpecial(n));
 
-  // Buttons in abilityBtnRow synchronisieren
-  const currentButtons = Array.from(abilityBtnRow.children);
-  const currentNames = currentButtons.map(b => b.dataset.name).filter(Boolean);
-  const needRebuild = currentNames.length !== abilityActors.length ||
-    abilityActors.some((n, idx) => currentNames[idx] !== n);
+  // Buttons in abilityBtnRow synchronisieren (ohne Array-Allokationen in jedem Frame!)
+  const children = abilityBtnRow.children;
+  let needRebuild = children.length !== abilityActors.length;
+  if (!needRebuild) {
+    for (let i = 0; i < abilityActors.length; i++) {
+      if (children[i].dataset.name !== abilityActors[i]) {
+        needRebuild = true;
+        break;
+      }
+    }
+  }
 
   if (needRebuild) {
     abilityBtnRow.innerHTML = '';
@@ -283,6 +299,8 @@ function updateControlHud() {
         `<span class="ab-count">0/${need}</span>` +
         (abilityActors.length > 1 ? `<span class="ab-char">${actorEmoji(name)}</span>` : '') +
         (idx === 0 ? `<span class="key-hint">F</span>` : '');
+      btn._fill = btn.querySelector('.ab-bar i');
+      btn._count = btn.querySelector('.ab-count');
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -297,17 +315,25 @@ function updateControlHud() {
   }
 
   // Werte der Buttons aktualisieren
-  for (const btn of abilityBtnRow.children) {
+  for (let i = 0; i < children.length; i++) {
+    const btn = children[i];
     const name = btn.dataset.name;
     if (!name || !actors[name]) continue;
     const charge = actors[name].specialCharge || 0;
     const ready = specialReady(name) && isAlive(name);
     btn.classList.toggle('ready', ready);
     btn.hidden = !isAlive(name);
-    const fill = btn.querySelector('.ab-bar i');
-    if (fill) fill.style.width = `${Math.min(100, (charge / need) * 100)}%`;
-    const count = btn.querySelector('.ab-count');
-    if (count) count.textContent = ready ? 'BEREIT!' : `${charge}/${need}`;
+    const fill = btn._fill || (btn._fill = btn.querySelector('.ab-bar i'));
+    if (fill && btn._lastCharge !== charge) {
+      fill.style.width = `${Math.min(100, (charge / need) * 100)}%`;
+      btn._lastCharge = charge;
+    }
+    const count = btn._count || (btn._count = btn.querySelector('.ab-count'));
+    const countText = ready ? 'BEREIT!' : `${charge}/${need}`;
+    if (count && btn._lastCountText !== countText) {
+      count.textContent = countText;
+      btn._lastCountText = countText;
+    }
   }
 }
 

@@ -60,24 +60,26 @@ function drawWeather(now) {
   else raindrops = [];
 
   // 🌧️ Regentropfen
-  ctx.save();
-  ctx.strokeStyle = 'rgba(147, 197, 253, 0.85)';
-  ctx.lineWidth = 2;
-  ctx.lineCap = 'round';
-  for (let i = raindrops.length - 1; i >= 0; i--) {
-    const d = raindrops[i];
-    d.y += d.speed;
-    if (d.y >= groundY()) {
-      landRaindrop(d);
-      raindrops.splice(i, 1);
-      continue;
-    }
+  if (raindrops.length > 0) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(147, 197, 253, 0.85)';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(d.x, d.y);
-    ctx.lineTo(d.x - 1, d.y - 10);
+    for (let i = raindrops.length - 1; i >= 0; i--) {
+      const d = raindrops[i];
+      d.y += d.speed;
+      if (d.y >= groundY()) {
+        landRaindrop(d);
+        raindrops.splice(i, 1);
+        continue;
+      }
+      ctx.moveTo(d.x, d.y);
+      ctx.lineTo(d.x - 1, d.y - 10);
+    }
     ctx.stroke();
+    ctx.restore();
   }
-  ctx.restore();
 
   // 🌱 → 🌿 → 🌳 Bäume wachsen von klein nach groß
   const growMs = GAME_CONFIG.treeGrowSeconds * 1000;

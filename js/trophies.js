@@ -101,7 +101,13 @@ if (trophiesData.highScore > highScore) {
   if (highScoreEl) highScoreEl.textContent = highScore;
 }
 
-function saveTrophies() {
+let saveTrophiesTimer = null;
+
+function flushSaveTrophies() {
+  if (saveTrophiesTimer) {
+    clearTimeout(saveTrophiesTimer);
+    saveTrophiesTimer = null;
+  }
   try {
     trophiesData.highScore = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
     localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophiesData));
@@ -110,7 +116,27 @@ function saveTrophies() {
   updateTrophyHud();
 }
 
-// 🎯 Speichert jeden erzielten Punkt & neuen Rekord sofort im Browser (auch wenn man neu lädt!)
+function saveTrophies(immediate = true) {
+  if (immediate) {
+    flushSaveTrophies();
+    return;
+  }
+  if (!saveTrophiesTimer) {
+    saveTrophiesTimer = setTimeout(() => {
+      saveTrophiesTimer = null;
+      flushSaveTrophies();
+    }, 600);
+  }
+}
+
+// Bei Tab-Schließen oder Seitenwechsel ausstehende Speicherungen sofort sichern
+window.addEventListener('beforeunload', flushSaveTrophies);
+window.addEventListener('pagehide', flushSaveTrophies);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) flushSaveTrophies();
+});
+
+// 🎯 Speichert jeden erzielten Punkt & neuen Rekord im Browser (auch wenn man neu lädt!)
 function addSavedScore(points) {
   const add = Number(points) || 0;
   if (add <= 0) return;
@@ -120,7 +146,7 @@ function addSavedScore(points) {
     if (highScoreEl) highScoreEl.textContent = highScore;
   }
   trophiesData.highScore = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
-  saveTrophies();
+  saveTrophies(false); // Sanft gebündelt statt 10-mal pro Sekunde auf die Festplatte
 }
 
 // 🗑️ Setzt alle gespeicherten Pokale, Gesamtpunkte & Rekorde im Browser einfach auf 0 zurück!
@@ -297,7 +323,7 @@ function updateTrophyHud() {
   const summaryText = `🏆 ${count} Pokale · 🎯 ${totalPts} Gesamtpunkte · 🏅 Rekord: ${bestRecord}`;
   if (savedStatsBadge) savedStatsBadge.textContent = summaryText;
   if (settingsStatsText) settingsStatsText.textContent = summaryText;
-  refreshUnlockTiles();
+  if (!isPlaying) refreshUnlockTiles();
 }
 
 // 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen, falls noch kein Fortschritt im Browser gespeichert ist!

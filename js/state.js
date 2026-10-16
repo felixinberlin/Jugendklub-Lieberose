@@ -44,7 +44,10 @@ let height = 640;
 let isPlaying = false;
 let isPaused = false;
 let score = 0;
-let highScore = parseInt(localStorage.getItem('lieberose_highscore') || '0', 10);
+let highScore = 0;
+try {
+  highScore = parseInt(localStorage.getItem('lieberose_highscore') || '0', 10) || 0;
+} catch (e) {}
 highScoreEl.textContent = highScore;
 
 // Matter.js Physik-Welt (wird in physics.js gebaut)

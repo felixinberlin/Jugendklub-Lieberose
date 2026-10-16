@@ -51,14 +51,22 @@ function drawSpecialBadge(name, now) {
   ctx.restore();
 }
 
+let steerCanvasRect = null;
+function getSteerCanvasRect() {
+  if (!steerCanvasRect) steerCanvasRect = canvas.getBoundingClientRect();
+  return steerCanvasRect;
+}
+window.addEventListener('resize', () => { steerCanvasRect = null; });
+window.addEventListener('scroll', () => { steerCanvasRect = null; }, { passive: true });
+
 // 👆 Finger verfolgen, damit du den Riesenball lenken kannst
 canvas.addEventListener('pointerdown', (event) => {
-  const rect = canvas.getBoundingClientRect();
-  steer = { active: true, id: event.pointerId, x: event.clientX - rect.left, y: event.clientY - rect.top };
+  steerCanvasRect = canvas.getBoundingClientRect();
+  steer = { active: true, id: event.pointerId, x: event.clientX - steerCanvasRect.left, y: event.clientY - steerCanvasRect.top };
 });
 window.addEventListener('pointermove', (event) => {
   if (!steer.active || event.pointerId !== steer.id) return;
-  const rect = canvas.getBoundingClientRect();
+  const rect = getSteerCanvasRect();
   steer.x = event.clientX - rect.left;
   steer.y = event.clientY - rect.top;
 });
