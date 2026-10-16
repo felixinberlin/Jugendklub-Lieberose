@@ -121,6 +121,8 @@ for (const name in actors) {
     if (drag.moved) {
       suppressClick = true;
       moveActor(name, drag.x + dx, drag.y + dy);
+      actors[name].homeRx = actors[name].body.position.x / width;
+      actors[name].homeRy = actors[name].body.position.y / height;
     }
   });
   function finishDrag(event) {

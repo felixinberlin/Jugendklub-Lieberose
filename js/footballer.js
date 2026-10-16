@@ -17,14 +17,14 @@ function updateFootballers() {
   for (const name in actors) {
     const actor = actors[name];
     if (!actorCfg(name, 'Shirt') || !actorCfg(name, 'Runs')) continue;
-    if (!isAlive(name) || actor.dragging || isStunned(name)) continue; // 🌪️ Im Wirbel steht er still
-    if (teamMode) continue; // ⚔️ Im Team-Modus bleibt jeder auf seinem Platz (sonst rennt er in sein Team) // Wer gerade gezogen wird, rennt nicht weg
+    if (!isAlive(name) || actor.dragging || isStunned(name) || actor.jump) continue; // 🌪️ Im Wirbel / Sprung stillstehen
     if (isSixSeven(actor)) continue; // Beim Jubeln bleibt er stehen
     if (!actor.runDir) actor.runDir = 1;
 
-    const speed = actorCfg(name, 'RunSpeed') || 1.5;
-    const left = width * 0.15;
-    const right = width * 0.85;
+    const speed = (actorCfg(name, 'RunSpeed') || 1.5) * (teamMode ? 0.65 : 1);
+    const homeX = (actor.homeRx ?? 0.5) * width;
+    const left = teamMode ? Math.max(46, homeX - 28) : width * 0.15;
+    const right = teamMode ? Math.min(width - 46, homeX + 28) : width * 0.85;
     let x = actor.body.position.x + actor.runDir * speed;
     if (x > right) { x = right; actor.runDir = -1; } // Wende!
     if (x < left) { x = left; actor.runDir = 1; }

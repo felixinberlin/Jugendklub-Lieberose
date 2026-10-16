@@ -12,16 +12,22 @@ function isAlive(name) {
 }
 
 // Auf wen wirft diese Figur? Ihr Ziel – oder, wenn das raus ist,
-// das nächste lebende Ziel im Kreis.
+// das nächste lebende Ziel im Kreis (versteckte Figuren im Mauseloch möglichst überspringen).
 function targetOf(name) {
+  const forced = actors[name] && actors[name].cpuAim;
+  if (forced && isAlive(forced) && forced !== name) return forced;
   if (teamMode) return nearestEnemy(name); // ⚔️ teams.js
   let next = actors[name].target;
+  let fallback = null;
   for (let i = 0; i < Object.keys(actors).length; i++) {
-    if (next === name) return null; // Einmal rum: niemand mehr da
-    if (isAlive(next)) return next;
+    if (next === name) break; // Einmal rum
+    if (isAlive(next)) {
+      if (!isHidden(next)) return next;
+      if (!fallback) fallback = next;
+    }
     next = actors[next].target;
   }
-  return null;
+  return fallback;
 }
 
 // Wird in physics.js nach jedem Treffer aufgerufen.

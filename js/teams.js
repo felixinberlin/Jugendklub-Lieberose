@@ -24,12 +24,15 @@ function enemiesOf(name) {
   return Object.keys(actors).filter(n => isAlive(n) && teamOf(n) !== myTeam);
 }
 
-// Die nächste lebende Figur aus dem anderen Team (auf die wird geworfen)
+// Die nächste lebende Figur aus dem anderen Team (versteckte im Mauseloch nur, wenn sonst niemand da ist)
 function nearestEnemy(name) {
   const me = actors[name].body.position;
+  const all = enemiesOf(name);
+  const visible = all.filter(n => !isHidden(n));
+  const pool = visible.length ? visible : all;
   let best = null;
   let bestDist = Infinity;
-  for (const n of enemiesOf(name)) {
+  for (const n of pool) {
     const p = actors[n].body.position;
     const d = Math.hypot(p.x - me.x, p.y - me.y);
     if (d < bestDist) { best = n; bestDist = d; }
