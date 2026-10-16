@@ -145,6 +145,12 @@ function playSound(type) {
     playTone(1650, 'sawtooth', 0.06, 0.18);
     playTone(95, 'sawtooth', 0.28, 0.24);
     setTimeout(() => playTone(68, 'square', 0.26, 0.22), 70);
+  } else if (type === 'combo') {
+    // 🤝⚽🌟 Yamal × Musiala Kombo-Fanfare!
+    playTone(523, 'triangle', 0.09, 0.2);
+    setTimeout(() => playTone(659, 'triangle', 0.09, 0.2), 70);
+    setTimeout(() => playTone(784, 'triangle', 0.11, 0.22), 140);
+    setTimeout(() => playTone(1046, 'square', 0.22, 0.24), 210);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);
@@ -161,6 +167,7 @@ function playAttackSound(actorName) {
     maus: 'mousethrow',  // 🐭🧀 Maus-Pieps
     goblin: 'firethrow', // 👺🔥 Feuerball
     musiala: 'kick',     // ⚽ Fußball-Kick
+    yamal: 'kick',       // 🌟⚽ Lamine Yamal Fußball-Kick
     drache: 'scratch',   // 🐉🐾 Krallen-Kratzer
     zeus: 'zap'          // ⚡ Elektrischer Blitz
   };

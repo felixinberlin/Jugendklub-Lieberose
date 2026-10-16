@@ -148,37 +148,49 @@ function drawFootballer(shirt, size, now, dir = 1, kick = 0, sixSeven = false) {
   ctx.fillStyle = shirt.numberColor || '#111827';
   ctx.fillText(shirt.number || '10', 0, 6);
 
-  // 🐐 Kopf – mit Hörnern & glühend roten Augen im Grusel-Modus!
+  // ⚽ Kopf – im Pro-Modus als echter Fußballstar mit Frisur & Stirnband gemalt!
   ctx.save();
   ctx.translate(0, -22);
   ctx.rotate(run * 0.08);
-  if (GAME_CONFIG.scarySkins) {
-    // Gebogene Ziegen-Hörner
-    ctx.fillStyle = '#facc15';
-    ctx.strokeStyle = '#78350f';
-    ctx.lineWidth = 1.6;
-    for (const side of [-1, 1]) {
-      ctx.beginPath();
-      ctx.moveTo(side * 6, -8);
-      ctx.quadraticCurveTo(side * 19, -22, side * 14, -5);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    }
-    // Dunkler Dämonen-Ziegenkopf
-    ctx.fillStyle = '#18181b';
-    ctx.strokeStyle = '#ef4444';
+  if (GAME_CONFIG.proSkins) {
+    // Hautfarbe
+    ctx.fillStyle = shirt.skin || '#d99b66';
+    ctx.strokeStyle = '#0f172a';
     ctx.lineWidth = 1.8;
     ctx.beginPath();
-    ctx.arc(0, 0, 11, 0, Math.PI * 2);
+    ctx.arc(0, 0, 11.5, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
-    // Glühende rote Augen
-    ctx.fillStyle = '#ef4444';
+
+    // Coole Locken-Frisur oben
+    ctx.fillStyle = shirt.hair || '#111827';
+    for (const hx of [-7, -2.5, 2.5, 7]) {
+      ctx.beginPath();
+      ctx.arc(hx, -10, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Sport-Stirnband
+    if (shirt.headband) {
+      ctx.fillStyle = shirt.headband;
+      ctx.fillRect(-10.5, -7, 21, 3.2);
+    }
+    // Freundlich-fokussierte Pro-Augen mit Glanzpunkt
+    ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(-4, -2, 2.3, 0, Math.PI * 2);
-    ctx.arc(4, -2, 2.3, 0, Math.PI * 2);
+    ctx.arc(-4, -1.5, 2.4, 0, Math.PI * 2);
+    ctx.arc(4, -1.5, 2.4, 0, Math.PI * 2);
     ctx.fill();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-4, -1.5, 1.3, 0, Math.PI * 2);
+    ctx.arc(4, -1.5, 1.3, 0, Math.PI * 2);
+    ctx.fill();
+    // Lächeln
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.arc(0, 2, 4, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
   } else {
     drawEmoji(shirt.head || '😃', 0, 0, 24); // 🖼️ sprites.js
   }

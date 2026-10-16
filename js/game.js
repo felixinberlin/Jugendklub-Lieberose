@@ -20,8 +20,9 @@
 // keepCharge = true: Deine Spezialkraft-Ladung bleibt (beim Weiter ins nächste Level)
 function startGame(keepCharge = false) {
   initAudio();
-  applyModeLives(); // 🏆 100 Leben im Pokal-Modus, sonst die gewählten Leben (trophies.js)
+  applyModeLives(); // 🏆 50 Leben im Pokal-Modus, sonst die gewählten Leben (trophies.js)
   isPlaying = true;
+  isPaused = false;
   score = 0;
   scoreEl.textContent = score;
 
@@ -34,12 +35,14 @@ function startGame(keepCharge = false) {
   startLevel();   // 🏅 Level-Schild & Anzeige (levels.js)
   setupPlayers(); // Wer spielt wen? (cpu.js)
   setupSpecialBar(); // ⚡ Knöpfe aktualisieren (specials.js)
-  tryLockLandscape(); // 🔄 Querformat auf dem Handy (controls.js)
+  tryLockLandscape(); // 🔄 Querformat + Vollbild auf dem Handy (controls.js)
   updateControlHud(); // 🕹️ Joystick + Schuss- & Fähigkeits-Knopf einblenden (controls.js)
 
   startScreen.classList.remove('active');
   modeScreen.classList.remove('active');
   teamScreen.classList.remove('active');
+  if (typeof pauseScreen !== 'undefined' && pauseScreen) pauseScreen.classList.remove('active');
+  if (typeof settingsScreen !== 'undefined' && settingsScreen) settingsScreen.classList.remove('active');
   hideLeaderboard();
   hideCredits();
   gameOverScreen.classList.remove('active');
@@ -81,7 +84,7 @@ function gameLoop(now) {
   drawActors(now);
   drawSpecials(now); // 🧌🌪️ Mini-Kobolde & Wirbelwolken (specials.js)
 
-  if (isPlaying) {
+  if (isPlaying && !isPaused) {
     // 2. Matter.js Physik-Schritt
     Engine.update(engine, dt);
 
@@ -95,7 +98,7 @@ function gameLoop(now) {
 
   // 4. Partikel malen
   drawParticles();
-  drawLevelBanner(now); // 📣 „LEVEL 2“ (levels.js)
+  drawLevelBanner(now); // 📣 „LEVEL 2“ (nur im Team-Modus, levels.js)
 
   requestAnimationFrame(gameLoop);
 }

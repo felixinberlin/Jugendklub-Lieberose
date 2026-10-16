@@ -23,12 +23,87 @@ const abilityFillEl = document.getElementById('abilityFill');
 const abilityCountEl = document.getElementById('abilityCount');
 const rotateOverlay = document.getElementById('rotateOverlay');
 const dismissRotateBtn = document.getElementById('dismissRotateBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const pauseScreen = document.getElementById('pauseScreen');
+const resumeGameBtn = document.getElementById('resumeGameBtn');
+const pauseRestartBtn = document.getElementById('pauseRestartBtn');
+const pauseHomeBtn = document.getElementById('pauseHomeBtn');
+let pausedAtTime = 0;
 
 // ⌨️ Gedrückte Tasten (WASD + Pfeiltasten)
 const keysDown = { up: false, down: false, left: false, right: false };
 // 🕹️ Joystick-Auslenkung (-1 bis +1)
 let joyVec = { x: 0, y: 0, pointerId: null };
 let shootHoldTimer = null;
+
+// ⏸️ Pause-Funktion – NUR im normalen Modus (!trophyMode), NICHT im Ranglisten-Modus!
+function canPauseGame() {
+  return isPlaying && !trophyMode;
+}
+
+function pauseGame() {
+  if (!canPauseGame() || isPaused) return;
+  isPaused = true;
+  pausedAtTime = performance.now();
+  keysDown.up = keysDown.down = keysDown.left = keysDown.right = false;
+  resetJoystick();
+  clearInterval(shootHoldTimer);
+  if (pauseScreen) pauseScreen.classList.add('active');
+  updateControlHud();
+}
+
+function resumeGame() {
+  if (!isPaused) return;
+  const pausedDuration = Math.max(0, performance.now() - pausedAtTime);
+  isPaused = false;
+  // Zeitstempel um die Pausen-Dauer verschieben, damit nach dem Fortsetzen alles nahtlos weiterläuft
+  for (const n in cpuNextThrow) {
+    if (typeof cpuNextThrow[n] === 'number') cpuNextThrow[n] += pausedDuration;
+  }
+  for (const n in actors) {
+    const a = actors[n];
+    if (a.stunnedUntil > 0) a.stunnedUntil += pausedDuration;
+    if (a.hiddenUntil > 0) a.hiddenUntil += pausedDuration;
+    if (a.burn) { a.burn.until += pausedDuration; a.burn.next += pausedDuration; }
+  }
+  if (typeof zeusStorms !== 'undefined') {
+    for (const s of zeusStorms) { s.until += pausedDuration; s.nextStrike += pausedDuration; }
+  }
+  if (pauseScreen) pauseScreen.classList.remove('active');
+  updateControlHud();
+}
+
+function togglePauseGame() {
+  if (!canPauseGame()) return;
+  if (isPaused) resumeGame();
+  else pauseGame();
+}
+
+if (pauseBtn) {
+  pauseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    togglePauseGame();
+  });
+}
+if (resumeGameBtn) {
+  resumeGameBtn.addEventListener('click', () => resumeGame());
+}
+if (pauseRestartBtn) {
+  pauseRestartBtn.addEventListener('click', () => {
+    isPaused = false;
+    if (pauseScreen) pauseScreen.classList.remove('active');
+    startGame(false);
+  });
+}
+if (pauseHomeBtn) {
+  pauseHomeBtn.addEventListener('click', () => {
+    isPaused = false;
+    isPlaying = false;
+    if (pauseScreen) pauseScreen.classList.remove('active');
+    updateControlHud();
+    startScreen.classList.add('active');
+  });
+}
 
 // Welche Figuren steuerst DU gerade?
 function myControlledActors() {
@@ -39,8 +114,9 @@ function myControlledActors() {
   return first ? [first] : [];
 }
 
-// 🔄 In der Runde ins Querformat wechseln; auf der Startseite wieder Hochformat erlauben
+// 🔄 In der Runde ins Querformat + Vollbild wechseln; auf der Startseite wieder Hochformat erlauben
 function tryLockLandscape() {
+  if (typeof requestGameFullscreen === 'function') requestGameFullscreen();
   try {
     if (screen.orientation && typeof screen.orientation.lock === 'function') {
       screen.orientation.lock('landscape').catch(() => {});
@@ -62,7 +138,7 @@ dismissRotateBtn.addEventListener('click', () => {
 
 // 🎯 Schießen auslösen (runder Knopf unten rechts oder linke Maustaste)
 function triggerPlayerShoot(aimX, aimY) {
-  if (!isPlaying) return;
+  if (!isPlaying || isPaused) return;
   initAudio();
   const mine = myControlledActors();
   if (!mine.length) return;
@@ -88,7 +164,7 @@ function triggerPlayerShoot(aimX, aimY) {
 
 // ⚡ Fähigkeit auslösen (quadratischer Knopf über dem Schieß-Knopf oder Taste F)
 function triggerPlayerSpecial() {
-  if (!isPlaying) return;
+  if (!isPlaying || isPaused) return;
   initAudio();
   const mine = myControlledActors();
   let usedAny = false;
@@ -101,10 +177,14 @@ function triggerPlayerSpecial() {
   return usedAny;
 }
 
-// 🔄 Aktualisiert das Aussehen vom runden Schieß-Knopf und dem quadratischen Fähigkeits-Knopf
+// 🔄 Aktualisiert das Aussehen vom runden Schieß-Knopf, dem quadratischen Fähigkeits-Knopf & dem Pause-Knopf
 function updateControlHud() {
   document.body.classList.toggle('in-round', isPlaying);
-  actionHud.hidden = !isPlaying;
+  actionHud.hidden = !isPlaying || isPaused;
+  // ⏸️ Pause-Knopf NUR im normalen Modus sichtbar – NICHT im Ranglisten-/Pokal-Modus!
+  if (pauseBtn) {
+    pauseBtn.hidden = !isPlaying || trophyMode;
+  }
   if (!isPlaying) {
     tryUnlockOrientation();
     return;
@@ -128,9 +208,10 @@ function updateControlHud() {
   if (sp) {
     const charge = actors[bestActor].specialCharge || 0;
     const ready = specialReady(bestActor);
-    abilityIconEl.textContent = sp.icon;
+    const hasCombo = typeof findComboPartner === 'function' && Boolean(findComboPartner(bestActor));
+    abilityIconEl.textContent = hasCombo ? '🤝' : sp.icon;
     abilityFillEl.style.width = `${Math.min(100, (charge / need) * 100)}%`;
-    abilityCountEl.textContent = ready ? 'BEREIT!' : `${charge}/${need}`;
+    abilityCountEl.textContent = ready ? (hasCombo ? 'KOMBO!' : 'BEREIT!') : `${charge}/${need}`;
     abilityBtn.classList.toggle('ready', ready);
   }
 }
@@ -206,7 +287,7 @@ abilityBtn.addEventListener('pointerdown', (event) => {
   triggerPlayerSpecial();
 });
 
-// ---------- ⌨️ Tastatur (WASD + F) & 🖱️ Linke Maustaste ----------
+// ---------- ⌨️ Tastatur (WASD + F + P/Esc für Pause im Normal-Modus) & 🖱️ Linke Maustaste ----------
 function setKey(event, down) {
   const code = event.code;
   const key = (event.key || '').toLowerCase();
@@ -214,9 +295,13 @@ function setKey(event, down) {
   if (code === 'KeyS' || key === 's' || code === 'ArrowDown') keysDown.down = down;
   if (code === 'KeyA' || key === 'a' || code === 'ArrowLeft') keysDown.left = down;
   if (code === 'KeyD' || key === 'd' || code === 'ArrowRight') keysDown.right = down;
-  if (down && (code === 'KeyF' || key === 'f') && isPlaying) {
+  if (down && (code === 'KeyF' || key === 'f') && isPlaying && !isPaused) {
     event.preventDefault();
     triggerPlayerSpecial();
+  }
+  if (down && (code === 'KeyP' || key === 'p' || code === 'Escape') && canPauseGame()) {
+    event.preventDefault();
+    togglePauseGame();
   }
 }
 
@@ -230,18 +315,16 @@ window.addEventListener('blur', () => {
 
 // 🖱️ Linke Maustaste auf dem Spielfeld = Schießen!
 canvas.addEventListener('pointerdown', (event) => {
-  if (!isPlaying || event.pointerType !== 'mouse' || event.button !== 0) return;
+  if (!isPlaying || isPaused || event.pointerType !== 'mouse' || event.button !== 0) return;
   const rect = canvas.getBoundingClientRect();
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
-  // Wenn oben auf Sonne/Mond oder Wolke geklickt wurde, kümmert sich handleSkyTap darum –
-  // wir schießen trotzdem oder zielen auf den Mauszeiger!
   triggerPlayerShoot(x, y);
 });
 
 // ---------- 🏃 In jedem Bild: Eigene Figur(en) mit WASD oder Joystick bewegen ----------
 function updatePlayerControls() {
-  if (!isPlaying) return;
+  if (!isPlaying || isPaused) return;
   let vx = (keysDown.right ? 1 : 0) - (keysDown.left ? 1 : 0) + joyVec.x;
   let vy = (keysDown.down ? 1 : 0) - (keysDown.up ? 1 : 0) + joyVec.y;
   const mag = Math.hypot(vx, vy);

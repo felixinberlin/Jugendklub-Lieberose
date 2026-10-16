@@ -276,4 +276,116 @@ function drawStorms(now) {
   }
 }
 
+// ---------- 🌟⚽ Lamine Yamal: Gold-Schuss & YAMAL × MUSIALA KOMBO (20 Treffer gemeinsam!) ----------
+let activeComboLinks = [];
+
+// Prüft, ob für diese Figur ein lebender Kombo-Partner (Yamal + Musiala) im selben Team steht
+function findComboPartner(name) {
+  const kind = kindOf(name);
+  if (kind !== 'yamal' && kind !== 'musiala') return null;
+  const wantedKind = kind === 'yamal' ? 'musiala' : 'yamal';
+  for (const other in actors) {
+    if (other === name || !isAlive(other) || kindOf(other) !== wantedKind) continue;
+    if (teamMode) {
+      if (teamOf(other) === teamOf(name)) return other;
+    } else if (playerTeam === null) {
+      return other;
+    }
+  }
+  return null;
+}
+
+// 🤝⚽🌟 Doppelpass-Kombo von Lamine Yamal & Musiala/GOAT!
+function yamalMusialaCombo(name, partnerName) {
+  const targets = popcornTargets(name);
+  if (!targets.length) return false;
+  const cfg = GAME_CONFIG.yamalMusialaCombo || { balls: 14, damage: 3, size: 42 };
+  const p1 = actors[name].body.position;
+  const p2 = actors[partnerName] ? actors[partnerName].body.position : p1;
+  const now = performance.now();
+
+  activeComboLinks.push({
+    a: name,
+    b: partnerName,
+    born: now,
+    until: now + 1800
+  });
+
+  spawnParticles(p1.x, p1.y, '#facc15', 30);
+  spawnParticles(p2.x, p2.y, '#38bdf8', 30);
+  playSound('combo');
+
+  // Beide schießen abwechselnd eine Salve goldener Traumtor-Fußbälle auf alle Gegner!
+  for (let i = 0; i < cfg.balls; i++) {
+    const shooter = (i % 2 === 0 || !actors[partnerName]) ? name : partnerName;
+    const target = targets[i % targets.length];
+    launchArc(shooter, target, {
+      emoji: i % 2 === 0 ? '⚽' : '🌟',
+      size: Math.round(cfg.size * (GAME_CONFIG.mapScale || 0.72)),
+      damage: cfg.damage,
+      special: true,
+      trail: '✨',
+      flightFrames: 26 + (i % 5) * 4
+    });
+  }
+  return true;
+}
+
+// 🌟⚽ Yamals Solo-Spezialkraft (oder Kombo, wenn er mit Musiala/GOAT in einem Team ist!)
+function yamalSpecial(name) {
+  const partner = findComboPartner(name);
+  if (partner) {
+    return yamalMusialaCombo(name, partner);
+  }
+  const targetName = targetOf(name);
+  if (!targetName) return false;
+  const cfg = GAME_CONFIG.yamalShot || { damage: 6, speed: 9.5, size: 54 };
+  // 3 schnelle goldene Winkel-Schüsse aufs Tor/Ziel!
+  for (let i = 0; i < 3; i++) {
+    launchArc(name, targetName, {
+      emoji: '⚽',
+      size: Math.round(cfg.size * (GAME_CONFIG.mapScale || 0.72)),
+      damage: Math.ceil(cfg.damage / 2),
+      special: true,
+      trail: '🌟',
+      flightFrames: 26 + i * 5
+    });
+  }
+  spawnParticles(actors[name].body.position.x, actors[name].body.position.y, '#facc15', 24);
+  playSound('bigball');
+  return true;
+}
+
+function drawComboEffects(now) {
+  for (let i = activeComboLinks.length - 1; i >= 0; i--) {
+    const c = activeComboLinks[i];
+    if (now > c.until || !isAlive(c.a) || !isAlive(c.b)) {
+      activeComboLinks.splice(i, 1);
+      continue;
+    }
+    const pa = actors[c.a].body.position;
+    const pb = actors[c.b].body.position;
+    const alpha = Math.min(1, (c.until - now) / 400);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    // Goldener Doppelpass-Energiestrahl zwischen Yamal & GOAT
+    ctx.strokeStyle = '#facc15';
+    ctx.lineWidth = 6;
+    ctx.setLineDash([12, 8]);
+    ctx.beginPath();
+    ctx.moveTo(pa.x, pa.y);
+    ctx.lineTo(pb.x, pb.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    const mx = (pa.x + pb.x) / 2;
+    const my = (pa.y + pb.y) / 2 - 26;
+    drawLabel('🤝 YAMAL × GOAT KOMBO! ⚽🌟', mx, my, {
+      size: 16, weight: '900', fill: '#facc15', stroke: '#0f172a', lineWidth: 4
+    });
+    ctx.restore();
+  }
+}
+
+
 

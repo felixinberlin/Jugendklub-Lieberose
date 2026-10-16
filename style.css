@@ -406,7 +406,7 @@ h2 {
   box-shadow: 0 5px 10px rgba(124, 58, 237, 0.3);
 }
 
-.sound-btn {
+.sound-btn, .fullscreen-btn {
   position: absolute;
   top: max(12px, env(safe-area-inset-top));
   right: max(16px, env(safe-area-inset-right));
@@ -424,9 +424,22 @@ h2 {
   cursor: pointer;
   z-index: 6;
 }
+.fullscreen-btn {
+  right: calc(max(16px, env(safe-area-inset-right)) + 52px);
+}
+.pause-hud-btn {
+  pointer-events: auto;
+  cursor: pointer;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 0.92rem;
+  background: rgba(59, 130, 246, 0.45);
+  border: 1.5px solid #93c5fd;
+}
+.pause-hud-btn:active { transform: scale(0.93); }
 
 #hud {
-  padding-right: 72px; /* Platz für den Ton-Knopf oben rechts */
+  padding-right: 120px; /* Platz für Vollbild- & Ton-Knopf oben rechts */
 }
 
 .actor-btn {
@@ -449,6 +462,7 @@ h2 {
 #mausBtn { left: 50%; top: 72%; }
 #goblinBtn { left: 25%; top: 32%; }
 #musialaBtn { left: 75%; top: 34%; }
+#yamalBtn { left: 82%; top: 74%; }
 #dracheBtn { left: 25%; top: 72%; }
 #zeusBtn { left: 75%; top: 72%; }
 .actor-btn:focus-visible { outline: 3px solid #ffde59; }
@@ -749,10 +763,30 @@ h2 {
   font-size: 0.88rem;
   font-weight: 800;
 }
+.cooldown-msg {
+  font-size: 0.86rem;
+  font-weight: 800;
+  padding: 6px 10px;
+  border-radius: 10px;
+}
+.cooldown-msg.locked {
+  color: #fde047;
+  background: rgba(185, 28, 28, 0.35);
+  border: 1px solid rgba(248, 113, 113, 0.55);
+}
+.cooldown-msg.unlocked {
+  color: #bbf7d0;
+  background: rgba(22, 101, 52, 0.35);
+  border: 1px solid rgba(74, 222, 128, 0.5);
+}
+.lb-row.lb-me {
+  border-color: #38bdf8;
+  background: rgba(56, 189, 248, 0.18);
+}
 
 /* 🗺️ In der Runde: Kompaktes HUD für maximale Sicht auf die größere Map */
 body.in-round #hud {
-  padding: 6px 64px 6px 12px;
+  padding: 6px 116px 6px 12px;
   font-size: 0.92rem;
 }
 body.in-round .hud-item {
@@ -782,14 +816,14 @@ body.in-round .hud-item {
   }
 }
 
-/* 📱↔️ Handy quer: Figuren-Auswahl in EINER Reihe (steht am Ende, damit es gewinnt) */
+/* 📱↔️ Handy quer: Figuren-Auswahl kompakt (steht am Ende, damit es gewinnt) */
 @media (max-height: 520px) {
-  h1 { font-size: 1.5rem; }
-  .instructions { font-size: 0.85rem; }
+  h1 { font-size: 1.4rem; }
+  .instructions { font-size: 0.82rem; }
   .pick-title { margin-bottom: 6px; }
-  .pick-grid { grid-template-columns: repeat(8, 68px); gap: 6px; margin-bottom: 4px; }
-  .pick-btn { min-height: 66px; }
-  .pick-emoji { font-size: 1.8rem; }
+  .pick-grid { grid-template-columns: repeat(5, 72px); gap: 6px; margin-bottom: 4px; }
+  .pick-btn { min-height: 62px; }
+  .pick-emoji { font-size: 1.7rem; }
   .btn-small { margin-top: 6px; padding: 8px 20px; }
   .hits-row { margin-bottom: 6px; }
   .hits-btn { min-height: 36px; }

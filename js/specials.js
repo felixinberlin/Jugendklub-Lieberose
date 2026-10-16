@@ -27,8 +27,13 @@
 // Welche Figuren haben eine Spezialkraft?
 // `desc` = Erklärung für den Startbildschirm (mit den echten Zahlen aus config.js)
 const SPECIALS = {
-  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall,
-    desc: () => `Riesiger Fußball, zählt ${GAME_CONFIG.bigBall.damage} Treffer. Du lenkst ihn mit dem Finger!` },
+  musiala: { name: 'RIESENBALL / KOMBO', icon: '⚽', use: (name) => {
+      const partner = findComboPartner(name);
+      return partner ? yamalMusialaCombo(name, partner) : bigBall(name);
+    },
+    desc: () => `Riesiger Fußball (${GAME_CONFIG.bigBall.damage} Treffer) – oder im Team mit YAMAL nach 20 gemeinsamen Treffern die MEGA-KOMBO 🤝⚽!` },
+  yamal: { name: 'GOLD-SCHUSS / KOMBO', icon: '🌟', use: yamalSpecial,
+    desc: () => `Goldene Traumtor-Salve – und im gleichen Team mit GOAT/Musiala (20 Treffer gemeinsam): DOPPELPASS-KOMBO 🤝⚽🌟!` },
   kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis,
     desc: () => `${GAME_CONFIG.miniKobolds.count} Mini-Kobolde fangen ${GAME_CONFIG.miniKobolds.seconds} Sek. lang Bomben ab.` },
   katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump,
@@ -49,17 +54,26 @@ function hasSpecial(name) {
   return Boolean(SPECIALS[kindOf(name)]);
 }
 
-// Aufgeladen? (20 Treffer mit normalen Würfen)
+// Aufgeladen? (20 Treffer mit normalen Würfen – oder 20 Treffer GEMEINSAM bei Yamal + Musiala im Team!)
 function specialReady(name) {
   return hasSpecial(name) && (actors[name].specialCharge || 0) >= GAME_CONFIG.specialChargeHits;
 }
 
-// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft lädt auf
+// Aus physics.js: Ein normaler Wurf hat getroffen → Spezialkraft lädt auf.
+// 🤝 Wenn Yamal & Musiala im selben Team sind, zählen ihre 20 Treffer GEMEINSAM!
 function chargeSpecial(name) {
   if (!hasSpecial(name)) return;
   const need = GAME_CONFIG.specialChargeHits;
-  actors[name].specialCharge = Math.min(need, (actors[name].specialCharge || 0) + 1);
-  if (actors[name].specialCharge === need && !isCpu(name)) playSound('ready'); // 🔔 Bereit!
+  const partner = typeof findComboPartner === 'function' ? findComboPartner(name) : null;
+  if (partner && actors[partner]) {
+    const shared = Math.min(need, Math.max(actors[name].specialCharge || 0, actors[partner].specialCharge || 0) + 1);
+    actors[name].specialCharge = shared;
+    actors[partner].specialCharge = shared;
+    if (shared === need && (!isCpu(name) || !isCpu(partner))) playSound('ready');
+  } else {
+    actors[name].specialCharge = Math.min(need, (actors[name].specialCharge || 0) + 1);
+    if (actors[name].specialCharge === need && !isCpu(name)) playSound('ready'); // 🔔 Bereit!
+  }
   updateSpecialBar();
 }
 
@@ -72,9 +86,14 @@ function isStunned(name) {
 function trySpecial(name) {
   if (!isPlaying || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
   if (!specialReady(name)) return false;
+  const partner = typeof findComboPartner === 'function' ? findComboPartner(name) : null;
   const used = SPECIALS[kindOf(name)].use(name);
   if (used === false) return false;
   actors[name].specialCharge = 0; // Wieder von vorn aufladen
+  if (partner && actors[partner]) {
+    actors[partner].specialCharge = 0; // Gemeinsame Kombo-Ladung verbraucht
+    actors[partner].wiggle = 1;
+  }
   actors[name].wiggle = 1;
   updateSpecialBar();
   return true;
@@ -97,6 +116,7 @@ function drawSpecials(now) {
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   drawStorms(now); // 🔴⚡ Roter Blitz-Regen-Kreis von Zeus
+  drawComboEffects(now); // 🤝⚽🌟 Doppelpass-Kombo von Yamal & GOAT
   for (const m of minis) {
     ctx.save();
     ctx.translate(m.body.position.x, m.body.position.y);
@@ -131,6 +151,7 @@ function drawSpecials(now) {
 function resetSpecials(keepCharge = false) {
   clearMinis();
   clearStorms();
+  activeComboLinks = [];
   for (const name in actors) {
     const mine = playerTeam === null || playerTeam.includes(name);
     if (!keepCharge || !mine) actors[name].specialCharge = 0;

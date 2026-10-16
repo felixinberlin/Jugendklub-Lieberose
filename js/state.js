@@ -42,6 +42,7 @@ let height = 640;
 
 // Game State
 let isPlaying = false;
+let isPaused = false;
 let score = 0;
 let highScore = parseInt(localStorage.getItem('lieberose_highscore') || '0', 10);
 highScoreEl.textContent = highScore;

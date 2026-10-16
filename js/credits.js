@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.33';
+const GAME_VERSION = '2.34';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -54,7 +54,8 @@ const WISHES = [
   { v: '2.30', text: 'Pokal-Modus 🏆, Rangliste 🥇 & im Team jedes Level 1 Figur dazu ⚔️' },
   { v: '2.31', text: 'Action-Steuerung im Querformat 🕹️: Joystick/WASD, runder Schieß-Knopf/Linksklick & Fähigkeit auf F ⚡' },
   { v: '2.32', text: 'Eigene Angriffs-Sounds 🪙🍿, 50 Leben im Pokal-Modus, größere Map 🗺️ & Spieler-Rangliste mit Namen 🏆' },
-  { v: '2.33', text: 'Dunkle Grusel-Skins 😈, GOAT #10 🐐, schlaue Pro-Bots 🤖, Pokal-Reset & Donnergott ZEUS ⚡ (40 🏆)' }
+  { v: '2.33', text: 'GOAT #10 🐐, schlaue Pro-Bots 🤖, Pokal-Reset & Donnergott ZEUS ⚡ (40 🏆)' },
+  { v: '2.34', text: 'Lamine Yamal #19 🌟 mit GOAT-Kombo (20 Treffer) 🤝⚽, edle Pro-Skins ✨, Vollbild ⛶, 7-Tage-Namenssperre ⚙️, Pause im Normal-Modus ⏸️ & 1-Match-Solo 🎯' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

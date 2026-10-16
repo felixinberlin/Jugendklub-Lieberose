@@ -6,36 +6,45 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
-  // 😈 Düstere Horror-/Battle-Skins für alle Figuren (true = gruseliger Pro-Skin statt Kinder-Emoji)
-  scarySkins: true,
+  // ✨ Coole, edle Pro-Skins (keine Monster, keine platte Kinder-Version – gleiche Figuren & Attacken!)
+  proSkins: true,
+  scarySkins: false,
+
   // Charaktere auf beiden Seiten
   koboldEmoji: '🧌',
   koboldSize: 70,
   cornEmoji: '🌽',
   cornSize: 74,
-  cornBomb: '🟡',        // 🌽 Der Mais schießt scharfe Glut-Körner
+  cornBomb: '🟡',        // 🌽 Der Mais schießt einzelne Maiskörner
   cornBombSize: 18,
-  koboldBomb: '💰',      // 🧌 Der Kobold wirft einen verfluchten Goldsack …
+  koboldBomb: '💰',      // 🧌 Der Kobold wirft einen Goldsack …
   koboldTrail: '🪙',     // … aus dem Goldmünzen purzeln
-  katzeEmoji: '🐈‍⬛',
+  katzeEmoji: '🐱',
   katzeSize: 70,
-  katzeBomb: '🐟',       // 🐈‍⬛ Die Schatten-Katze wirft Knochen-Fische
-  mausEmoji: '🐀',
+  katzeBomb: '🐟',       // 🐱 Die Katze wirft Fische
+  mausEmoji: '🐭',
   mausSize: 60,
-  mausBomb: '🧀',        // 🐀 Die Seuchen-Ratte wirft Gift-Käse!
-  goblinEmoji: '👹',
+  mausBomb: '🧀',        // 🐭 Die Maus wirft Käse!
+  goblinEmoji: '👺',
   goblinSize: 68,
-  goblinBomb: '🔥',      // 👹 Der Höllen-Goblin wirft Höllenfeuer!
-  musialaEmoji: '🐐',    // Wird nur benutzt, wenn musialaShirt fehlt
-  // 👕 GOAT trägt jetzt das schwarze Elite-Trikot mit der Nummer 10!
-  musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#7f1d1d', head: '🐐', stripe: true, sixSeven: false },
-  musialaRuns: true,     // 🏃 GOAT sprintet über das Feld
-  musialaRunSpeed: 2.2,  // Schneller Pro-Sprint!
+  goblinBomb: '🔥',      // 👺 Der Goblin wirft Feuer!
+  musialaEmoji: '⚽',
+  // 👕 Musiala / GOAT trägt das Elite-Trikot mit der Nummer 10!
+  musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#1e293b', head: '⚽', stripe: true, sixSeven: false, skin: '#d99b66', hair: '#111827', headband: '#facc15' },
+  musialaRuns: true,     // 🏃 Dribbelt über das Feld
+  musialaRunSpeed: 2.2,
   musialaSize: 66,
-  musialaBomb: '⚽',     // GOAT schießt Power-Fußbälle!
+  musialaBomb: '⚽',
+  // ⚽🌟 NEU: Lamine Yamal (#19) – macht im Team mit Musiala die 20-Treffer-Kombo!
+  yamalEmoji: '🌟',
+  yamalShirt: { color: '#dc2626', number: '19', numberColor: '#facc15', shorts: '#1d4ed8', head: '🌟', stripe: false, sixSeven: false, skin: '#c68642', hair: '#111827', headband: '#38bdf8' },
+  yamalRuns: true,
+  yamalRunSpeed: 2.35,
+  yamalSize: 65,
+  yamalBomb: '⚽',
   dracheEmoji: '🐉',
   dracheSize: 74,
-  dracheBomb: '🐾',      // 🐉 Tobis Nacht-Drache macht eine scharfe Kratzspur!
+  dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
   dracheBombSize: 38,
   dracheScratch: true,   // Malt glühende Krallen-Kratzer in die Luft
   zeusEmoji: '⚡',
@@ -45,6 +54,11 @@ const GAME_CONFIG = {
   zeusBolt: true,        // Malt echte leuchtende Zickzack-Blitze
   zeusUnlockTrophies: 40, // 🔒 Für Zeus braucht man 40 Pokale!
 
+  // 🤝KOMBO: Yamal + Musiala im gleichen Team (20 Treffer gemeinsam!)
+  comboChargeHits: 20,
+  yamalMusialaCombo: { balls: 14, damage: 3, size: 42 },
+  yamalShot: { damage: 6, speed: 9.5, size: 54 },
+
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
   restitution: 0.85,      // Flummi-Effekt! (0.0 = Blei, 0.95 = Mega-Flummi)
@@ -53,15 +67,11 @@ const GAME_CONFIG = {
   // Die angeklickte Figur wirft, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
-  // 🏅 Fünf Level – Bots schießen jetzt viel schneller und zielen schlauer!
+  // 🏅 Solo-Modus hat jetzt 1 direktes Match (keine Level-Anzeige im Solo-Modus)
   levels: [
-    { title: 'Aufwärmen ⚡',       throwMs: 1650, huntPlayer: 0.22 },
-    { title: 'Schlaue Bots 😈',    throwMs: 1350, huntPlayer: 0.32 },
-    { title: 'Pro-Arena 🔥',       throwMs: 1150, huntPlayer: 0.42 },
-    { title: 'Alptraum 😤',        throwMs: 980,  huntPlayer: 0.50 },
-    { title: 'Endstufe 💀',        throwMs: 850,  huntPlayer: 0.58 }
+    { title: 'Arena-Match ⚡', throwMs: 1200, huntPlayer: 0.38 }
   ],
-  // ⚔️ Team-Modus: schnellere, stärkere Gegner-Bots!
+  // ⚔️ Team-Modus: 8 Level mit immer mehr Gegnern!
   teamLevels: [
     { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 1550 },
     { title: 'Zu zweit 🙂',        enemies: 3,  throwMs: 1450 },
@@ -77,21 +87,22 @@ const GAME_CONFIG = {
   playerMoveSpeed: 4.4,  // 🕹️ Bewegungs-Tempo mit Joystick / WASD
   // ⚡ Spezialkräfte – specials.js
   specialChargeHits: 20,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
-  cpuSpecialChance: 0.68,    // Bots nutzen ihre Spezialkraft jetzt öfter!
-  bigBall: { size: 80, damage: 6, speed: 7.5, seconds: 5 }, // ⚽ GOATs Riesenball
+  cpuSpecialChance: 0.68,    // Bots nutzen ihre Spezialkraft öfter!
+  bigBall: { size: 80, damage: 6, speed: 7.5, seconds: 5 }, // ⚽ Musiala/GOAT Riesenball
   miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
-  catStunSeconds: 4,                                        // 🐈‍⬛🌪️ So lange ist der Gegner gefangen
-  catDamage: 4,                                              // 🐈‍⬛ Schaden beim Draufspringen
-  hideSeconds: 6,                                           // 🐀🕳️ So lange ist die Maus versteckt
+  catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen
+  catDamage: 4,                                              // 🐱 Schaden beim Draufspringen
+  hideSeconds: 6,                                           // 🐭🕳️ So lange ist die Maus versteckt
   popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
-  fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👹🔥 Feuerspeer
+  fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
   dragonBite: { damage: 6, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
   zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 2 }, // ⚡🌩️ Zeus: 4 Sek. Blitz-Regen im roten Kreis!
   maxHits: 20, // 💀 So viele Treffer hält eine Figur im normalen Modus aus
   trophyLives: 50, // 🏆 Im Pokal-Modus hat jede Figur 50 Leben!
+  nameChangeCooldownDays: 7, // 🔒 Name erst nach 7 Tagen wieder änderbar!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
-  mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde (kleiner = weiter rausgezoomt)
-  maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte (3 = schärfer, aber langsamer)
+  mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
+  maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte
   maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
 
@@ -102,7 +113,6 @@ const GAME_CONFIG = {
   sunEmoji: '☀️',
 
   // 🌧️ Regen & wachsende Bäume (nur bei Tag)
-  // Wolke antippen = sie regnet. Sonne antippen = Nacht, Mond antippen = Tag.
   rain: false,              // true = alle Wolken regnen immer
   rainSeconds: 8,           // So lange regnet eine angetippte Wolke
   rainAmount: 0.16,         // Sanfter, flüssiger Regen ohne Lag

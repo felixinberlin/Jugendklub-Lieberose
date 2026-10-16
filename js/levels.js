@@ -1,37 +1,55 @@
 /**
- * 🏅 levels.js – Fünf Level, jedes schwerer
+ * 🏅 levels.js – Team-Level (Solo-Modus hat nur 1 direktes Match ohne Level-Anzeige!)
  *
- * Nur wenn du eine eigene Figur spielst (nicht bei „Alle zusammen“).
- * Gewinnst du ein Level, geht's ins nächste. Verlierst du, nochmal dasselbe.
- * Wie schwer jedes Level ist, steht in config.js unter `levels`.
+ * Im Solo-Modus (Rangliste & Normal) gibt es nur 1 Runde und gar keine Level-Anzeige.
+ * Im Team-Modus kämpfst du dich durch die 8 Team-Level!
  */
 
-let currentLevel = 0; // 0 = Level 1, 1 = Level 2, … (Anzahl = GAME_CONFIG.levels)
+let currentLevel = 0; // 0 = Level 1, 1 = Level 2, … (für Team-Modus)
 let nextLevel = 0;    // Welches Level startet „WEITER“ / „NOCHMAL“?
 let levelStartTime = 0;
 
 // Die Einstellungen des aktuellen Levels
 function levelList() {
-  return teamMode ? GAME_CONFIG.teamLevels : GAME_CONFIG.levels; // ⚔️ Team-Modus hat eigene Level
+  return teamMode ? GAME_CONFIG.teamLevels : GAME_CONFIG.levels;
 }
 function level() {
-  return levelList()[currentLevel];
+  return levelList()[currentLevel] || levelList()[0];
 }
 
 // Wird bei jedem Spielstart aufgerufen.
+// Im Solo-Modus werden Level gar nicht erst angezeigt!
 function startLevel() {
   levelStartTime = performance.now();
-  levelEl.textContent = `${currentLevel + 1}/${levelList().length}`;
-  levelHudEl.hidden = playerTeam === null;
+  if (teamMode) {
+    levelEl.textContent = `${currentLevel + 1}/${levelList().length}`;
+    levelHudEl.hidden = false;
+  } else {
+    levelHudEl.hidden = true; // 🚫 Im Solo-Modus keine Level-Anzeige!
+  }
 }
 
-// Level vorbei: Text und Knopf auf dem Game-Over-Bildschirm einstellen.
+// Runde vorbei: Text und Knopf auf dem Game-Over-Bildschirm einstellen.
 function finishLevel(won) {
+  awardLevelTrophies(won); // 🏆 Pokale vergeben, falls im Pokal-Modus gespielt wurde (trophies.js)
+
+  // 🎮 SOLO-MODUS: Nur 1 Match, gar keine Level!
+  if (!teamMode) {
+    if (won) {
+      winnerMsgEl.textContent = '🏆 DU GEWINNST! 🏆';
+    } else {
+      winnerMsgEl.textContent = '😵 Du bist raus!';
+    }
+    restartBtn.textContent = 'NOCHMAL SPIELEN 🔄';
+    nextLevel = 0;
+    return;
+  }
+
+  // ⚔️ TEAM-MODUS: 8 Level
   const nr = currentLevel + 1;
   const last = currentLevel === levelList().length - 1;
-  awardLevelTrophies(won); // 🏆 Pokale vergeben, falls im Pokal-Modus gespielt wurde (trophies.js)
   if (!won) {
-    winnerMsgEl.textContent = teamMode ? `😵 Dein Team ist raus! (Level ${nr})` : `😵 Du bist raus! (Level ${nr})`;
+    winnerMsgEl.textContent = `😵 Dein Team ist raus! (Level ${nr})`;
     restartBtn.textContent = `NOCHMAL LEVEL ${nr} 🔄`;
     nextLevel = currentLevel;
   } else if (!last) {
@@ -46,21 +64,21 @@ function finishLevel(won) {
     winnerMsgEl.textContent = `🏆 ALLE ${nr} LEVEL GESCHAFFT! 🏆`;
     restartBtn.textContent = 'NOCHMAL SPIELEN 🔄';
     nextLevel = 0;
-    // 🎬 Alles geschafft = Abspann wie im Kino (credits.js) – aber nicht, wenn schon neu gestartet wurde
+    // 🎬 Alles geschafft = Abspann wie im Kino (credits.js)
     setTimeout(() => { if (!isPlaying) showCredits(); }, 3500);
   }
 }
 
-// 📣 Großes „LEVEL 2“-Schild am Anfang jedes Levels (2 Sekunden)
+// 📣 Großes „LEVEL“-Schild am Anfang jedes Team-Levels (im Solo-Modus gar nicht anzeigen!)
 function drawLevelBanner(now) {
-  if (playerTeam === null || !isPlaying) return;
+  if (!teamMode || playerTeam === null || !isPlaying) return;
   const t = (now - levelStartTime) / 2000; // 0 → 1
   if (t > 1) return;
   const lv = level();
   ctx.save();
-  ctx.globalAlpha = t < 0.8 ? 1 : (1 - t) / 0.2; // Am Ende ausblenden
+  ctx.globalAlpha = t < 0.8 ? 1 : (1 - t) / 0.2;
   ctx.translate(width / 2, height * 0.45);
-  ctx.scale(1 + (1 - Math.min(1, t * 4)) * 0.6, 1 + (1 - Math.min(1, t * 4)) * 0.6); // Reinzoomen
+  ctx.scale(1 + (1 - Math.min(1, t * 4)) * 0.6, 1 + (1 - Math.min(1, t * 4)) * 0.6);
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.lineJoin = 'round';
@@ -75,7 +93,7 @@ function drawLevelBanner(now) {
   ctx.fillStyle = '#ffffff';
   ctx.strokeText(lv.title, 0, 44);
   ctx.fillText(lv.title, 0, 44);
-  if (teamMode) { // ⚔️ Wie viele Figuren gegen wie viele Gegner?
+  if (teamMode) {
     ctx.font = '800 18px -apple-system, sans-serif';
     ctx.fillStyle = TEAM_COLORS.enemy;
     const sub = `${chosenTeam.length} gegen ${lv.enemies} Gegner!`;
