@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.31';
+const GAME_VERSION = '2.32';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -51,8 +51,9 @@ const WISHES = [
   { v: '2.27', text: 'Link zum Code für Eltern 👨‍👩‍👧' },
   { v: '2.28', text: 'Schlaue Computer-Gegner 🤖 – bewegen sich, wehren ab & flüchten vor dem Riesenball ⚽' },
   { v: '2.29', text: 'Tobis Wunsch: der Drache 🐉 mit Kratzspur 🐾 und Drachenbiss 🦷' },
-  { v: '2.30', text: 'Pokal-Modus 🏆 (immer 100 Leben), Rangliste 🥇 & im Team jedes Level 1 Figur dazu ⚔️' },
-  { v: '2.31', text: 'Action-Steuerung im Querformat 🕹️: Joystick/WASD, runder Schieß-Knopf/Linksklick & Fähigkeit auf F ⚡' }
+  { v: '2.30', text: 'Pokal-Modus 🏆, Rangliste 🥇 & im Team jedes Level 1 Figur dazu ⚔️' },
+  { v: '2.31', text: 'Action-Steuerung im Querformat 🕹️: Joystick/WASD, runder Schieß-Knopf/Linksklick & Fähigkeit auf F ⚡' },
+  { v: '2.32', text: 'Eigene Angriffs-Sounds 🪙🍿, 50 Leben im Pokal-Modus, größere Map 🗺️ & Spieler-Rangliste mit Namen 🏆' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

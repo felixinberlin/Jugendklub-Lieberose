@@ -11,37 +11,37 @@ const actors = {
   kobold: {
     name: 'KOBOLD', color: '#6ee7b7', category: 4, target: 'corn',
     sway: 420, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: Math.max(46, width * 0.1), y: height * 0.55 })
+    start: () => ({ x: Math.max(42, width * 0.12), y: height * 0.52 })
   },
   corn: {
     name: 'MAIS', color: '#fef08a', category: 8, target: 'katze',
     sway: 480, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width - Math.max(46, width * 0.1), y: height * 0.55 })
+    start: () => ({ x: width - Math.max(42, width * 0.12), y: height * 0.52 })
   },
   katze: {
     name: 'KATZE', color: '#f9a8d4', category: 16, target: 'maus',
     sway: 360, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width / 2, y: height * 0.3 })
+    start: () => ({ x: width * 0.5, y: height * 0.22 })
   },
   maus: {
     name: 'MAUS', color: '#d1d5db', category: 32, target: 'goblin',
     sway: 260, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width / 2, y: height * 0.72 })
+    start: () => ({ x: width * 0.66, y: height * 0.76 })
   },
   goblin: {
     name: 'GOBLIN', color: '#fca5a5', category: 64, target: 'musiala',
     sway: 300, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width * 0.25, y: height * 0.32 })
+    start: () => ({ x: width * 0.24, y: height * 0.25 })
   },
   musiala: {
     name: 'MUSIALA', color: '#fecaca', category: 128, target: 'drache',
     sway: 220, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width * 0.75, y: height * 0.34 })
+    start: () => ({ x: width * 0.76, y: height * 0.25 })
   },
   drache: {
     name: 'DRACHE', color: '#86efac', category: 256, target: 'kobold',
     sway: 340, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width * 0.25, y: height * 0.72 })
+    start: () => ({ x: width * 0.34, y: height * 0.76 })
   }
 };
 
@@ -52,16 +52,18 @@ function actorCfg(name, key) { return GAME_CONFIG[`${kindOf(name)}${key}`]; }
 // Der Knopf zum Antippen (Gegner-Kopien haben keinen → null)
 function actorBtn(name) { return document.getElementById(`${name}Btn`); }
 
-// Emoji und Größe kommen aus config.js (z. B. koboldEmoji, katzeSize).
+// Emoji und Größe kommen aus config.js (z. B. koboldEmoji, katzeSize) + mapScale für größere Map-Übersicht.
+function mapScale() { return GAME_CONFIG.mapScale || 0.72; }
 function actorEmoji(name) { return actorCfg(name, 'Emoji'); }
-function actorSize(name) { return actorCfg(name, 'Size') * teamScale(); }
+function actorSize(name) { return actorCfg(name, 'Size') * teamScale() * mapScale(); }
 
 // Baut die Physik-Körper der Figuren und setzt sie in die Welt.
 function createActors() {
+  const r = Math.round(34 * mapScale());
   for (const name in actors) {
     const actor = actors[name];
     const { x, y } = actor.start();
-    actor.body = Bodies.circle(x, y, 34, {
+    actor.body = Bodies.circle(x, y, r, {
       isStatic: true,
       label: name,
       collisionFilter: { category: actor.category },
@@ -75,8 +77,8 @@ function createActors() {
 function moveActor(name, x, y) {
   const actor = actors[name];
   if (!actor || !actor.body) return;
-  const marginX = Math.min(46, width / 2);
-  const marginY = Math.min(65, height / 2);
+  const marginX = Math.min(36, width / 2);
+  const marginY = Math.min(48, height / 2);
   const position = {
     x: Math.max(marginX, Math.min(width - marginX, x)),
     y: Math.max(marginY, Math.min(height - marginY, y))

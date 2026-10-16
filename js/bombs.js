@@ -34,14 +34,15 @@ function shootBomb(actor, forcedTarget) {
     : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
   const isScratch = Boolean(actorCfg(actor, 'Scratch'));
+  const scale = GAME_CONFIG.mapScale || 0.76;
   launchArc(actor, targetName, {
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
-    size: actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize,
+    size: Math.round((actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize) * scale),
     trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
     scratch: isScratch
   });
   actors[actor].wiggle = 1;
-  playSound(isScratch ? 'scratch' : 'throw');
+  playAttackSound(actor);
 }
 
 // 🎯 Ein Geschoss im Bogen von `actor` zu `targetName` werfen.
@@ -56,8 +57,9 @@ function launchArc(actor, targetName, opts) {
   const distance = Math.hypot(dx, dy);
   const direction = distance ? dx / distance : 1;
   const radius = opts.size * 0.42;
-  const x = source.position.x + direction * (34 + radius + 4);
-  const y = source.position.y + (distance ? dy / distance : 0) * (34 + radius + 4);
+  const actorR = 34 * (GAME_CONFIG.mapScale || 0.76);
+  const x = source.position.x + direction * (actorR + radius + 4);
+  const y = source.position.y + (distance ? dy / distance : 0) * (actorR + radius + 4);
   const gravityPerFrame = engine.gravity.y * engine.gravity.scale * (1000 / 60) ** 2;
   const body = Bodies.circle(x, y, radius, {
     restitution: 0,

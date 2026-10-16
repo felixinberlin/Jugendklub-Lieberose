@@ -99,7 +99,7 @@ function setupTeams() {
       category: TEAM_BITS.enemy, target: null, sway: base.sway, body: null,
       wiggle: 0, hitsGiven: 0, hitsTaken: 0, alive: true, start: base.start
     };
-    actors[name].body = Bodies.circle(width / 2, height / 3, 34, {
+    actors[name].body = Bodies.circle(width / 2, height / 3, Math.round(34 * mapScale()), {
       isStatic: true, label: name, restitution: 1.05,
       collisionFilter: { category: TEAM_BITS.enemy }
     });
@@ -109,20 +109,20 @@ function setupTeams() {
 
   // Aufstellung: Gegner oben, dein Team unten.
   // Breiter Bildschirm: mehr nebeneinander, weniger Reihen (sonst überlappen sie quer)
-  const perRow = Math.max(4, Math.floor(width / 100));
+  const perRow = Math.max(4, Math.floor(width / 90));
   if (height < 500) {
-    placeInRows(enemyNames, [0.18, 0.42], perRow);
-    placeInRows(chosenTeam, [0.68], 7); // Platz lassen für die ⚡-Knöpfe unten
+    placeInRows(enemyNames, [0.18, 0.38], perRow);
+    placeInRows(chosenTeam, [0.72], 7);
   } else {
-    placeInRows(enemyNames, [0.2, 0.34, 0.48], perRow);
-    placeInRows(chosenTeam, [0.62, 0.76], Math.max(4, Math.floor(width / 110))); // Platz für ⚡-Knöpfe
+    placeInRows(enemyNames, [0.18, 0.32, 0.45], perRow);
+    placeInRows(chosenTeam, [0.64, 0.78], Math.max(4, Math.floor(width / 100)));
   }
 }
 
 // Im Team-Modus etwas kleiner, damit alle draufpassen (auf flachen Bildschirmen noch kleiner)
 function teamScale() {
   if (!teamMode) return 1;
-  return height < 500 ? 0.6 : 0.8;
+  return height < 500 ? 0.72 : 0.85;
 }
 
 // 🔵🔴 Leuchtkreis in Teamfarbe hinter der Figur (wird in drawActors aufgerufen)
@@ -133,7 +133,7 @@ function drawTeamAura(name) {
   ctx.globalAlpha = 0.35;
   ctx.fillStyle = color;
   ctx.beginPath();
-  ctx.arc(0, 0, 36 * teamScale() + 4, 0, Math.PI * 2);
+  ctx.arc(0, 0, 36 * teamScale() * mapScale() + 4, 0, Math.PI * 2);
   ctx.fill();
   ctx.globalAlpha = 1;
   ctx.lineWidth = 3;

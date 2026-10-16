@@ -49,6 +49,31 @@ function playSound(type) {
   } else if (type === 'throw') {
     playTone(300, 'triangle', 0.1, 0.15);
     setTimeout(() => playTone(500, 'triangle', 0.1, 0.15), 60);
+  } else if (type === 'coin') {
+    // 🧌🪙 Kobold-Angriff: helles Münzen-Klimpern!
+    playTone(1320, 'sine', 0.07, 0.16);
+    setTimeout(() => playTone(1760, 'sine', 0.11, 0.16), 45);
+    setTimeout(() => playTone(2090, 'triangle', 0.09, 0.12), 95);
+  } else if (type === 'cornpop') {
+    // 🌽🍿 Mais-Angriff: knackiges Popcorn-Pop!
+    playTone(920, 'square', 0.035, 0.16);
+    setTimeout(() => playTone(480, 'triangle', 0.045, 0.14), 28);
+  } else if (type === 'catthrow') {
+    // 🐱🐟 Katzen-Angriff: kurzes Miau-Platsch!
+    playTone(680, 'triangle', 0.07, 0.14);
+    setTimeout(() => playTone(520, 'sine', 0.09, 0.13), 50);
+  } else if (type === 'mousethrow') {
+    // 🐭🧀 Maus-Angriff: hohes Piepsen!
+    playTone(1500, 'sine', 0.045, 0.13);
+    setTimeout(() => playTone(1850, 'sine', 0.05, 0.13), 40);
+  } else if (type === 'firethrow') {
+    // 👺🔥 Goblin-Angriff: fauchender Feuerball!
+    playTone(190, 'sawtooth', 0.11, 0.16);
+    setTimeout(() => playTone(130, 'sawtooth', 0.1, 0.14), 45);
+  } else if (type === 'kick') {
+    // ⚽👟 Musiala-Angriff: satter Fußball-Schuss!
+    playTone(135, 'sine', 0.09, 0.24);
+    setTimeout(() => playTone(260, 'triangle', 0.06, 0.14), 30);
   } else if (type === 'rain') {
     playTone(900, 'sine', 0.06, 0.1);
     setTimeout(() => playTone(700, 'sine', 0.06, 0.1), 70);
@@ -66,36 +91,69 @@ function playSound(type) {
     playTone(660, 'triangle', 0.1, 0.15);  // 🔔 Spezialkraft bereit!
     setTimeout(() => playTone(990, 'triangle', 0.15, 0.15), 90);
   } else if (type === 'hide') {
-    playTone(900, 'sine', 0.08, 0.12);   // Schwupp – weg!
-    setTimeout(() => playTone(450, 'sine', 0.12, 0.12), 70);
+    // 🐭🕳️ Maus versteckt sich: schnelles Flitz-Piepsen abwärts!
+    playTone(1600, 'sine', 0.05, 0.14);
+    setTimeout(() => playTone(1100, 'sine', 0.06, 0.13), 45);
+    setTimeout(() => playTone(450, 'triangle', 0.1, 0.12), 90);
   } else if (type === 'popcorn') {
-    for (let i = 0; i < 5; i++) setTimeout(() => playTone(700 + Math.random() * 600, 'square', 0.04, 0.1), i * 45); // Pop-pop-pop!
+    // 🌽🍿 Mais-Spezial: ganz viele knackige Popcorn-Pops hintereinander!
+    for (let i = 0; i < 8; i++) {
+      setTimeout(() => {
+        playTone(800 + Math.random() * 650, 'square', 0.035, 0.14);
+        setTimeout(() => playTone(420 + Math.random() * 250, 'triangle', 0.04, 0.12), 22);
+      }, i * 42);
+    }
   } else if (type === 'spear') {
-    playTone(200, 'sawtooth', 0.15, 0.15);  // Wusch!
-    setTimeout(() => playTone(500, 'sawtooth', 0.12, 0.12), 60);
+    // 👺🔥 Goblin-Feuerspeer: donnerndes Feuer-Zischen!
+    playTone(160, 'sawtooth', 0.16, 0.2);
+    setTimeout(() => playTone(320, 'sawtooth', 0.14, 0.16), 50);
+    setTimeout(() => playTone(580, 'sawtooth', 0.12, 0.14), 100);
   } else if (type === 'bigball') {
-    playTone(150, 'square', 0.2, 0.25);  // Wumms!
-    setTimeout(() => playTone(300, 'square', 0.15, 0.2), 80);
+    // ⚽ Musiala-Riesenball: Anpfiff + Mega-Schuss!
+    playTone(1450, 'sine', 0.09, 0.16);
+    setTimeout(() => playTone(110, 'square', 0.22, 0.26), 85);
+    setTimeout(() => playTone(240, 'triangle', 0.16, 0.2), 140);
   } else if (type === 'minis') {
-    playTone(900, 'triangle', 0.06, 0.12);
-    setTimeout(() => playTone(1100, 'triangle', 0.06, 0.12), 60);
-    setTimeout(() => playTone(1300, 'triangle', 0.06, 0.12), 120);
+    // 🧌🪙 Mini-Kobolde: dreifaches Goldmünzen-Klingeln!
+    playTone(1200, 'sine', 0.07, 0.15);
+    setTimeout(() => playTone(1500, 'sine', 0.07, 0.15), 55);
+    setTimeout(() => playTone(1850, 'sine', 0.09, 0.16), 110);
+    setTimeout(() => playTone(2200, 'triangle', 0.12, 0.15), 165);
   } else if (type === 'jump') {
-    playTone(400, 'sine', 0.1, 0.15);
-    setTimeout(() => playTone(800, 'sine', 0.12, 0.15), 70);
+    playTone(420, 'triangle', 0.09, 0.16);
+    setTimeout(() => playTone(840, 'sine', 0.12, 0.16), 65);
   } else if (type === 'whirl') {
-    playTone(250, 'sawtooth', 0.25, 0.12);
-    setTimeout(() => playTone(350, 'sawtooth', 0.2, 0.1), 90);
+    playTone(250, 'sawtooth', 0.25, 0.14);
+    setTimeout(() => playTone(380, 'sawtooth', 0.2, 0.12), 85);
   } else if (type === 'scratch') {
-    playTone(950, 'sawtooth', 0.06, 0.14);  // 🐾 Scharfer Krallen-Hieb!
-    setTimeout(() => playTone(620, 'sawtooth', 0.08, 0.14), 40);
+    // 🐉🐾 Drachen-Kratzspur: scharfer Krallen-Hieb!
+    playTone(980, 'sawtooth', 0.055, 0.15);
+    setTimeout(() => playTone(620, 'sawtooth', 0.075, 0.15), 38);
+    setTimeout(() => playTone(390, 'sawtooth', 0.08, 0.13), 75);
   } else if (type === 'bite') {
-    playTone(140, 'sawtooth', 0.14, 0.24);  // 🦷 Schnapp!
-    playTone(95, 'square', 0.16, 0.2);
+    // 🐉🦷 Drachenbiss: tiefes Drachen-Schnappen!
+    playTone(135, 'sawtooth', 0.15, 0.25);
+    playTone(88, 'square', 0.17, 0.22);
+    setTimeout(() => playTone(210, 'sawtooth', 0.08, 0.18), 60);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);
   }
+}
+
+// 🎵 Passender Sound für den normalen Angriff jeder Figur
+function playAttackSound(actorName) {
+  const kind = kindOf(actorName);
+  const map = {
+    kobold: 'coin',      // 🪙 Münzen-Klimpern
+    corn: 'cornpop',     // 🍿 Popcorn-Pop
+    katze: 'catthrow',   // 🐱🐟 Miau-Wurf
+    maus: 'mousethrow',  // 🐭🧀 Maus-Pieps
+    goblin: 'firethrow', // 👺🔥 Feuerball
+    musiala: 'kick',     // ⚽ Fußball-Kick
+    drache: 'scratch'    // 🐉🐾 Krallen-Kratzer
+  };
+  playSound(map[kind] || 'throw');
 }
 
 soundToggle.addEventListener('click', (e) => {

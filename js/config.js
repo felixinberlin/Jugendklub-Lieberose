@@ -84,8 +84,9 @@ const GAME_CONFIG = {
   fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
   dragonBite: { damage: 6, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
   maxHits: 20, // 💀 So viele Treffer hält eine Figur im normalen Modus aus
-  trophyLives: 100, // 🏆 Im Pokal-Modus hat jede Figur immer 100 Leben!
+  trophyLives: 50, // 🏆 Im Pokal-Modus hat jede Figur 50 Leben!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
+  mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde (kleiner = weiter rausgezoomt)
   maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte (3 = schärfer, aber langsamer)
   maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.

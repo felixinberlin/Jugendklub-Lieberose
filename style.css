@@ -687,7 +687,60 @@ h2 {
   box-shadow: 0 3px 10px rgba(220, 38, 38, 0.8);
 }
 
-/* 📱🔄 Querformat-Hinweis im Hochformat */
+/* 🔒 Versteckte Elemente (z. B. alte Spezialleiste unten links oder Charakter-Rangliste) zuverlässig ausblenden */
+[hidden], .special-bar[hidden] {
+  display: none !important;
+}
+
+/* 👤 Spielername-Eingabe für die Rangliste */
+.name-input-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+.name-input-wrap label {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #fde68a;
+}
+.player-name-input {
+  width: 100%;
+  max-width: 240px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 2px solid #ffde59;
+  background: rgba(15, 23, 42, 0.9);
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.player-name-input:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+.name-error {
+  color: #fca5a5;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+/* 🗺️ In der Runde: Kompaktes HUD für maximale Sicht auf die größere Map */
+body.in-round #hud {
+  padding: 6px 64px 6px 12px;
+  font-size: 0.92rem;
+}
+body.in-round .hud-item {
+  padding: 4px 10px;
+  background: rgba(7, 17, 30, 0.55);
+}
+
+/* 📱🔄 Querformat-Hinweis NUR in der aktiven Spielrunde (Startseite bleibt im Hochformat!) */
 .rotate-overlay {
   position: absolute;
   inset: 0;
@@ -704,7 +757,7 @@ h2 {
 }
 .rotate-icon { font-size: 3.6rem; animation: pulse 0.8s infinite alternate; }
 @media (orientation: portrait) and (max-width: 650px) {
-  .rotate-overlay:not(.dismissed) {
+  body.in-round .rotate-overlay:not(.dismissed) {
     display: flex;
   }
 }

@@ -26,7 +26,7 @@
         <div class="badge">🏰 Jugendklub Lieberose <span id="version" class="version"></span></div>
         <h1>KOBOLD, MAIS, KATZE, MAUS, GOBLIN, MUSIALA & DRACHE</h1>
         <div class="instructions">
-          <p>📱 <b>Handy (Querformat):</b> Links 🕹️ bewegen · Rechts 🔴 schießen & 🟦⚡ Fähigkeit!<br>⌨️ <b>Tastatur & Maus:</b> <b>WASD</b> bewegen · <b>Linksklick</b> schießen · <b>F</b> Fähigkeit!<br>💀 <span id="hitsText">20</span> Treffer = raus (🏆 Pokal-Modus = 100 ❤️) · ☁️ Wolke = Regen · ☀️ Sonne = Nacht</p>
+          <p>📱 <b>Startseite im Hochformat · Runde im Querformat!</b><br>🕹️ Links bewegen (oder <b>WASD</b>) · 🔴 Rechts schießen (oder <b>Linksklick</b>) · 🟦⚡ Fähigkeit (oder <b>F</b>)<br>💀 <span id="hitsText">20</span> Treffer = raus (🏆 Pokal-Modus = <b>50 ❤️</b>)</p>
         </div>
         <details class="specials-info">
           <summary>⚡ Spezialkräfte – antippen zum Lesen</summary>
@@ -46,14 +46,19 @@
           <a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">den ganzen Code ansehen ↗</a></p>
       </div>
 
-      <!-- 🏆 Modus-Auswahl: Mit Pokalen (100 Leben) oder Normal (Leben einstellbar) -->
+      <!-- 🏆 Modus-Auswahl: Mit Pokalen (50 Leben) oder Normal (Leben einstellbar) -->
       <div id="modeScreen" class="overlay-screen">
         <h2 id="modeScreenTitle">WIE WILLST DU SPIELEN?</h2>
         <p id="modeScreenSub" class="team-hint"></p>
         <div class="mode-card trophy-card">
           <h3>🏆 MIT POKALEN</h3>
-          <p>Immer <b>💀 100 Leben</b> · Sammle Pokale für die Rangliste!</p>
-          <button id="playTrophyBtn" class="btn btn-trophy">🏆 MIT POKALEN (100 ❤️)</button>
+          <p>Immer <b>💀 50 Leben</b> · Pokal gibt es, wenn du gewinnst (Solo-Sieg / alle 8 Team-Level)!</p>
+          <div class="name-input-wrap">
+            <label for="playerNameInput">👤 Dein Spielername:</label>
+            <input id="playerNameInput" class="player-name-input" type="text" maxlength="16" placeholder="Dein Name..." autocomplete="off">
+          </div>
+          <p id="nameErrorMsg" class="name-error" hidden>👆 Bitte gib zuerst deinen Spielernamen ein!</p>
+          <button id="playTrophyBtn" class="btn btn-trophy">🏆 MIT POKALEN (50 ❤️)</button>
         </div>
         <div class="mode-card normal-card">
           <h3>🎮 NORMAL</h3>
@@ -67,11 +72,13 @@
         <button id="modeBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
-      <!-- 🏆 Rangliste (trophies.js) -->
+      <!-- 🏆 Spieler-Rangliste (trophies.js) -->
       <div id="leaderboardScreen" class="overlay-screen">
-        <h2>🏆 POKAL-RANGLISTE 🏆</h2>
+        <h2>🏆 SPIELER-RANGLISTE 🏆</h2>
         <div id="myTrophyBanner" class="trophy-banner"></div>
         <div id="leaderboardList" class="leaderboard-list"></div>
+        <!-- Charakter-Rangliste: nicht gelöscht, nur versteckt (kann später wiederkommen) -->
+        <div id="charLeaderboardSection" class="leaderboard-list" hidden></div>
         <button id="leaderboardBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 

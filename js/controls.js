@@ -39,11 +39,19 @@ function myControlledActors() {
   return first ? [first] : [];
 }
 
-// 🔄 Versucht auf Handys automatisch ins Querformat zu wechseln
+// 🔄 In der Runde ins Querformat wechseln; auf der Startseite wieder Hochformat erlauben
 function tryLockLandscape() {
   try {
     if (screen.orientation && typeof screen.orientation.lock === 'function') {
       screen.orientation.lock('landscape').catch(() => {});
+    }
+  } catch (e) {}
+}
+
+function tryUnlockOrientation() {
+  try {
+    if (screen.orientation && typeof screen.orientation.unlock === 'function') {
+      screen.orientation.unlock();
     }
   } catch (e) {}
 }
@@ -95,8 +103,12 @@ function triggerPlayerSpecial() {
 
 // 🔄 Aktualisiert das Aussehen vom runden Schieß-Knopf und dem quadratischen Fähigkeits-Knopf
 function updateControlHud() {
+  document.body.classList.toggle('in-round', isPlaying);
   actionHud.hidden = !isPlaying;
-  if (!isPlaying) return;
+  if (!isPlaying) {
+    tryUnlockOrientation();
+    return;
+  }
   const mine = myControlledActors();
   if (!mine.length) return;
 
