@@ -135,6 +135,16 @@ function playSound(type) {
     playTone(135, 'sawtooth', 0.15, 0.25);
     playTone(88, 'square', 0.17, 0.22);
     setTimeout(() => playTone(210, 'sawtooth', 0.08, 0.18), 60);
+  } else if (type === 'zap') {
+    // ⚡ Zeus-Blitzschuss: elektrisches Zischen!
+    playTone(1750, 'sawtooth', 0.045, 0.16);
+    setTimeout(() => playTone(920, 'square', 0.055, 0.15), 28);
+    setTimeout(() => playTone(1420, 'sawtooth', 0.04, 0.13), 55);
+  } else if (type === 'thunder') {
+    // 🌩️ Zeus-Gewittersturm: Donnergrollen + Blitzschlag!
+    playTone(1650, 'sawtooth', 0.06, 0.18);
+    playTone(95, 'sawtooth', 0.28, 0.24);
+    setTimeout(() => playTone(68, 'square', 0.26, 0.22), 70);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);
@@ -151,7 +161,8 @@ function playAttackSound(actorName) {
     maus: 'mousethrow',  // 🐭🧀 Maus-Pieps
     goblin: 'firethrow', // 👺🔥 Feuerball
     musiala: 'kick',     // ⚽ Fußball-Kick
-    drache: 'scratch'    // 🐉🐾 Krallen-Kratzer
+    drache: 'scratch',   // 🐉🐾 Krallen-Kratzer
+    zeus: 'zap'          // ⚡ Elektrischer Blitz
   };
   playSound(map[kind] || 'throw');
 }

@@ -450,6 +450,7 @@ h2 {
 #goblinBtn { left: 25%; top: 32%; }
 #musialaBtn { left: 75%; top: 34%; }
 #dracheBtn { left: 25%; top: 72%; }
+#zeusBtn { left: 75%; top: 72%; }
 .actor-btn:focus-visible { outline: 3px solid #ffde59; }
 .actor-btn:active { cursor: grabbing; background: rgba(255, 222, 89, 0.15); }
 .instructions { font-size: 16px; line-height: 1.6; }
@@ -550,6 +551,25 @@ h2 {
   font-size: 0.62rem;
   font-weight: 900;
   color: #bbf7d0;
+}
+
+/* 🔒 Gesperrte Figur (ZEUS ab 40 Pokalen) */
+.pick-btn.locked {
+  background: rgba(15, 23, 42, 0.75);
+  border-color: rgba(248, 113, 113, 0.55);
+  opacity: 0.78;
+}
+.pick-btn.locked .pick-emoji {
+  filter: grayscale(0.6) brightness(0.8);
+}
+.pick-lock-badge {
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: #fde047;
+  background: rgba(185, 28, 28, 0.85);
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-top: 2px;
 }
 
 /* 🕹️ Action-Steuerung: Unten links Joystick, unten rechts runder Schieß-Knopf + quadratischer Fähigkeits-Knopf darüber */
@@ -767,7 +787,7 @@ body.in-round .hud-item {
   h1 { font-size: 1.5rem; }
   .instructions { font-size: 0.85rem; }
   .pick-title { margin-bottom: 6px; }
-  .pick-grid { grid-template-columns: repeat(7, 74px); gap: 8px; margin-bottom: 4px; }
+  .pick-grid { grid-template-columns: repeat(8, 68px); gap: 6px; margin-bottom: 4px; }
   .pick-btn { min-height: 66px; }
   .pick-emoji { font-size: 1.8rem; }
   .btn-small { margin-top: 6px; padding: 8px 20px; }

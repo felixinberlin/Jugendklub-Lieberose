@@ -6,36 +6,44 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
+  // 😈 Düstere Horror-/Battle-Skins für alle Figuren (true = gruseliger Pro-Skin statt Kinder-Emoji)
+  scarySkins: true,
   // Charaktere auf beiden Seiten
   koboldEmoji: '🧌',
   koboldSize: 70,
   cornEmoji: '🌽',
   cornSize: 74,
-  cornBomb: '🟡',        // 🌽 Der Mais schießt kleine Maiskörner
+  cornBomb: '🟡',        // 🌽 Der Mais schießt scharfe Glut-Körner
   cornBombSize: 18,
-  koboldBomb: '💰',      // 🧌 Der Kobold wirft einen Goldsack …
+  koboldBomb: '💰',      // 🧌 Der Kobold wirft einen verfluchten Goldsack …
   koboldTrail: '🪙',     // … aus dem Goldmünzen purzeln
-  katzeEmoji: '🐱',
+  katzeEmoji: '🐈‍⬛',
   katzeSize: 70,
-  katzeBomb: '🐟',       // 🐱 Die Katze wirft Fische
-  mausEmoji: '🐭',
-  mausSize: 58,
-  mausBomb: '🧀', // Die Maus wirft Käse!
-  goblinEmoji: '👺',
-  goblinSize: 66,
-  goblinBomb: '🔥', // Der Goblin wirft Feuer!
-  musialaEmoji: '🏃', // Wird nur benutzt, wenn musialaShirt fehlt
-  // 👕 Trikot! Farbe, Nummer, Schwarz-Rot-Gold-Streifen. Löschen = wieder Emoji.
-  musialaShirt: { color: '#ffffff', number: '67', stripe: true, sixSeven: false }, // 🤲 true = 6-7-Jubel nach Treffern
-  musialaRuns: true,     // 🏃 Musiala dribbelt von allein hin und her
-  musialaRunSpeed: 1.5,  // 0.5 = gemütlich, 4 = Turbo-Sprint!
-  musialaSize: 64,
-  musialaBomb: '⚽', // Musiala schießt Fußbälle!
+  katzeBomb: '🐟',       // 🐈‍⬛ Die Schatten-Katze wirft Knochen-Fische
+  mausEmoji: '🐀',
+  mausSize: 60,
+  mausBomb: '🧀',        // 🐀 Die Seuchen-Ratte wirft Gift-Käse!
+  goblinEmoji: '👹',
+  goblinSize: 68,
+  goblinBomb: '🔥',      // 👹 Der Höllen-Goblin wirft Höllenfeuer!
+  musialaEmoji: '🐐',    // Wird nur benutzt, wenn musialaShirt fehlt
+  // 👕 GOAT trägt jetzt das schwarze Elite-Trikot mit der Nummer 10!
+  musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#7f1d1d', head: '🐐', stripe: true, sixSeven: false },
+  musialaRuns: true,     // 🏃 GOAT sprintet über das Feld
+  musialaRunSpeed: 2.2,  // Schneller Pro-Sprint!
+  musialaSize: 66,
+  musialaBomb: '⚽',     // GOAT schießt Power-Fußbälle!
   dracheEmoji: '🐉',
-  dracheSize: 72,
-  dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
+  dracheSize: 74,
+  dracheBomb: '🐾',      // 🐉 Tobis Nacht-Drache macht eine scharfe Kratzspur!
   dracheBombSize: 38,
   dracheScratch: true,   // Malt glühende Krallen-Kratzer in die Luft
+  zeusEmoji: '⚡',
+  zeusSize: 74,
+  zeusBomb: '⚡',        // ⚡ Zeus schleudert gezackte Blitze!
+  zeusBombSize: 38,
+  zeusBolt: true,        // Malt echte leuchtende Zickzack-Blitze
+  zeusUnlockTrophies: 40, // 🔒 Für Zeus braucht man 40 Pokale!
 
   // 🧪 PHYSIK-WERTE (Kinder können das live rufen!)
   gravityY: 0.9,          // 0.2 = Mond, 1.0 = Erde, 2.5 = Riesen-Schwerkraft!
@@ -45,44 +53,40 @@ const GAME_CONFIG = {
   // Die angeklickte Figur wirft, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
-  // Eigene Wurfsachen pro Figur: <name>Bomb (Emoji), <name>BombSize (Größe),
-  // <name>Trail (Emoji, das beim Fliegen herausfällt, z. B. koboldTrail: '🪙')
-  // 🏅 Fünf Level, jedes schwerer (nur wenn man eine eigene Figur spielt)
-  // throwMs = so oft wirft eine Computer-Figur (kleiner = frecher)
-  // huntPlayer = wie oft sie auf DICH zielt statt auf ihr normales Ziel (0 = nie, 1 = immer)
+  // 🏅 Fünf Level – Bots schießen jetzt viel schneller und zielen schlauer!
   levels: [
-    { title: 'Aufwärmen 🌱',       throwMs: 2600, huntPlayer: 0.05 },
-    { title: 'Locker 🙂',          throwMs: 2200, huntPlayer: 0.15 },
-    { title: 'Es wird wild 🔥',    throwMs: 1900, huntPlayer: 0.25 },
-    { title: 'Richtig schwer 😤',  throwMs: 1800, huntPlayer: 0.3 },
-    { title: 'Alle gegen dich 💀', throwMs: 1700, huntPlayer: 0.34 }
+    { title: 'Aufwärmen ⚡',       throwMs: 1650, huntPlayer: 0.22 },
+    { title: 'Schlaue Bots 😈',    throwMs: 1350, huntPlayer: 0.32 },
+    { title: 'Pro-Arena 🔥',       throwMs: 1150, huntPlayer: 0.42 },
+    { title: 'Alptraum 😤',        throwMs: 980,  huntPlayer: 0.50 },
+    { title: 'Endstufe 💀',        throwMs: 850,  huntPlayer: 0.58 }
   ],
-  // ⚔️ Team-Modus: Level 1 startet mit 1 Figur, jedes Level kommt 1 dazu (ab Level 6 alle!)
-  // enemies = Anzahl Gegner, throwMs = so oft wirft JEDER Gegner.
+  // ⚔️ Team-Modus: schnellere, stärkere Gegner-Bots!
   teamLevels: [
-    { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 2200 },
-    { title: 'Zu zweit 🙂',        enemies: 3,  throwMs: 2000 },
-    { title: 'Zu dritt 🔥',        enemies: 4,  throwMs: 2300 },
-    { title: 'Vierer-Bande 😤',    enemies: 5,  throwMs: 2800 },
-    { title: 'Fünf Freunde 😱',    enemies: 6,  throwMs: 3200 },
-    { title: 'Alle zusammen! 🪖',  enemies: 7,  throwMs: 3600 },
-    { title: 'Chaos pur 🌪️',        enemies: 8,  throwMs: 4000 },
-    { title: 'Endboss-Horde 💀',    enemies: 10, throwMs: 5000 }
+    { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 1550 },
+    { title: 'Zu zweit 🙂',        enemies: 3,  throwMs: 1450 },
+    { title: 'Zu dritt 🔥',        enemies: 4,  throwMs: 1650 },
+    { title: 'Vierer-Bande 😤',    enemies: 5,  throwMs: 1950 },
+    { title: 'Fünf Freunde 😱',    enemies: 6,  throwMs: 2200 },
+    { title: 'Alle zusammen! 🪖',  enemies: 7,  throwMs: 2500 },
+    { title: 'Chaos pur 🌪️',        enemies: 8,  throwMs: 2800 },
+    { title: 'Endboss-Horde 💀',    enemies: 10, throwMs: 3300 }
   ],
-  cpuThrowMs: 1800,      // 🤖 Wurf-Tempo der Computer, falls es keine Level gibt
-  throwCooldownMs: 250,  // Mindestpause zwischen zwei Würfen derselben Figur
-  playerMoveSpeed: 4.2,  // 🕹️ Bewegungs-Tempo mit Joystick / WASD
-  // ⚡ Spezialkräfte (Knopf unten links) – specials.js
+  cpuThrowMs: 1200,      // 🤖 Schnelleres Wurf-Tempo der Bots
+  throwCooldownMs: 240,  // Mindestpause zwischen zwei Würfen derselben Figur
+  playerMoveSpeed: 4.4,  // 🕹️ Bewegungs-Tempo mit Joystick / WASD
+  // ⚡ Spezialkräfte – specials.js
   specialChargeHits: 20,     // So oft musst du Gegner treffen, bis die Kraft bereit ist
-  cpuSpecialChance: 0.5,     // Wenn aufgeladen: wie oft Computer statt zu werfen ihre Kraft nutzen
-  bigBall: { size: 80, damage: 6, speed: 7, seconds: 5 }, // ⚽ Musialas Riesenball
+  cpuSpecialChance: 0.68,    // Bots nutzen ihre Spezialkraft jetzt öfter!
+  bigBall: { size: 80, damage: 6, speed: 7.5, seconds: 5 }, // ⚽ GOATs Riesenball
   miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
-  catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen
-  catDamage: 4,                                              // 🐱 Schaden beim Draufspringen
-  hideSeconds: 6,                                           // 🐭🕳️ So lange ist die Maus versteckt
+  catStunSeconds: 4,                                        // 🐈‍⬛🌪️ So lange ist der Gegner gefangen
+  catDamage: 4,                                              // 🐈‍⬛ Schaden beim Draufspringen
+  hideSeconds: 6,                                           // 🐀🕳️ So lange ist die Maus versteckt
   popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
-  fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
+  fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👹🔥 Feuerspeer
   dragonBite: { damage: 6, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
+  zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 2 }, // ⚡🌩️ Zeus: 4 Sek. Blitz-Regen im roten Kreis!
   maxHits: 20, // 💀 So viele Treffer hält eine Figur im normalen Modus aus
   trophyLives: 50, // 🏆 Im Pokal-Modus hat jede Figur 50 Leben!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus

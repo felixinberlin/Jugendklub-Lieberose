@@ -16,11 +16,11 @@ let normalLives = GAME_CONFIG.maxHits; // Eingestellte Leben für den normalen M
 let pendingMode = null; // Merkt sich, ob gerade Solo oder Team-Modus angeklickt wurde
 let currentPlayerName = ''; // Aktueller Spielername (nur im Arbeitsspeicher der Sitzung)
 
-// 🏆 Spieler-Rangliste im Arbeitsspeicher (mit Start-Herausforderern + allen Spielern der Sitzung)
+// 🏆 Spieler-Rangliste im Arbeitsspeicher – alle Pokale wurden auf 0 zurückgesetzt, jeder fängt bei 0 an!
 const sessionPlayers = [
-  { name: 'Drachen-Champion 🐉', trophies: 3, isBot: true },
-  { name: 'Kobold-König 🧌', trophies: 2, isBot: true },
-  { name: 'Mais-Meister 🌽', trophies: 1, isBot: true }
+  { name: 'Drachen-Champion 🐉', trophies: 0, isBot: true },
+  { name: 'Kobold-König 🧌', trophies: 0, isBot: true },
+  { name: 'Mais-Meister 🌽', trophies: 0, isBot: true }
 ];
 
 const modeScreen = document.getElementById('modeScreen');
@@ -43,10 +43,16 @@ const trophiesEl = document.getElementById('trophies');
 const trophyHudEl = document.getElementById('trophyHud');
 const trophyRewardMsgEl = document.getElementById('trophyRewardMsg');
 
+// 🔄 Alle alten Pokale auf der Website zurücksetzen, damit alle wieder bei 0 anfangen!
+const TROPHY_STORAGE_KEY = 'lieberose_trophies_v2_reset';
+try {
+  localStorage.removeItem('lieberose_trophies');
+} catch (e) {}
+
 // 🏆 Anonyme Pokal-Zahlen aus dem Browser-Speicher laden (keine Namen in localStorage!)
 function loadTrophies() {
   try {
-    const raw = JSON.parse(localStorage.getItem('lieberose_trophies') || '{}');
+    const raw = JSON.parse(localStorage.getItem(TROPHY_STORAGE_KEY) || '{}');
     return {
       total: Number(raw.total) || 0,
       solo: Number(raw.solo) || 0,
@@ -62,7 +68,7 @@ let trophiesData = loadTrophies();
 
 function saveTrophies() {
   try {
-    localStorage.setItem('lieberose_trophies', JSON.stringify(trophiesData));
+    localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophiesData));
   } catch (e) {}
   updateTrophyHud();
 }
@@ -83,12 +89,45 @@ function activePlayerTrophies() {
   return getOrCreatePlayerEntry(currentPlayerName).trophies;
 }
 
+// 🔒 Prüft, ob eine Figur schon freigeschaltet ist (ZEUS braucht 40 Pokale!)
+function requiredTrophiesFor(name) {
+  return kindOf(name) === 'zeus' ? (GAME_CONFIG.zeusUnlockTrophies || 40) : 0;
+}
+
+function isActorUnlocked(name) {
+  const req = requiredTrophiesFor(name);
+  if (req <= 0) return true;
+  const best = Math.max(trophiesData.total || 0, activePlayerTrophies());
+  return best >= req;
+}
+
+function refreshUnlockTiles() {
+  for (const btn of document.querySelectorAll('.pick-btn[data-name]')) {
+    const n = btn.dataset.name;
+    const req = requiredTrophiesFor(n);
+    const unlocked = isActorUnlocked(n);
+    btn.classList.toggle('locked', !unlocked);
+    let badge = btn.querySelector('.pick-lock-badge');
+    if (!unlocked && req > 0) {
+      if (!badge) {
+        badge = document.createElement('span');
+        badge.className = 'pick-lock-badge';
+        btn.appendChild(badge);
+      }
+      badge.textContent = `🔒 ${req} 🏆`;
+    } else if (badge) {
+      badge.remove();
+    }
+  }
+}
+
 function updateTrophyHud() {
   const count = activePlayerTrophies();
   trophiesEl.textContent = count;
   trophyHudEl.classList.toggle('active-trophy', trophyMode);
   playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
   leaderboardStartBtn.textContent = `🏆 RANGLISTE (${count} 🏆)`;
+  refreshUnlockTiles();
 }
 
 // 💀 Leben für den normalen Modus einstellen und auf beiden Bildschirmen synchron halten

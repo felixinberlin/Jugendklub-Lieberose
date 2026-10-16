@@ -165,13 +165,23 @@ for (const name in actors) {
   btn.innerHTML = `<span class="pick-emoji">${actorEmoji(name)}</span>${actors[name].name}`;
   btn.addEventListener('click', () => {
     if (chosenTeam.includes(name)) return; // Schon fest im Team!
+    if (!isActorUnlocked(name)) {
+      initAudio();
+      playSound('hit');
+      const need = requiredTrophiesFor(name);
+      const have = Math.max(trophiesData.total || 0, activePlayerTrophies());
+      teamHintText.textContent = `🔒 Für ${actors[name].name} brauchst du ${need} Pokale! (Du hast ${have} 🏆)`;
+      return;
+    }
     pendingTeamPick = name;
     refreshTeamGrid();
   });
   teamGrid.appendChild(btn);
 }
+refreshUnlockTiles();
 
 function refreshTeamGrid() {
+  refreshUnlockTiles();
   const lvNr = currentLevel + 1;
   const isSixthOrMore = currentLevel >= 5;
   for (const btn of teamGrid.children) {
@@ -207,7 +217,7 @@ function openTeamPickForLevel(keepCharge = false) {
     teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · Noch ${6 - lvNr} Level bis alle vereint sind!`;
   } else {
     teamPickTitle.textContent = `Level 6: Wähle deine letzte Figur – dann kämpfen ALLE! 👇`;
-    teamHintText.textContent = 'Ab jetzt ziehst du mit allen Figuren gemeinsam bis zum letzten Level (Level 8)! 🔥';
+    teamHintText.textContent = 'Ab jetzt ziehst du mit allen freigeschalteten Figuren gemeinsam bis zum letzten Level (Level 8)! 🔥';
   }
   refreshTeamGrid();
   teamScreen.classList.add('active');
@@ -238,10 +248,10 @@ teamBackBtn.addEventListener('click', () => {
 teamGoBtn.addEventListener('click', () => {
   if (!pendingTeamPick) return;
   if (!chosenTeam.includes(pendingTeamPick)) chosenTeam.push(pendingTeamPick);
-  // Ab Level 6 (Index 5) sind alle Figuren freigeschaltet und kämpfen gemeinsam bis Level 8!
+  // Ab Level 6 (Index 5) sind alle freigeschalteten Figuren im Team und kämpfen gemeinsam bis Level 8!
   if (currentLevel >= 5) {
     for (const n of baseActorNames()) {
-      if (!chosenTeam.includes(n)) chosenTeam.push(n);
+      if (isActorUnlocked(n) && !chosenTeam.includes(n)) chosenTeam.push(n);
     }
   }
   playerTeam = chosenTeam.slice();

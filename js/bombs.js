@@ -34,12 +34,14 @@ function shootBomb(actor, forcedTarget) {
     : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
   if (!targetName) return;
   const isScratch = Boolean(actorCfg(actor, 'Scratch'));
+  const isBolt = Boolean(actorCfg(actor, 'Bolt'));
   const scale = GAME_CONFIG.mapScale || 0.76;
   launchArc(actor, targetName, {
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
     size: Math.round((actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize) * scale),
     trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
-    scratch: isScratch
+    scratch: isScratch,
+    bolt: isBolt
   });
   actors[actor].wiggle = 1;
   playAttackSound(actor);
@@ -74,6 +76,7 @@ function launchArc(actor, targetName, opts) {
       special: Boolean(opts.special),
       trail: opts.trail,
       scratch: Boolean(opts.scratch),
+      bolt: Boolean(opts.bolt),
       isPlayerBomb: true,
       shooter: actor,
       target: targetName,
@@ -97,6 +100,10 @@ function explodeBomb(bomb) {
     playSound('scratch');
     spawnParticles(x, y, '#ef4444', 24);
     spawnParticles(x, y, '#fef08a', 14);
+  } else if (bomb.customData && bomb.customData.bolt) {
+    playSound('zap');
+    spawnParticles(x, y, '#38bdf8', 24);
+    spawnParticles(x, y, '#facc15', 16);
   } else {
     playSound('boom');
     spawnParticles(x, y, '#ff9f1c', 30);
@@ -139,6 +146,33 @@ function drawClawLines(size, alpha = 1) {
     ctx.quadraticCurveTo(0, offset - 1, size * 0.48, offset + 4);
     ctx.stroke();
   }
+  ctx.restore();
+}
+
+// ⚡ Malt einen gezackten elektrischen Blitz für ZEUS
+function drawLightningBolt(size) {
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const pts = [
+    [-size * 0.65, -4],
+    [-size * 0.15, 7],
+    [-size * 0.05, -5],
+    [size * 0.65, 3]
+  ];
+  ctx.strokeStyle = '#38bdf8';
+  ctx.lineWidth = 7;
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.stroke();
+
+  ctx.strokeStyle = '#fef08a';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.stroke();
   ctx.restore();
 }
 
@@ -188,6 +222,17 @@ function updateBombs(now) {
       ctx.translate(pos.x, pos.y);
       ctx.rotate(Math.atan2(b.velocity.y, b.velocity.x));
       drawClawLines(data.size || 38, 0.95);
+      ctx.restore();
+      continue;
+    }
+
+    // ⚡ Blitz-Geschoss von ZEUS
+    if (data.bolt) {
+      if (Math.random() < 0.5) spawnParticles(pos.x, pos.y, '#38bdf8', 1);
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      ctx.rotate(Math.atan2(b.velocity.y, b.velocity.x));
+      drawLightningBolt(data.size || 36);
       ctx.restore();
       continue;
     }

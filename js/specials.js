@@ -40,7 +40,9 @@ const SPECIALS = {
   maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse,
     desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` },
   drache: { name: 'DRACHENBISS', icon: '🦷', use: dragonBite,
-    desc: () => `Fliegt zum Gegner und beißt kräftig zu (${GAME_CONFIG.dragonBite.damage} Schaden)!` }
+    desc: () => `Fliegt zum Gegner und beißt kräftig zu (${GAME_CONFIG.dragonBite.damage} Schaden)!` },
+  zeus: { name: 'BLITZ-REGEN', icon: '🌩️', use: zeusStorm,
+    desc: () => `Markiert einen roten Kreis und lässt ${GAME_CONFIG.zeusStorm.seconds} Sek. lang Blitze regnen (ab ${GAME_CONFIG.zeusUnlockTrophies} 🏆)!` }
 };
 
 function hasSpecial(name) {
@@ -86,6 +88,7 @@ function updateSpecials(now) {
   updateJumps(now);
   updateBurns(now);
   updateHiding(now);
+  updateStorms(now);
 }
 
 // Malt Mini-Kobolde und Wirbelwolken (nach den Figuren, damit sie obendrauf sind)
@@ -93,6 +96,7 @@ function drawSpecials(now) {
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
+  drawStorms(now); // 🔴⚡ Roter Blitz-Regen-Kreis von Zeus
   for (const m of minis) {
     ctx.save();
     ctx.translate(m.body.position.x, m.body.position.y);
@@ -126,6 +130,7 @@ function drawSpecials(now) {
 // keepCharge = true: DEINE Figuren behalten ihre Ladung fürs nächste Level.
 function resetSpecials(keepCharge = false) {
   clearMinis();
+  clearStorms();
   for (const name in actors) {
     const mine = playerTeam === null || playerTeam.includes(name);
     if (!keepCharge || !mine) actors[name].specialCharge = 0;

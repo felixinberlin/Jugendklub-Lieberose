@@ -148,11 +148,40 @@ function drawFootballer(shirt, size, now, dir = 1, kick = 0, sixSeven = false) {
   ctx.fillStyle = shirt.numberColor || '#111827';
   ctx.fillText(shirt.number || '10', 0, 6);
 
-  // 🙂 Kopf – nickt beim Rennen leicht
+  // 🐐 Kopf – mit Hörnern & glühend roten Augen im Grusel-Modus!
   ctx.save();
   ctx.translate(0, -22);
   ctx.rotate(run * 0.08);
-  drawEmoji(shirt.head || '😃', 0, 0, 24); // 🖼️ sprites.js
+  if (GAME_CONFIG.scarySkins) {
+    // Gebogene Ziegen-Hörner
+    ctx.fillStyle = '#facc15';
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 1.6;
+    for (const side of [-1, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(side * 6, -8);
+      ctx.quadraticCurveTo(side * 19, -22, side * 14, -5);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    // Dunkler Dämonen-Ziegenkopf
+    ctx.fillStyle = '#18181b';
+    ctx.strokeStyle = '#ef4444';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    ctx.arc(0, 0, 11, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    // Glühende rote Augen
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.arc(-4, -2, 2.3, 0, Math.PI * 2);
+    ctx.arc(4, -2, 2.3, 0, Math.PI * 2);
+    ctx.fill();
+  } else {
+    drawEmoji(shirt.head || '😃', 0, 0, 24); // 🖼️ sprites.js
+  }
   ctx.restore();
 
   // 💬 „6 7!“ über dem Kopf – die Zahlen hüpfen abwechselnd

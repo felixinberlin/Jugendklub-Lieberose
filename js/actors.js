@@ -31,17 +31,22 @@ const actors = {
   goblin: {
     name: 'GOBLIN', color: '#fca5a5', category: 64, target: 'musiala',
     sway: 300, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width * 0.24, y: height * 0.25 })
+    start: () => ({ x: width * 0.24, y: height * 0.24 })
   },
   musiala: {
-    name: 'MUSIALA', color: '#fecaca', category: 128, target: 'drache',
+    name: 'GOAT', color: '#facc15', category: 128, target: 'drache',
     sway: 220, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width * 0.76, y: height * 0.25 })
+    start: () => ({ x: width * 0.76, y: height * 0.24 })
   },
   drache: {
-    name: 'DRACHE', color: '#86efac', category: 256, target: 'kobold',
+    name: 'DRACHE', color: '#86efac', category: 256, target: 'zeus',
     sway: 340, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width * 0.34, y: height * 0.76 })
+    start: () => ({ x: width * 0.28, y: height * 0.76 })
+  },
+  zeus: {
+    name: 'ZEUS', color: '#38bdf8', category: 512, target: 'kobold',
+    sway: 300, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
+    start: () => ({ x: width * 0.5, y: height * 0.78 })
   }
 };
 
@@ -165,14 +170,16 @@ function drawActors(now) {
       shirt = { ...shirt, color: TEAM_COLORS.enemy, numberColor: '#ffffff' }; // Gegner: rotes Trikot
     }
     if (shirt) {
-      drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ Figur im Trikot (footballer.js)
+      drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ GOAT im #10 Trikot (footballer.js)
     } else if (isHidden(name)) {
-      // 🐭🕳️ Versteckt: Mauseloch, die Figur guckt nur ganz blass heraus
+      // 🐀🕳️ Versteckt: Mauseloch, die Figur guckt nur ganz blass heraus
       drawEmoji('🕳️', 0, 18, actorSize(name) * 0.9);
       ctx.globalAlpha = 0.3;
       drawEmoji(actorEmoji(name), 0, 4, actorSize(name) * 0.7);
       ctx.globalAlpha = 1;
       drawLabel(`🙈 ${Math.ceil((actor.hiddenUntil - now) / 1000)}`, 0, -28, { size: 14, fill: '#ffffff', stroke: '#111827', lineWidth: 3 });
+    } else if (GAME_CONFIG.scarySkins && typeof drawScarySkin === 'function') {
+      drawScarySkin(kindOf(name), actorSize(name), now); // 😈 Düsterer Horror-/Pro-Skin (skins.js)
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }

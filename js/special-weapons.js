@@ -161,3 +161,119 @@ function updateBurns(now) {
   }
 }
 
+// ---------- ⚡ ZEUS: Roter Blitz-Regen (4 Sekunden im markierten Kreis) ----------
+let zeusStorms = [];
+
+function zeusStorm(name) {
+  const targetName = targetOf(name);
+  if (!targetName || !isAlive(targetName)) return false;
+  const cfg = GAME_CONFIG.zeusStorm;
+  const pos = actors[targetName].body.position;
+  const now = performance.now();
+  zeusStorms.push({
+    shooter: name,
+    x: pos.x,
+    y: pos.y,
+    radius: cfg.radius,
+    born: now,
+    until: now + cfg.seconds * 1000,
+    nextStrike: now + 120,
+    bolts: []
+  });
+  playSound('thunder');
+  return true;
+}
+
+function clearStorms() {
+  zeusStorms = [];
+}
+
+function updateStorms(now) {
+  const cfg = GAME_CONFIG.zeusStorm;
+  for (let i = zeusStorms.length - 1; i >= 0; i--) {
+    const s = zeusStorms[i];
+    if (now > s.until) {
+      zeusStorms.splice(i, 1);
+      continue;
+    }
+    // Alte Blitz-Einschläge ausblenden
+    s.bolts = s.bolts.filter(b => now - b.born < 220);
+
+    if (now >= s.nextStrike) {
+      s.nextStrike = now + cfg.strikeEveryMs;
+      // 3 Blitze schlagen im roten Kreis ein
+      for (let k = 0; k < 3; k++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.sqrt(Math.random()) * (s.radius - 10);
+        const bx = s.x + Math.cos(angle) * dist;
+        const by = s.y + Math.sin(angle) * dist;
+        s.bolts.push({ x: bx, y: by, born: now });
+        spawnParticles(bx, by, '#38bdf8', 7);
+        spawnParticles(bx, by, '#facc15', 5);
+      }
+      playSound('zap');
+
+      // Trifft alle Gegner, die im roten Kreis stehen!
+      for (const victim in actors) {
+        if (victim === s.shooter || !isAlive(victim) || isHidden(victim)) continue;
+        if (teamMode && teamOf(victim) === teamOf(s.shooter)) continue;
+        const p = actors[victim].body.position;
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= s.radius + 22) {
+          applyHit(victim, s.shooter, cfg.damage, true);
+        }
+      }
+    }
+  }
+}
+
+function drawStorms(now) {
+  for (const s of zeusStorms) {
+    const pulse = 0.5 + 0.5 * Math.sin(now * 0.018);
+    ctx.save();
+    // 🔴 Rot markierter runder Bereich auf der Map
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(220, 38, 38, ${0.22 + pulse * 0.14})`;
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#ef4444';
+    ctx.stroke();
+
+    // Innerer Warnring + Countdown-Restanzeige
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.radius * 0.65, 0, Math.PI * 2);
+    ctx.setLineDash([8, 6]);
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(252, 165, 165, 0.8)';
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ⚡ Einschlagende Blitze von oben in den roten Kreis
+    for (const b of s.bolts) {
+      const alpha = 1 - (now - b.born) / 220;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, alpha);
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(b.x - 10, b.y - 130);
+      ctx.lineTo(b.x + 8, b.y - 80);
+      ctx.lineTo(b.x - 7, b.y - 40);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#fef08a';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(b.x - 10, b.y - 130);
+      ctx.lineTo(b.x + 8, b.y - 80);
+      ctx.lineTo(b.x - 7, b.y - 40);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+}
+
+
