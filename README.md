@@ -1,36 +1,36 @@
-# 🚀 Jugendklub Lieberose – Das Spiel
+# 🏰 Jugendklub Lieberose – Das Spiel
 
 **🌐 Live im Web:** [https://jugendklub.vercel.app/](https://jugendklub.vercel.app/)
 
 ![QR Code](qr-code.png)
 
-Ein mobiles HTML5-Webspiel, das gemeinsam mit den Kindern im **Jugendklub Lieberose** live per "Vibecoding" entwickelt wird!
+Ein mobiles HTML5-Webspiel (**Kobold, Mais, Katze, Maus, Goblin & Musiala**), das gemeinsam mit den Kindern im **Jugendklub Lieberose** live auf der Bühne per „Vibecoding“ entwickelt wird – ohne Login, ohne Installation, ohne Datensammeln!
 
-## 📱 Auf dem Smartphone spielen
-1. Projekt in **Vercel** importieren (oder den QR-Code scannen).
-2. Auf dem Handy öffnen (keine Installation nötig, läuft direkt in Safari & Chrome).
-3. Mit dem Finger nach links und rechts wischen oder tippen, um auszuweichen und Schätze einzusammeln!
+## 📱 Auf dem Smartphone oder Laptop spielen
+1. [jugendklub.vercel.app](https://jugendklub.vercel.app/) öffnen oder den QR-Code scannen (läuft direkt in jedem Browser).
+2. Figur für die **5 Solo-Level** wählen, im **⚔️ Team-Modus** (8 Level) antreten oder **👥 Alle zusammen** an einem Bildschirm spielen.
+3. **👆 Antippen** = werfen · **↔️ Ziehen** = ausweichen · **⚡ Spezialkraft** nach 20 Treffern auslösen · **☁️ Wolke / ☀️ Sonne** antippen = Regen & Tag/Nacht wechseln!
 
-## 🕹️ Live-Vibecoding für den Workshop
-Alle Spielwerte können während des Workshops direkt in [`js/config.js`](js/config.js) angepasst werden (der restliche Code liegt nach Themen sortiert in [`js/`](js/)):
+## 📖 Für Kinder & Eltern: So ist das Spiel gebaut
+Eine kindgerechte Erklärung aller Dateien mit Schaubildern und Experimenten zum Ausprobieren steht in **[`js/README.md`](js/README.md)**.
+
+Alle Spielwerte lassen sich live während des Workshops in [`js/config.js`](js/config.js) anpassen:
 
 ```javascript
 const GAME_CONFIG = {
-  playerEmoji: '🚀',       // Ändere den Spieler live (z.B. 🐉, 🛹, 🐱, ⚽)
-  goodItems: [ ... ],      // Sammelobjekte (Pizza, Sterne, Limo, etc.)
-  badItems: [ ... ],       // Hindernisse & Gegner (Bomben, Monster, Hausaufgaben)
-  baseSpeed: 1.0,          // Geschwindigkeit
+  koboldEmoji: '🧌',      // Figuren & Größen (Kobold, Mais, Katze, Maus, Goblin, Musiala)
+  koboldBomb: '💰',       // Eigene Würfe (Goldsack, Maiskörner, Fische, Käse, Feuer, Fußball)
+  gravityY: 0.9,          // 0.2 = Mond-Schwerkraft, 2.5 = Riesen-Schwerkraft
+  maxHits: 20,            // Wie viele Treffer hält eine Figur aus?
 };
 ```
-
-👀 **Neugierig, wie das Spiel funktioniert?** Die Erklärung für Kinder steht in [`js/README.md`](js/README.md).
 
 ### ⚡ Live-Deployment während der Show
 Sobald eine Idee der Kinder eingebaut ist:
 ```bash
-./deploy.sh "Pizza-Powerup hinzugefügt"
+./deploy.sh "Neuer Kinder-Wunsch eingebaut"
 ```
 Vercel aktualisiert das Spiel automatisch innerhalb von ~15 Sekunden. Anschließend einfach auf den Handys die Seite neu laden!
 
 ---
-Entwickelt mit ❤️ für den Jugendklub Lieberose.
+Entwickelt mit ❤️ im Jugendklub Lieberose.

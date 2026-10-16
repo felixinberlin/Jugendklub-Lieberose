@@ -26,6 +26,7 @@ function chooseAndStart(name) {
   playerTeam = name === null ? null : [name];
   teamMode = false;
   currentLevel = 0; // Immer bei Level 1 anfangen (levels.js)
+  nextLevel = 0;
   startGame();
 }
 

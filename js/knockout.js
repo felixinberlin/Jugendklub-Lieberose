@@ -67,6 +67,7 @@ function endGame(winner) {
   } else {
     winnerMsgEl.textContent = winner ? `🏆 ${actors[winner].name} gewinnt! 🏆` : 'Alle sind raus! 🤯';
     restartBtn.textContent = 'NOCHMAL SPIELEN 🔄';
+    nextLevel = 0;
   }
   if (score > highScore) {
     highScore = score;

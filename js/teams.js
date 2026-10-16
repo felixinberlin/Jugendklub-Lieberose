@@ -11,7 +11,7 @@ let teamMode = false;  // Läuft gerade der Team-Modus?
 let chosenTeam = [];   // Deine Figuren (Namen aus actors)
 
 const TEAM_COLORS = { mine: '#3b82f6', enemy: '#ef4444' };
-const TEAM_BITS = { mine: 256, enemy: 512 }; // Physik-Kategorien der beiden Teams
+const TEAM_BITS = { mine: 1 << 20, enemy: 1 << 21 }; // Eigene Bits weit oben, damit neue Figuren (256, 512, …) frei bleiben
 
 // Zu welchem Team gehört die Figur? 'mine' oder 'enemy'
 function teamOf(name) {
@@ -172,6 +172,7 @@ teamGoBtn.addEventListener('click', () => {
   playerTeam = chosenTeam.slice();
   playerActor = null;
   currentLevel = 0;
+  nextLevel = 0;
   teamScreen.classList.remove('active');
   startGame();
 });

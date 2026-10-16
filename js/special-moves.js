@@ -5,7 +5,7 @@
  * Laufende Effekte hier aktualisieren und in resetSpecials() zurücksetzen.
  */
 
-const MINI_BIT = 1024; // Physik-Kategorie der Mini-Kobolde
+const MINI_BIT = 1 << 22; // Physik-Kategorie der Mini-Kobolde (weit oben, damit Figuren-Bits frei bleiben)
 let minis = [];        // Mini-Kobolde, die gerade da sind
 const MINI_ORBIT = 0.035; // So schnell kreisen sie (pro Bild)
 const MINI_RADIUS = 62;   // So weit weg vom Kobold
@@ -107,7 +107,7 @@ function updateJumps(now) {
     else if (t < 2) {                                             // Landung + zurück
       if (!j.landed) {
         j.landed = true;
-        if (isAlive(j.victim)) {
+        if (isAlive(j.victim) && !isHidden(j.victim)) {
           actors[j.victim].stunnedUntil = now + GAME_CONFIG.catStunSeconds * 1000;
           spawnParticles(victimPos.x, victimPos.y, '#e2e8f0', 25);
           playSound('whirl');
