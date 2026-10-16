@@ -11,12 +11,14 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 |---|---|---|
 | ⚙️ [`config.js`](config.js) | Die **Stellschrauben**: Emojis, Größen, Schwerkraft | ⭐ Fang hier an! |
 | 🔊 [`audio.js`](audio.js) | Alle **Töne** – ohne eine einzige Sounddatei | ⭐⭐ |
+| 🖼️ [`sprites.js`](sprites.js) | Der **Bilder-Speicher**: Jedes Emoji wird nur EINMAL gemalt und dann kopiert – so bleibt das Spiel schnell 🚀 | ⭐⭐ |
 | ✨ [`particles.js`](particles.js) | Die **Funken** bei einer Explosion | ⭐⭐ |
 | 💀 [`knockout.js`](knockout.js) | **Lebensleiste** ❤️ – wer 20-mal getroffen wird, ist **raus**. Die letzte Figur **gewinnt** 🏆 | ⭐⭐ |
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
+| 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |
 | ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
-| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥 | ⭐⭐⭐ |
+| ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️ | ⭐⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |

@@ -77,8 +77,7 @@ function drawFootballer(shirt, size, now, dir = 1, kick = 0, sixSeven = false) {
   // ⚽ Ball: hüpft vor dem Fuß auf und ab (Ball hochhalten). Beim Schuss ist er weg.
   if (kick < 0.3) {
     const juggle = Math.abs(Math.sin(now / 160)) * 12;
-    ctx.font = '14px -apple-system, sans-serif';
-    ctx.fillText('⚽', 15, 28 - juggle);
+    drawEmoji('⚽', 15, 28 - juggle, 14); // 🖼️ sprites.js
   }
 
   // 💪 Arme schwingen gegenläufig zu den Beinen
@@ -152,8 +151,7 @@ function drawFootballer(shirt, size, now, dir = 1, kick = 0, sixSeven = false) {
   ctx.save();
   ctx.translate(0, -22);
   ctx.rotate(run * 0.08);
-  ctx.font = '24px -apple-system, sans-serif';
-  ctx.fillText(shirt.head || '😃', 0, 0);
+  drawEmoji(shirt.head || '😃', 0, 0, 24); // 🖼️ sprites.js
   ctx.restore();
 
   // 💬 „6 7!“ über dem Kopf – die Zahlen hüpfen abwechselnd

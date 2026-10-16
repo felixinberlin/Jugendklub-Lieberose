@@ -65,6 +65,9 @@ function playSound(type) {
   } else if (type === 'ready') {
     playTone(660, 'triangle', 0.1, 0.15);  // 🔔 Spezialkraft bereit!
     setTimeout(() => playTone(990, 'triangle', 0.15, 0.15), 90);
+  } else if (type === 'hide') {
+    playTone(900, 'sine', 0.08, 0.12);   // Schwupp – weg!
+    setTimeout(() => playTone(450, 'sine', 0.12, 0.12), 70);
   } else if (type === 'popcorn') {
     for (let i = 0; i < 5; i++) setTimeout(() => playTone(700 + Math.random() * 600, 'square', 0.04, 0.1), i * 45); // Pop-pop-pop!
   } else if (type === 'spear') {

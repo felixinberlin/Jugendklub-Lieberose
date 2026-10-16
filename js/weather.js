@@ -92,8 +92,7 @@ function drawWeather(now) {
     ctx.save();
     ctx.translate(t.x, t.y);
     ctx.rotate(sway);
-    ctx.font = `${size}px -apple-system, sans-serif`;
-    ctx.fillText(emoji, 0, 0);
+    drawEmoji(emoji, 0, 0, size, true); // 🖼️ sprites.js (unten = Boden)
     ctx.restore();
   }
   ctx.restore();

@@ -41,6 +41,8 @@ function finishLevel(won) {
     winnerMsgEl.textContent = `🏆 ALLE ${nr} LEVEL GESCHAFFT! 🏆`;
     restartBtn.textContent = 'NOCHMAL SPIELEN 🔄';
     nextLevel = 0;
+    // 🎬 Alles geschafft = Abspann wie im Kino (credits.js) – aber nicht, wenn schon neu gestartet wurde
+    setTimeout(() => { if (!isPlaying) showCredits(); }, 3500);
   }
 }
 

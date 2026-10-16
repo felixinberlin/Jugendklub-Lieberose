@@ -136,10 +136,7 @@ function updateBombs(now) {
     ctx.save();
     ctx.translate(pos.x, pos.y);
     ctx.rotate(angle);
-    ctx.font = `${data.size}px -apple-system, sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(data.emoji, 0, 0);
+    drawEmoji(data.emoji, 0, 0, data.size); // 🖼️ sprites.js
     ctx.restore();
   }
 }

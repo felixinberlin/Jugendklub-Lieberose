@@ -31,6 +31,9 @@ Neue Werte, die Kinder live ändern sollen, immer in `GAME_CONFIG` ablegen.
 - Tap-Flächen ≥ 44×44 px. Kein Build, keine Frameworks, keine CDNs.
 - Neue Bodies immer in `fallingBodies` aufnehmen, damit sie entfernt werden (`Composite.remove`).
 
+## 3b. 🎬 Abspann
+Den Wunsch als neue Zeile in `WISHES` (`js/credits.js`) eintragen und `GAME_VERSION` hochzählen (z. B. 2.22 → 2.23). Kurz, kindgerecht, mit Emoji – so sehen die Kinder ihren Wunsch im Abspann.
+
 ## 4. Prüfen
 1. `for f in js/*.js; do node -c "$f"; done` – muss ohne Fehler durchlaufen.
 2. Lokal testen: `./serve.sh 8123 &` und mit Playwright im Handy-Viewport (390×760) öffnen. Mit `browser_evaluate` die neue Funktion direkt auslösen (Globals wie `fallingBodies`, `isPlaying` sind erreichbar). Test **direkt nach dem Spielstart** machen – nach Game Over laufen keine Kollisionen. Konsole prüfen (nur das `favicon.ico`-404 ist bekannt/harmlos). Danach den Server wieder beenden.

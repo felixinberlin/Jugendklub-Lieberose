@@ -22,11 +22,15 @@
 
       <!-- Start Screen -->
       <div id="startScreen" class="overlay-screen active">
-        <div class="badge">🏰 Jugendklub Lieberose</div>
+        <div class="badge">🏰 Jugendklub Lieberose <span id="version" class="version"></span></div>
         <h1>KOBOLD, MAIS, KATZE, MAUS, GOBLIN & MUSIALA</h1>
         <div class="instructions">
-          <p>👆 Antippen: werfen! ↔️ Ziehen: ausweichen!<br>💀 <span id="hitsText">20</span> Treffer = raus. Wer übrig bleibt, gewinnt! 🏅 5 Level<br>⚡ 20 Treffer = Spezialkraft-Knopf unten links (⚽ 🧌 🌪️ 🍿 🔥)<br>💣 Bomben treffen jeden im Weg · ☁️ Wolke = Regen · ☀️ Sonne = Nacht</p>
+          <p>👆 Antippen: werfen! ↔️ Ziehen: ausweichen!<br>💀 <span id="hitsText">20</span> Treffer = raus. Wer übrig bleibt, gewinnt! 🏅 5 Level<br>💣 Bomben treffen jeden im Weg · ☁️ Wolke = Regen · ☀️ Sonne = Nacht</p>
         </div>
+        <details class="specials-info">
+          <summary>⚡ Spezialkräfte – antippen zum Lesen</summary>
+          <div id="specialsList"></div>
+        </details>
         <div class="hits-row">
           <span class="hits-label">💀 Leben:</span>
           <div id="hitsChoice" class="hits-choice"></div>
@@ -35,6 +39,15 @@
         <div id="pickGrid" class="pick-grid"></div>
         <button id="teamModeBtn" class="btn">⚔️ TEAM-MODUS</button>
         <button id="startBtn" class="btn btn-small">👥 ALLE ZUSAMMEN</button>
+        <button id="creditsStartBtn" class="btn btn-small">🎬 ABSPANN</button>
+        <p class="parents-link">👨‍👩‍👧 Für Eltern: So ist das Spiel gebaut –
+          <a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">den ganzen Code ansehen ↗</a></p>
+      </div>
+
+      <!-- 🎬 Abspann (credits.js) – antippen = zurück -->
+      <div id="creditsScreen" class="overlay-screen credits-screen">
+        <div id="creditsRoll" class="credits-roll"></div>
+        <p class="credits-hint">👆 Antippen = zurück</p>
       </div>
 
       <!-- ⚔️ Team-Auswahl (teams.js) -->
@@ -55,6 +68,7 @@
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
         <button id="changeBtn" class="btn btn-small">🎭 Andere Figur</button>
+        <button id="creditsBtn" class="btn btn-small">🎬 ABSPANN</button>
       </div>
 
       <button id="koboldBtn" class="actor-btn" type="button" aria-label="Kobold steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
@@ -75,6 +89,7 @@
   <!-- Die Reihenfolge ist wichtig: game.js startet das Spiel und kommt zuletzt. -->
   <script src="js/config.js"></script>
   <script src="js/state.js"></script>
+  <script src="js/sprites.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/forest.js"></script>
   <script src="js/particles.js"></script>
@@ -88,6 +103,7 @@
   <script src="js/levels.js"></script>
   <script src="js/teams.js"></script>
   <script src="js/specials.js"></script>
+  <script src="js/credits.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

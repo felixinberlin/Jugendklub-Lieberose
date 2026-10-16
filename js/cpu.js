@@ -71,14 +71,8 @@ function updateCpu(now) {
 // ⭐ „DU“-Markierung über der eigenen Figur (wird in drawActors aufgerufen).
 function drawPlayerMarker(name, now) {
   if (name !== playerActor) return;
-  ctx.font = '900 14px -apple-system, sans-serif';
-  ctx.lineWidth = 4;
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = '#111827';
-  ctx.fillStyle = '#ffde59';
   const y = -52 + Math.sin(now / 200) * 3;
-  ctx.strokeText('⭐ DU ⭐', 0, y);
-  ctx.fillText('⭐ DU ⭐', 0, y);
+  drawLabel('⭐ DU ⭐', 0, y, { size: 14, weight: '900', fill: '#ffde59', stroke: '#111827', lineWidth: 4 });
 }
 
 // 👇 Auswahl-Knöpfe auf dem Startbildschirm bauen – eine Kachel pro Figur.
@@ -88,6 +82,7 @@ for (const name in actors) {
   const btn = document.createElement('button');
   btn.className = 'pick-btn';
   btn.type = 'button';
+  btn.dataset.name = name;
   btn.innerHTML = `<span class="pick-emoji">${GAME_CONFIG[`${name}Emoji`]}</span>${actors[name].name}`;
   btn.addEventListener('click', () => chooseAndStart(name));
   pickGrid.appendChild(btn);

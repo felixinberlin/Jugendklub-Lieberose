@@ -73,11 +73,14 @@ const GAME_CONFIG = {
   bigBall: { size: 80, damage: 6, speed: 7, seconds: 5 }, // ⚽ Musialas Riesenball
   miniKobolds: { count: 3, seconds: 5 },                    // 🧌 Mini-Kobolde
   catStunSeconds: 4,                                        // 🐱🌪️ So lange ist der Gegner gefangen
-  catDamage: 4,                                             // 🐱 Schaden beim Draufspringen
+  catDamage: 4,
+  hideSeconds: 6,                                           // 🐭🕳️ So lange ist die Maus versteckt                                             // 🐱 Schaden beim Draufspringen
   popcorn: { count: 10, damage: 1, size: 26 },              // 🌽🍿 Popcorn-Regen
   fireSpear: { damage: 4, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔥 Feuerspeer
   maxHits: 20, // 💀 So viele Treffer hält eine Figur aus, dann ist sie raus
   hitChoices: [5, 10, 20, 50], // Zum Auswählen auf dem Startbildschirm
+  maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte (3 = schärfer, aber langsamer)
+  maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)

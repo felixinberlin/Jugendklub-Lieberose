@@ -157,26 +157,26 @@ function drawActors(now) {
     }
     if (shirt) {
       drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ Figur im Trikot (footballer.js)
+    } else if (isHidden(name)) {
+      // 🐭🕳️ Versteckt: Mauseloch, die Figur guckt nur ganz blass heraus
+      drawEmoji('🕳️', 0, 18, actorSize(name) * 0.9);
+      ctx.globalAlpha = 0.3;
+      drawEmoji(actorEmoji(name), 0, 4, actorSize(name) * 0.7);
+      ctx.globalAlpha = 1;
+      drawLabel(`🙈 ${Math.ceil((actor.hiddenUntil - now) / 1000)}`, 0, -28, { size: 14, fill: '#ffffff', stroke: '#111827', lineWidth: 3 });
     } else {
-      ctx.font = `${actorSize(name)}px -apple-system, sans-serif`;
-      ctx.fillText(actorEmoji(name), 0, 0);
+      drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }
-    ctx.font = 'bold 11px -apple-system, sans-serif';
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)'; // Dunkler Rand: lesbar bei Tag und Nacht
-    ctx.lineJoin = 'round'; // Sonst stehen bei „M“ spitze Zacken heraus
-    ctx.strokeText(actor.name, 0, 42);
-    ctx.fillStyle = teamMode ? TEAM_COLORS[teamOf(name)] : actor.color;
-    ctx.fillText(actor.name, 0, 42);
+    // Name mit dunklem Rand: lesbar bei Tag und Nacht
+    drawLabel(actor.name, 0, 42, {
+      size: 11, fill: teamMode ? TEAM_COLORS[teamOf(name)] : actor.color,
+      stroke: 'rgba(0, 0, 0, 0.75)', lineWidth: 3
+    });
 
     // Treffer-Zähler: gegeben (🎯) / eingesteckt (💥)
-    const statsText = `🎯${actor.hitsGiven} 💥${actor.hitsTaken}`;
-    ctx.font = 'bold 10px -apple-system, sans-serif';
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.strokeText(statsText, 0, 56);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(statsText, 0, 56);
+    drawLabel(`🎯${actor.hitsGiven} 💥${actor.hitsTaken}`, 0, 56, {
+      size: 10, fill: '#ffffff', stroke: 'rgba(0, 0, 0, 0.8)', lineWidth: 2.5
+    });
     drawLifeBar(actor); // ❤️ (knockout.js)
     drawPlayerMarker(name, now); // ⭐ DU (cpu.js)
     drawSpecialBadge(name, now); // ⚡ Spezialkraft bereit? (specials.js)

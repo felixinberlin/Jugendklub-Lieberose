@@ -9,12 +9,15 @@
  *  🐱 Katze:   WIRBELSPRUNG – springt auf einen Gegner (Schaden!), 🌪️ Wirbelwolke:
  *             Der Gegner kann sich 4 Sekunden nicht bewegen und nicht werfen.
  *  🌽 Mais:    POPCORN – poppt 10 Popcorn 🍿 im Bogen auf verschiedene Gegner.
+ *  🐭 Maus:    VERSTECKEN – verschwindet 6 Sekunden im Mauseloch 🕳️:
+ *             Alles fliegt durch sie durch, sie bekommt KEINEN Schaden.
  *  👺 Goblin:  FEUERSPEER – fliegt gerade DURCH alle Gegner durch und
  *             lässt sie brennen 🔥 (3 Sekunden lang Schaden).
  *
  * AUFLADEN: Triff Gegner 20-mal mit normalen Würfen (egal welche) –
  * dann leuchtet der Knopf „BEREIT!“ (`specialChargeHits` in config.js).
- * Nach dem Benutzen geht es wieder bei 0 los.
+ * Nach dem Benutzen geht es wieder bei 0 los. Beim „WEITER“ ins nächste
+ * Level behalten deine Figuren ihre gesammelten Treffer.
  * Auch Computer-Figuren laden auf und benutzen ihre Kräfte.
  */
 
@@ -25,12 +28,20 @@ const MINI_RADIUS = 62;   // So weit weg vom Kobold
 let steer = { active: false, id: null, x: 0, y: 0 }; // Wo zeigt dein Finger hin?
 
 // Welche Figuren haben eine Spezialkraft?
+// `desc` = Erklärung für den Startbildschirm (mit den echten Zahlen aus config.js)
 const SPECIALS = {
-  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall },
-  kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis },
-  katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump },
-  corn: { name: 'POPCORN', icon: '🍿', use: popcorn },
-  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear }
+  musiala: { name: 'RIESENBALL', icon: '⚽', use: bigBall,
+    desc: () => `Riesiger Fußball, zählt ${GAME_CONFIG.bigBall.damage} Treffer. Du lenkst ihn mit dem Finger!` },
+  kobold: { name: 'MINI-KOBOLDE', icon: '🧌', use: spawnMinis,
+    desc: () => `${GAME_CONFIG.miniKobolds.count} Mini-Kobolde fangen ${GAME_CONFIG.miniKobolds.seconds} Sek. lang Bomben ab.` },
+  katze: { name: 'WIRBELSPRUNG', icon: '🌪️', use: catJump,
+    desc: () => `Springt auf einen Gegner (${GAME_CONFIG.catDamage} Schaden). Der ist ${GAME_CONFIG.catStunSeconds} Sek. im Wirbel gefangen.` },
+  corn: { name: 'POPCORN', icon: '🍿', use: popcorn,
+    desc: () => `${GAME_CONFIG.popcorn.count} Popcorn fliegen auf alle Gegner.` },
+  goblin: { name: 'FEUERSPEER', icon: '🔥', use: fireSpear,
+    desc: () => `Durchbohrt alle in einer Reihe und lässt sie ${GAME_CONFIG.fireSpear.burnSeconds} Sek. brennen.` },
+  maus: { name: 'VERSTECKEN', icon: '🕳️', use: hideMouse,
+    desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` }
 };
 
 function hasSpecial(name) {
@@ -342,15 +353,13 @@ function drawSpear(b, now) {
   ctx.lineTo(8, 7);
   ctx.closePath();
   ctx.fill();
-  ctx.font = `${26 + Math.sin(now / 50) * 4}px -apple-system, sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('🔥', 16, -4);
+  drawEmoji('🔥', 16, -4, 26 + Math.sin(now / 50) * 4);
   ctx.restore();
 }
 
 // 🔥 Brennen: alle `burnEveryMs` einen Schaden, `burnSeconds` lang
 function startBurn(victim, shooter) {
+  if (isHidden(victim)) return; // 🐭🕳️ Im Mauseloch brennt nichts
   const cfg = GAME_CONFIG.fireSpear;
   const now = performance.now();
   actors[victim].burn = { shooter, until: now + cfg.burnSeconds * 1000, next: now + cfg.burnEveryMs };
@@ -371,6 +380,33 @@ function updateBurns(now) {
   }
 }
 
+// ---------- 🐭 Maus: Verstecken ----------
+// Versteckt? Dann gibt es keinen Schaden (physics.js fragt das in applyHit).
+function isHidden(name) {
+  return actors[name] && actors[name].hiddenUntil > performance.now();
+}
+
+function hideMouse(name) {
+  const actor = actors[name];
+  actor.hiddenUntil = performance.now() + GAME_CONFIG.hideSeconds * 1000;
+  actor.body.collisionFilter.mask = 0; // Kollidiert mit gar nichts mehr – alles fliegt durch
+  actor.burn = null;                   // Im Loch geht das Feuer aus
+  spawnParticles(actor.body.position.x, actor.body.position.y, '#a8a29e', 20);
+  playSound('hide');
+}
+
+// Wieder auftauchen, wenn die Zeit um ist
+function updateHiding(now) {
+  for (const name in actors) {
+    const actor = actors[name];
+    if (actor.hiddenUntil && now > actor.hiddenUntil) {
+      actor.hiddenUntil = 0;
+      actor.body.collisionFilter.mask = 0xFFFFFFFF; // Wieder treffbar
+      spawnParticles(actor.body.position.x, actor.body.position.y, '#fde68a', 15);
+    }
+  }
+}
+
 // ---------- Jedes Bild ----------
 function updateSpecials(now) {
   steerBalls();
@@ -378,6 +414,7 @@ function updateSpecials(now) {
   updateMinis(now);
   updateJumps(now);
   updateBurns(now);
+  updateHiding(now);
 }
 
 // Malt Mini-Kobolde und Wirbelwolken (nach den Figuren, damit sie obendrauf sind)
@@ -389,16 +426,15 @@ function drawSpecials(now) {
     ctx.save();
     ctx.translate(m.body.position.x, m.body.position.y);
     ctx.rotate(Math.sin(now / 150 + m.angle) * 0.2 + m.wiggle * 0.5);
-    ctx.font = '30px -apple-system, sans-serif';
-    ctx.fillText(actorEmoji('kobold'), 0, 0);
+    drawEmoji(actorEmoji('kobold'), 0, 0, 30); // 🖼️ sprites.js
     ctx.restore();
   }
   for (const name in actors) {
     if (!isAlive(name) || !actors[name].burn) continue;
     const p = actors[name].body.position;
-    ctx.font = `${22 + Math.sin(now / 60) * 4}px -apple-system, sans-serif`; // 🔥 flackert
-    ctx.fillText('🔥', p.x - 18, p.y - 30 + Math.sin(now / 90) * 3);
-    ctx.fillText('🔥', p.x + 18, p.y - 26 + Math.cos(now / 80) * 3);
+    const flame = 22 + Math.sin(now / 60) * 4; // 🔥 flackert
+    drawEmoji('🔥', p.x - 18, p.y - 30 + Math.sin(now / 90) * 3, flame);
+    drawEmoji('🔥', p.x + 18, p.y - 26 + Math.cos(now / 80) * 3, flame);
   }
   for (const name in actors) {
     if (!isAlive(name) || !isStunned(name)) continue;
@@ -407,11 +443,9 @@ function drawSpecials(now) {
     ctx.translate(p.x, p.y);
     ctx.globalAlpha = 0.85;
     ctx.rotate(now / 120); // 🌪️ dreht sich
-    ctx.font = '64px -apple-system, sans-serif';
-    ctx.fillText('🌪️', 0, 0);
+    drawEmoji('🌪️', 0, 0, 64);
     ctx.restore();
-    ctx.font = '18px -apple-system, sans-serif';
-    ctx.fillText('💫', p.x + Math.cos(now / 200) * 30, p.y - 40 + Math.sin(now / 200) * 6);
+    drawEmoji('💫', p.x + Math.cos(now / 200) * 30, p.y - 40 + Math.sin(now / 200) * 6, 18);
   }
   ctx.restore();
 }
@@ -422,19 +456,22 @@ function drawSpecialBadge(name, now) {
   const ready = specialReady(name);
   ctx.save();
   ctx.globalAlpha = ready ? 1 : 0.35;
-  ctx.font = `${ready ? 18 + Math.sin(now / 150) * 2 : 15}px -apple-system, sans-serif`;
-  ctx.fillText('⚡', 30, -26);
+  drawEmoji('⚡', 30, -26, ready ? 18 + Math.sin(now / 150) * 2 : 15);
   ctx.restore();
 }
 
-// Alles zurücksetzen (bei jedem Start)
-function resetSpecials() {
+// Alles zurücksetzen (bei jedem Start).
+// keepCharge = true: DEINE Figuren behalten ihre Ladung fürs nächste Level.
+function resetSpecials(keepCharge = false) {
   clearMinis();
   for (const name in actors) {
-    actors[name].specialCharge = 0;
+    const mine = playerTeam === null || playerTeam.includes(name);
+    if (!keepCharge || !mine) actors[name].specialCharge = 0;
     actors[name].stunnedUntil = 0;
     actors[name].jump = null;
     actors[name].burn = null;
+    actors[name].hiddenUntil = 0;
+    actors[name].body.collisionFilter.mask = 0xFFFFFFFF;
   }
 }
 
@@ -454,3 +491,19 @@ for (const type of ['pointerup', 'pointercancel']) {
     if (event.pointerId === steer.id) steer.active = false;
   });
 }
+
+// 📖 Startbildschirm: Spezialkräfte erklären + kleines Symbol auf jeder Figur-Kachel
+function buildSpecialsInfo() {
+  const list = document.getElementById('specialsList');
+  let html = `<p class="sp-how">🎯 Triff ${GAME_CONFIG.specialChargeHits}-mal → der Knopf unten links leuchtet → antippen!</p>`;
+  for (const name in SPECIALS) {
+    const sp = SPECIALS[name];
+    html += `<p class="sp-row"><b>${actorEmoji(name)} ${actors[name].name} · ${sp.icon} ${sp.name}</b><br>${sp.desc()}</p>`;
+  }
+  list.innerHTML = html;
+  for (const tile of document.querySelectorAll('#pickGrid .pick-btn, #teamGrid .pick-btn')) {
+    const sp = SPECIALS[tile.dataset.name];
+    if (sp) tile.insertAdjacentHTML('beforeend', `<span class="pick-special">${sp.icon}</span>`);
+  }
+}
+buildSpecialsInfo();
