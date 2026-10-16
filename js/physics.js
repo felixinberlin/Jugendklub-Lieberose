@@ -77,6 +77,7 @@ function applyHit(victim, shooterName, damage, special) {
   if (playerTeam === null || playerTeam.includes(shooterName)) {
     score += damage;
     scoreEl.textContent = score;
+    if (typeof addSavedScore === 'function') addSavedScore(damage);
   }
   checkKnockout(victim); // 💀 Genug Treffer? Dann ist die Figur raus (knockout.js)
 }

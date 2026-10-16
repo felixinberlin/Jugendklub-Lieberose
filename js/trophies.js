@@ -64,36 +64,100 @@ const settingsCooldownMsg = document.getElementById('settingsCooldownMsg');
 const settingsNameSaveBtn = document.getElementById('settingsNameSaveBtn');
 const settingsFullscreenBtn = document.getElementById('settingsFullscreenBtn');
 const settingsBackBtn = document.getElementById('settingsBackBtn');
+const settingsStatsText = document.getElementById('settingsStatsText');
+const settingsResetStatsBtn = document.getElementById('settingsResetStatsBtn');
+const savedStatsBadge = document.getElementById('savedStatsBadge');
+const resetStatsStartBtn = document.getElementById('resetStatsStartBtn');
+const leaderboardResetBtn = document.getElementById('leaderboardResetBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-// 🔄 Anonyme Pokal-Zahlen & 7-Tage-Zeitstempel aus dem Browser-Speicher laden
+// 🔄 Anonyme Pokal- & Punkt-Zahlen aus dem Browser-Speicher (localStorage) laden – bleiben beim Neuladen erhalten!
 const TROPHY_STORAGE_KEY = 'lieberose_trophies_v2_reset';
-try {
-  localStorage.removeItem('lieberose_trophies');
-} catch (e) {}
 
 function loadTrophies() {
   try {
     const raw = JSON.parse(localStorage.getItem(TROPHY_STORAGE_KEY) || '{}');
+    const savedHigh = Math.max(
+      Number(raw.highScore) || 0,
+      parseInt(localStorage.getItem('lieberose_highscore') || '0', 10) || 0
+    );
     return {
       total: Number(raw.total) || 0,
       solo: Number(raw.solo) || 0,
       team: Number(raw.team) || 0,
+      totalScore: Number(raw.totalScore) || 0,
+      highScore: savedHigh,
       nameChangedAt: Number(raw.nameChangedAt) || 0,
       actors: (raw.actors && typeof raw.actors === 'object') ? raw.actors : {}
     };
   } catch (e) {
-    return { total: 0, solo: 0, team: 0, nameChangedAt: 0, actors: {} };
+    return { total: 0, solo: 0, team: 0, totalScore: 0, highScore: 0, nameChangedAt: 0, actors: {} };
   }
 }
 
 let trophiesData = loadTrophies();
+if (trophiesData.highScore > highScore) {
+  highScore = trophiesData.highScore;
+  if (highScoreEl) highScoreEl.textContent = highScore;
+}
 
 function saveTrophies() {
   try {
+    trophiesData.highScore = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
     localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophiesData));
+    localStorage.setItem('lieberose_highscore', String(trophiesData.highScore));
   } catch (e) {}
   updateTrophyHud();
+}
+
+// 🎯 Speichert jeden erzielten Punkt & neuen Rekord sofort im Browser (auch wenn man neu lädt!)
+function addSavedScore(points) {
+  const add = Number(points) || 0;
+  if (add <= 0) return;
+  trophiesData.totalScore = (Number(trophiesData.totalScore) || 0) + add;
+  if (score > highScore) {
+    highScore = score;
+    if (highScoreEl) highScoreEl.textContent = highScore;
+  }
+  trophiesData.highScore = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
+  saveTrophies();
+}
+
+// 🗑️ Setzt alle gespeicherten Pokale, Gesamtpunkte & Rekorde im Browser einfach auf 0 zurück!
+function resetTrophiesAndScores() {
+  initAudio();
+  trophiesData = {
+    total: 0,
+    solo: 0,
+    team: 0,
+    totalScore: 0,
+    highScore: 0,
+    nameChangedAt: trophiesData.nameChangedAt || 0,
+    actors: {}
+  };
+  score = 0;
+  highScore = 0;
+  if (scoreEl) scoreEl.textContent = '0';
+  if (highScoreEl) highScoreEl.textContent = '0';
+  if (finalScoreEl) finalScoreEl.textContent = '0';
+  for (const p of sessionPlayers) {
+    if (p.isMe) p.trophies = 0;
+  }
+  try {
+    localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophiesData));
+    localStorage.setItem('lieberose_highscore', '0');
+  } catch (e) {}
+  playSound('bounce');
+  updateTrophyHud();
+  if (savedStatsBadge) {
+    savedStatsBadge.textContent = '✅ Pokale & Punkte wurden auf 0 gesetzt!';
+  }
+  if (settingsStatsText) {
+    settingsStatsText.textContent = '✅ Pokale & Punkte wurden auf 0 gesetzt!';
+  }
+  if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
+    showLeaderboard();
+  }
 }
 
 // ⛶ Vollbild-Modus: Versteckt die Browser-Adressleiste oben!
@@ -130,6 +194,15 @@ if (fullscreenBtn) {
 if (settingsFullscreenBtn) {
   settingsFullscreenBtn.addEventListener('click', () => toggleGameFullscreen());
 }
+if (resetStatsStartBtn) {
+  resetStatsStartBtn.addEventListener('click', resetTrophiesAndScores);
+}
+if (settingsResetStatsBtn) {
+  settingsResetStatsBtn.addEventListener('click', resetTrophiesAndScores);
+}
+if (leaderboardResetBtn) {
+  leaderboardResetBtn.addEventListener('click', resetTrophiesAndScores);
+}
 
 // ⏳ 7-Tage-Sperre für Namensänderung prüfen
 function cooldownMsRemaining() {
@@ -150,15 +223,14 @@ function formatCooldownRemaining(ms) {
 
 // Holt oder aktualisiert den registrierten Benutzer in der Sitzungs-Rangliste
 function getOrCreatePlayerEntry(name) {
-  const clean = (name || '').trim();
-  if (!clean) return { name: 'Gast', trophies: trophiesData.total || 0, isBot: false };
+  const clean = (name || '').trim() || 'Du (Gespeichert)';
   let entry = sessionPlayers.find(p => p.isMe);
   if (!entry) {
     entry = { name: clean, trophies: trophiesData.total || 0, region: '🌍 Dein Gerät', isMe: true };
     sessionPlayers.push(entry);
   } else {
-    entry.name = clean;
-    entry.trophies = Math.max(entry.trophies, trophiesData.total || 0);
+    if (name && name.trim()) entry.name = name.trim();
+    entry.trophies = trophiesData.total || 0;
   }
   return entry;
 }
@@ -177,8 +249,7 @@ function registerOrUpdatePlayerName(newName, isInitial) {
 }
 
 function activePlayerTrophies() {
-  if (!currentPlayerName) return trophiesData.total;
-  return getOrCreatePlayerEntry(currentPlayerName).trophies;
+  return Number(trophiesData.total) || 0;
 }
 
 // 🔒 Prüft, ob eine Figur schon freigeschaltet ist (ZEUS braucht 40 Pokale!)
@@ -215,19 +286,35 @@ function refreshUnlockTiles() {
 
 function updateTrophyHud() {
   const count = activePlayerTrophies();
+  const totalPts = Number(trophiesData.totalScore) || 0;
+  const bestRecord = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
   trophiesEl.textContent = count;
+  if (highScoreEl) highScoreEl.textContent = bestRecord;
   trophyHudEl.classList.toggle('active-trophy', trophyMode);
   playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
   leaderboardStartBtn.textContent = `🌍 GLOBALE RANGLISTE (${count} 🏆)`;
-  if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Gast';
+  if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Spieler 1';
+  const summaryText = `🏆 ${count} Pokale · 🎯 ${totalPts} Gesamtpunkte · 🏅 Rekord: ${bestRecord}`;
+  if (savedStatsBadge) savedStatsBadge.textContent = summaryText;
+  if (settingsStatsText) settingsStatsText.textContent = summaryText;
   refreshUnlockTiles();
 }
 
-// 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen, falls noch kein Name gewählt wurde!
+// 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen, falls noch kein Fortschritt im Browser gespeichert ist!
 function initWelcomeRegistration() {
-  if (!currentPlayerName) {
+  const hasSavedProgress = Boolean(
+    trophiesData.nameChangedAt > 0 ||
+    trophiesData.total > 0 ||
+    trophiesData.totalScore > 0 ||
+    highScore > 0
+  );
+  if (!currentPlayerName && !hasSavedProgress) {
     welcomeNameScreen.classList.add('active');
     startScreen.classList.remove('active');
+  } else if (!currentPlayerName) {
+    currentPlayerName = 'Spieler 1';
+    getOrCreatePlayerEntry(currentPlayerName);
+    updateTrophyHud();
   }
 }
 
@@ -264,7 +351,8 @@ welcomeNameSaveBtn.addEventListener('click', () => {
 // ⚙️ Einstellungen im Hauptmenü öffnen (mit 7-Tage-Sperre für Namensänderung)
 function openSettingsScreen() {
   initAudio();
-  settingsCurrentName.textContent = currentPlayerName || 'Noch nicht gewählt';
+  updateTrophyHud();
+  settingsCurrentName.textContent = currentPlayerName || 'Spieler 1';
   settingsNameInput.value = currentPlayerName || '';
   const rem = currentPlayerName ? cooldownMsRemaining() : 0;
   if (rem > 0) {
@@ -475,22 +563,27 @@ function buildCharacterLeaderboardHtml() {
 }
 
 // 🌍 Globale Spieler-Rangliste bauen und anzeigen:
-// Sobald man einen Namen eingegeben UND mindestens 1 Pokal hat, wird man in der globalen Rangliste für alle angezeigt!
+// Sobald man mindestens 1 Pokal hat, wird man in der globalen Rangliste für alle angezeigt (auch nach Browser-Neuladen)!
 function showLeaderboard() {
   initAudio();
-  const activeName = currentPlayerName || 'Gast';
+  const activeName = currentPlayerName || 'Spieler 1';
   const activeCount = activePlayerTrophies();
-  const isListedGlobally = Boolean(currentPlayerName && activeCount > 0);
+  const totalPts = Number(trophiesData.totalScore) || 0;
+  const bestRecord = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
+  if (activeCount > 0) {
+    getOrCreatePlayerEntry(activeName);
+  }
+  const isListedGlobally = Boolean(activeCount > 0);
 
   myTrophyBanner.innerHTML =
-    `<div class="my-trophy-total">👤 ${activeName}: <b>${activeCount} 🏆</b></div>` +
+    `<div class="my-trophy-total">👤 ${activeName}: <b>${activeCount} 🏆</b> · 🎯 <b>${totalPts}</b> Punkte · 🏅 Rekord: <b>${bestRecord}</b></div>` +
     `<div class="my-trophy-sub">${
       isListedGlobally
-        ? '🌍✅ Du bist als registrierter Benutzer mit Pokalen weltweit in der globalen Rangliste sichtbar!'
-        : 'ℹ️ Sobald du deinen Namen eingegeben und mindestens 1 Pokal 🏆 geholt hast, erscheinst du hier weltweit in der globalen Rangliste!'
+        ? '🌍✅ Deine Pokale & Punkte sind im Browser gespeichert und in der globalen Rangliste sichtbar!'
+        : 'ℹ️ Deine Pokale & Punkte werden automatisch im Browser gespeichert. Ab 1 Pokal 🏆 stehst du in der globalen Rangliste!'
     }</div>`;
 
-  // Alle weltweiten Spieler mit Pokalen + der registrierte Benutzer (sobald er ≥ 1 Pokal hat!)
+  // Alle weltweiten Spieler mit Pokalen + der gespeicherte Benutzer (sobald er ≥ 1 Pokal hat!)
   const pool = [...globalChallengers];
   for (const p of sessionPlayers) {
     if (p.name && p.trophies > 0) {
@@ -508,7 +601,7 @@ function showLeaderboard() {
       `<span class="lb-rank">${rank}</span>` +
       `<span class="lb-emoji">${isMe ? '⭐' : '🌍'}</span>` +
       `<div class="lb-info">` +
-        `<div class="lb-name">${p.name}${isMe ? ' (DU · REGISTRIERT)' : ''}</div>` +
+        `<div class="lb-name">${p.name}${isMe ? ' (DU · GESPEICHERT)' : ''}</div>` +
         `<div class="lb-bar"><i style="width:${pct}%;background:${isMe ? '#ffde59' : '#38bdf8'}"></i></div>` +
       `</div>` +
       `<span class="lb-count">${p.trophies} 🏆</span>` +

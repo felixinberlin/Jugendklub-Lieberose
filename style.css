@@ -784,6 +784,36 @@ h2 {
   background: rgba(56, 189, 248, 0.18);
 }
 
+.saved-stats-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  margin-bottom: 6px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.78);
+  border: 1.5px solid rgba(250, 204, 21, 0.45);
+  color: #fde047;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.btn-reset-inline {
+  background: rgba(239, 68, 68, 0.25);
+  border: 1.5px solid rgba(248, 113, 113, 0.65);
+  color: #fecaca;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.btn-reset-inline:active {
+  transform: scale(0.95);
+}
+
 /* 🗺️ In der Runde: Kompaktes HUD für maximale Sicht auf die größere Map */
 body.in-round #hud {
   padding: 6px 116px 6px 12px;

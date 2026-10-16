@@ -17,10 +17,10 @@
       <!-- HUD -->
       <div id="hud">
         <div class="hud-item">TREFFER: <span id="score">0</span></div>
+        <div class="hud-item">REKORD: <span id="highScore">0</span></div>
         <div id="levelHud" class="hud-item" hidden>LEVEL <span id="level">1</span></div>
         <div id="trophyHud" class="hud-item trophy-hud">🏆 <span id="trophies">0</span></div>
         <button id="pauseBtn" class="hud-item pause-hud-btn" type="button" hidden>⏸️ PAUSE</button>
-        <div class="hud-item" hidden>REKORD: <span id="highScore">0</span></div>
       </div>
 
       <!-- 👤 Willkommens-Fenster beim Reinkommen: Namen eingeben & als Benutzer registrieren -->
@@ -43,7 +43,11 @@
         <div class="badge">🏰 Jugendklub Lieberose <span id="version" class="version"></span> · 👤 <span id="currentUserBadge">Gast</span></div>
         <h1>KOBOLD, MAIS, KATZE, MAUS, GOBLIN, GOAT, YAMAL, DRACHE & ZEUS</h1>
         <div class="instructions">
-          <p>📱 <b>Startseite im Hochformat · Runde im Querformat (Vollbild)!</b><br>🕹️ Links bewegen (<b>WASD</b>) · 🔴 Rechts schießen (<b>Linksklick</b>) · 🟦⚡ Fähigkeit / Kombo (<b>F</b>)<br>🤝 <b>YAMAL + GOAT</b> im selben Team = <b>20-Treffer-Kombo!</b></p>
+          <p>📱 <b>Startseite im Hochformat · Runde im Querformat (Vollbild)!</b><br>🕹️ Links bewegen (<b>WASD</b>) · 🔴 Rechts schießen (<b>Linksklick</b>) · 🟦⚡ Fähigkeit / Kombo (<b>F</b>)<br>🤝 <b>19 Team-Combos</b> · 💾 <b>Pokale & Punkte bleiben im Browser gespeichert!</b></p>
+        </div>
+        <div class="saved-stats-bar">
+          <span id="savedStatsBadge">🏆 0 Pokale · 🎯 0 Gesamtpunkte · 🏅 Rekord: 0</span>
+          <button id="resetStatsStartBtn" class="btn-reset-inline" type="button">🔄 Auf 0 setzen</button>
         </div>
         <details class="specials-info">
           <summary>⚡ Spezialkräfte & Kombos – antippen zum Lesen</summary>
@@ -64,7 +68,7 @@
           <a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">den ganzen Code ansehen ↗</a></p>
       </div>
 
-      <!-- ⚙️ Einstellungen im Hauptmenü (Name erst nach 7 Tagen änderbar + Vollbild) -->
+      <!-- ⚙️ Einstellungen im Hauptmenü (Name erst nach 7 Tagen änderbar + Vollbild + Auf 0 setzen) -->
       <div id="settingsScreen" class="overlay-screen">
         <h2>⚙️ EINSTELLUNGEN</h2>
         <div class="mode-card trophy-card">
@@ -76,6 +80,11 @@
           </div>
           <p id="settingsCooldownMsg" class="cooldown-msg"></p>
           <button id="settingsNameSaveBtn" class="btn btn-trophy" type="button">💾 NAMEN ÄNDERN</button>
+        </div>
+        <div class="mode-card normal-card">
+          <h3>💾 GESPEICHERTE POKALE & PUNKTE</h3>
+          <p id="settingsStatsText">🏆 0 Pokale · 🎯 0 Gesamtpunkte · 🏅 Rekord: 0</p>
+          <button id="settingsResetStatsBtn" class="btn btn-small" type="button">🗑️ POKALE & PUNKTE AUF 0 SETZEN</button>
         </div>
         <div class="mode-card normal-card">
           <h3>⛶ ANZEIGE & VOLLBILD</h3>
@@ -127,6 +136,7 @@
         <div id="leaderboardList" class="leaderboard-list"></div>
         <!-- Charakter-Rangliste: nicht gelöscht, nur versteckt (kann später wiederkommen) -->
         <div id="charLeaderboardSection" class="leaderboard-list" hidden></div>
+        <button id="leaderboardResetBtn" class="btn btn-small" type="button">🗑️ Eigene Pokale & Punkte auf 0 setzen</button>
         <button id="leaderboardBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
