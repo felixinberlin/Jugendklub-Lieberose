@@ -1,5 +1,5 @@
 /**
- * 🧌🌽🐱 actors.js – Die Figuren: Kobold, Mais und Katze
+ * 🧌🌽🐱 actors.js – Alle sechs Figuren und ihre Steuerung
  *
  * Hier steht, wie die Figuren gebaut, bewegt, angetippt und gemalt werden.
  */

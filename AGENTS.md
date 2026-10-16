@@ -83,6 +83,9 @@ If a user request would violate any of these, stop and clarify first:
 - Jedes Update soll etwas Echtes berichten: keine erfundenen Erfolge, keine endlosen Wiederholungen und keine künstlichen Pausen nur für Kommentare. Bei Problemen kurz verständlich sagen, woran du arbeitest, und direkt weitermachen.
 - Beispiele (an den echten Wunsch anpassen): „Der Mais bekommt jetzt seine Popcorn-Power! 🌽🍿“ · „Die Körner fliegen schon! Ich prüfe gerade, ob ihr sie auch auf dem Handy gut werfen könnt. 📱“ · „Die neue Kraft ist online! 3 … 2 … 1 … Handy aktualisieren! 🚀“ (nur nach erfolgreichem Deploy).
 
+### Vorbereitung und schneller Einstieg
+Lies vor dem Workshop den [Spickzettel](WORKSHOP.md): aktuelle Erweiterungspunkte, Prüfablauf und bekannte Grenzen. Reine Vorbereitung, Aufräumen und Dokumentation bekommen keinen Credits-Eintrag und keine neue Spielversion.
+
 ### A. The `GAME_CONFIG` Object (Live Hacking Zone)
 Lives alone in `js/config.js`. Designed for instant modifications when kids shout ideas on stage:
 Lies die echte Datei (`cat js/config.js`), sie ist kurz. Wichtigste Schalter:
@@ -244,6 +247,18 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 | `js/specials.js` | `SPECIALS` (`musiala` → `bigBall` (6 Schaden), `kobold` → `spawnMinis`, `katze` → `catJump` (4 Schaden + Wirbel), `corn` → `popcorn` (10× 🍿 per `launchArc`), `goblin` → `fireSpear` (Sensor-Speer `pierce` durch alle, `startBurn` → `updateBurns` Schaden über Zeit, `drawSpear`), `maus` → `hideMouse` (`hiddenUntil`, `body.collisionFilter.mask = 0` = nichts trifft, `isHidden()` blockt `applyHit`, `updateHiding` macht sie wieder treffbar); per `kindOf`, gilt also auch für Gegner-Kopien), `trySpecial(name)`, `specialReady` (`specialCharge >= specialChargeHits`), `chargeSpecial(name)` (aus `physics.js` bei jedem Treffer mit NORMALEM Wurf, nicht mit Riesenball), `setupSpecialBar()` / `updateSpecialBar()` (Knöpfe `#specialBar` unten links für jede eigene Figur mit Kraft – Ladebalken, „12/20“, „BEREIT!“), `isStunned(name)` (blockiert Werfen, Ziehen, Dribbeln), `steerBalls()` (Riesenball: eigener folgt dem Finger `steer`, Computer-Ball zielsucht; keine Schwerkraft), Minis = Sensor-Bodies `miniKobold` (Kategorie `MINI_BIT` 1024, alle Bomben-Masken enthalten sie) + `decoyFor(target, from, frames)` (Bomben auf den Kobold zielen auf die vorausberechnete Mini-Position), `blockByMini()` (aus `physics.js`), `updateSpecials`, `drawSpecials`, `drawSpecialBadge` (⚡), `buildSpecialsInfo()` (aufklappbare Erklärung `#specialsList` auf dem Startbildschirm aus `SPECIALS[].desc()` + Kraft-Symbol auf den Figur-Kacheln), `resetSpecials(keepCharge)` (aus `startGame(keepCharge)`; `true` nur beim „WEITER“ ins nächste Level → eigene Figuren behalten `specialCharge`, Computer starten bei 0). Computer laden genauso auf und nutzen Kräfte dann mit `cpuSpecialChance`. Kein Doppeltippen mehr (Figur antippen = immer werfen) |
 | `js/credits.js` | `GAME_VERSION`, `WISHES` (Liste aller Kinder-Wünsche mit Version), `buildCredits()`, `showCredits()` (🎬-Knopf auf dem Game-Over-Bildschirm; automatisch nach dem letzten Level), `hideCredits()`. Version steht im Abzeichen auf dem Startbildschirm; 🎬-Knopf auch auf dem Startbildschirm (`#creditsStartBtn`). `REPO_URL` – Link „Für Eltern“ zum öffentlichen GitHub-Repo steht unten auf dem Startbildschirm (`.parents-link` in `index.html`) und am Ende des Abspanns (Antippen des Links schließt den Abspann nicht) |
 | `js/game.js` | `startGame()`, `gameLoop(now)` (ruft nur noch `drawForest` → `drawWeather` → `drawActors` → `drawSpecials` → `Engine.update` → `updateFootballers` → `updateCpu` → `updateSpecials` → `updateBombs` → `drawParticles` → `drawLevelBanner`), Initialisierung; `restartBtn` startet `nextLevel` |
+
+### Aufteilung der Spezialkräfte (aktuell)
+Die lange Beschreibung oben nennt die Funktionen; ihre Dateien sind jetzt:
+
+| Datei | Aufgabe |
+|---|---|
+| `js/special-weapons.js` | `bigBall`, `steerBalls`, `popcornTargets`, `popcorn`, `fireSpear`, `updateSpears`, `drawSpear`, `startBurn`, `updateBurns` |
+| `js/special-moves.js` | `MINI_BIT`, `minis`, `steer`, Mini-Kobolde/Lockvögel, Katzensprung, Mauseloch |
+| `js/specials.js` | `SPECIALS`, Aufladen, Auslösen, `updateSpecials`, `drawSpecials`, `resetSpecials` |
+| `js/special-ui.js` | Kraft-Knöpfe, `drawSpecialBadge`, Finger-Ereignisse, `buildSpecialsInfo` |
+
+Ladereihenfolge: Waffen → Bewegungen → Zentrale → Anzeige → Credits → game.js. Funktionskörper dürfen spätere Globals verwenden; sofort ausgeführter Code darf das nicht. `SPECIALS` braucht beim Laden bereits die Kraft-Funktionen; `buildSpecialsInfo()` braucht die Auswahl-Kacheln.
 
 ## 8c. 🍳 Rezepte für typische Kinder-Wünsche
 

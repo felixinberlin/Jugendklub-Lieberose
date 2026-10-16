@@ -1,7 +1,7 @@
 # 🎮 So funktioniert unser Spiel
 
 Hallo! 👋 Schön, dass du in den Code schaust.
-Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dateien**, und jede kümmert sich nur um **eine Sache**. Such dir die aus, die dich interessiert.
+Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Dateien**, und jede kümmert sich nur um **eine Sache**. Such dir die aus, die dich interessiert.
 
 ---
 
@@ -19,6 +19,9 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **9 kleinen Dat
 | 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |
 | ⚔️ [`teams.js`](teams.js) | **Team-Modus**: Du wählst mehrere Figuren 🔵, die Gegner sind rot 🔴 – und jedes Level bringt **mehr Gegner** | ⭐⭐⭐ |
 | ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️ | ⭐⭐⭐ |
+| ⚽ [`special-weapons.js`](special-weapons.js) | **Spezialwaffen**: Riesenball, Popcorn, Feuerspeer und Brennen | ⭐⭐⭐ |
+| 🧌 [`special-moves.js`](special-moves.js) | **Schutz & Bewegung**: Mini-Kobolde, Katzensprung und Mauseloch | ⭐⭐⭐ |
+| 👆 [`special-ui.js`](special-ui.js) | **Kraft-Knöpfe**, Erklärungen und Fingersteuerung | ⭐⭐ |
 | ⚽ [`footballer.js`](footballer.js) | Malt **Musiala im Trikot** – Strich für Strich – und lässt ihn **dribbeln** | ⭐⭐ |
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
@@ -138,7 +141,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `levels` → `huntPlayer: 0.5` → `1` | In dem Level zielen ALLE nur auf dich 🎯 |
 | `teamLevels` → bei Level 8 `enemies: 10` → `20` | 20 Gegner auf einmal! 😱 |
 | `hitChoices: [5, 10, 20, 50]` → `[1, 100]` | Andere Auswahl auf dem Startbildschirm 💀 |
-| `bigBall` → `damage: 3` → `10` | Musialas Riesenball haut alles um ⚽💥 |
+| `bigBall` → `damage: 6` → `10` | Musialas Riesenball haut alles um ⚽💥 |
 | `miniKobolds` → `count: 3` → `8` | Eine ganze Mini-Kobold-Armee 🧌🧌🧌 |
 | `catStunSeconds: 4` → `10` | Die Wirbelwolke hält 10 Sekunden 🌪️ |
 | `popcorn` → `count: 10` → `40` | Popcorn-Sturm 🍿🍿🍿 |
