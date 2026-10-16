@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.37';
+const GAME_VERSION = '2.38';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -58,7 +58,8 @@ const WISHES = [
   { v: '2.34', text: 'Lamine Yamal #19 🌟 mit GOAT-Kombo (20 Treffer) 🤝⚽, edle Pro-Skins ✨, Vollbild ⛶, 7-Tage-Namenssperre ⚙️, Pause im Normal-Modus ⏸️ & 1-Match-Solo 🎯' },
   { v: '2.35', text: 'Team-Bots mit Klick-Wechsel 🤖👆 & 19 Mega-Combos (Kobold wirft Mais 🧌🌽, Drache+Goblin Brand-Aura 🐉👺🔥 uvm.!) 💥' },
   { v: '2.36', text: 'Pokale 🏆 & Punkte 🎯 bleiben beim Neuladen im Browser gespeichert – mit „Auf 0 setzen“-Knopf 🔄' },
-  { v: '2.37', text: 'Exakte Werte für alle 8 Figuren (Goat 100 HP 4/1.2s 1.0x, Kobold 120 HP 3/1.0s, Mais 100 HP 2/0.5s 1.2x, Maus 105 HP 3/0.9s 1.5x, Katze 110 HP 5/1.5s 1.2x, Goblin 100 HP 4/1.4s 1.4x, Zeus 130 HP 7/2.3s 1.5x, Yamal 105 HP 4/1.4s 1.3x) 📊, Yamals Sternen-Explosion in der Mitte (12 Schaden) 🌟💥, 5 Popcorn je 4 Schaden 🍿, Dreizack 10 Schaden 🔱, Blitzregen 5 Schaden 🌩️ & Wirbel 5 Schaden 🌪️' }
+  { v: '2.37', text: 'Exakte Werte für alle 8 Figuren 📊, Yamals Sternen-Explosion in der Mitte (12 Schaden) 🌟💥, 5 Popcorn je 4 Schaden 🍿, Dreizack 10 Schaden 🔱, Blitzregen 5 Schaden 🌩️ & Wirbel 5 Schaden 🌪️' },
+  { v: '2.38', text: 'Interaktiver Kino-Abspann 🎬 (Spulen, Tempo 1x/2x/4x, Pause) & die große Ehren-Rolle für Kevin, Felix, Skoogi & Grit! 🎮🐶' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
@@ -66,38 +67,182 @@ function buildCredits() {
   let html = '<p class="credits-title">🎬 KOBOLD, MAIS & CO.</p>' +
     `<p class="credits-version">Version ${GAME_VERSION}</p>` +
     '<p class="credits-sub">Ein Spiel vom Jugendklub Lieberose 🏰</p>' +
-    '<p class="credits-head">✨ Eure Wünsche ✨</p>';
+    '<p class="credits-head">✨ Eure Wünsche & Spielversionen ✨</p>';
   for (const w of WISHES) {
     html += w.workshop
       ? `<p class="credits-workshop">${w.workshop}</p>`
       : `<p class="credits-wish"><span class="credits-v">v${w.v}</span> ${w.text}</p>`;
   }
-  html += '<p class="credits-head">💡 Ideen</p><p class="credits-wish">Die Kinder vom Jugendklub Lieberose</p>' +
-    '<p class="credits-head">⌨️ Programmiert</p><p class="credits-wish">live auf der Bühne – mit KI 🤖</p>' +
+  html += '<p class="credits-head">👑 Chef des Spieldesigns</p>' +
+    '<p class="credits-wish"><b>Kevin</b> 🎮✨<br><small style="color:#94a3b8">Hat die Session geleitet, Prompts selbst geschrieben & Ideen von zu Hause mitgebracht!</small></p>' +
+    '<p class="credits-head">🧪 Head of Working Systems & Cheftester</p>' +
+    '<p class="credits-wish"><b>Felix</b> (der andere Felix!) 🕹️🔍<br><small style="color:#94a3b8">Härtetest aller Systeme & unermüdlicher Spieletester</small></p>' +
+    '<p class="credits-head">💡 Co-Designer & Test-Crew</p>' +
+    '<p class="credits-wish">Die Kinder vom Jugendklub Lieberose 🏰</p>' +
+    '<p class="credits-head">🍲 Chefin der Küche & Club-DJ</p>' +
+    '<p class="credits-wish"><b>Grit</b> 🍲🎧🎶<br><small style="color:#94a3b8">Die leckerste Verpflegung & beste Musik am Mischpult</small></p>' +
+    '<p class="credits-head">🐶 Haupt-Investor</p>' +
+    '<p class="credits-wish"><b>Hund Skoogi</b> 🦴🥩🐾<br><small style="color:#94a3b8">Treuer Begleiter, Seelentröster & Gute-Laune-Großinvestor</small></p>' +
+    '<p class="credits-head">⌨️ Live-Programmierung</p>' +
+    '<p class="credits-wish">Felix & Antigravity KI auf der Bühne 🤖💻</p>' +
     '<p class="credits-head">👨‍👩‍👧 Für Eltern</p>' +
-    `<p class="credits-wish">Der ganze Code ist offen:<br><a class="credits-link" href="${REPO_URL}" target="_blank" rel="noopener">github.com/felixinberlin/Jugendklub-Lieberose</a></p>` +
-    '<p class="credits-end">Danke fürs Spielen! ❤️</p>';
+    `<p class="credits-wish">Der ganze Code ist quelloffen:<br><a class="credits-link" href="${REPO_URL}" target="_blank" rel="noopener">github.com/felixinberlin/Jugendklub-Lieberose</a></p>` +
+    '<p class="credits-end">Danke fürs Spielen! Bis nach den Ferien in 2 Wochen! ❤️🏰</p>';
   creditsRoll.innerHTML = html;
   versionEl.textContent = `v${GAME_VERSION}`;
 }
 
-// 🎬 Abspann starten: Text rollt von unten nach oben durchs Bild
+// ---------- 🎬 Interaktive Abspann-Steuerung (Vor-/Zurückspulen, Tempo, Pause) ----------
+const creditsRewindBtn = document.getElementById('creditsRewindBtn');
+const creditsPauseBtn = document.getElementById('creditsPauseBtn');
+const creditsSpeedBtn = document.getElementById('creditsSpeedBtn');
+const creditsCloseBtn = document.getElementById('creditsCloseBtn');
+
+let creditsSpeed = 1; // 1 = 1x, 2 = 2x, 4 = 4x, -2.5 = Zurückspulen
+let isCreditsPaused = false;
+let creditsRaf = null;
+let lastCreditsTime = performance.now();
+let userScrollTimer = null;
+let isUserScrolling = false;
+
+function updateCreditsUi() {
+  if (creditsPauseBtn) {
+    creditsPauseBtn.textContent = isCreditsPaused ? '▶️ Weiter' : '⏸️ Pause';
+    creditsPauseBtn.classList.toggle('active', isCreditsPaused);
+  }
+  if (creditsRewindBtn) {
+    creditsRewindBtn.classList.toggle('active', creditsSpeed < 0 && !isCreditsPaused);
+  }
+  if (creditsSpeedBtn) {
+    const sp = creditsSpeed > 0 ? creditsSpeed : 1;
+    creditsSpeedBtn.textContent = `⏩ ${sp}x`;
+    creditsSpeedBtn.classList.toggle('active', creditsSpeed > 1 && !isCreditsPaused);
+  }
+}
+
+function creditsLoop(now) {
+  if (!creditsScreen.classList.contains('active')) return;
+  const dt = Math.min(100, now - lastCreditsTime);
+  lastCreditsTime = now;
+
+  if (!isCreditsPaused && !isUserScrolling) {
+    const pxPerSec = 48 * creditsSpeed;
+    creditsScreen.scrollTop += (pxPerSec * dt) / 1000;
+
+    // Am oberen Rand angekommen beim Zurückspulen
+    if (creditsScreen.scrollTop <= 0 && creditsSpeed < 0) {
+      creditsScreen.scrollTop = 0;
+      creditsSpeed = 1;
+      isCreditsPaused = true;
+      updateCreditsUi();
+    }
+  }
+
+  creditsRaf = requestAnimationFrame(creditsLoop);
+}
+
+function onUserScrollActivity() {
+  isUserScrolling = true;
+  clearTimeout(userScrollTimer);
+  userScrollTimer = setTimeout(() => {
+    isUserScrolling = false;
+    lastCreditsTime = performance.now();
+  }, 1400);
+}
+
+creditsScreen.addEventListener('wheel', onUserScrollActivity, { passive: true });
+creditsScreen.addEventListener('touchstart', onUserScrollActivity, { passive: true });
+creditsScreen.addEventListener('touchmove', onUserScrollActivity, { passive: true });
+creditsScreen.addEventListener('scroll', onUserScrollActivity, { passive: true });
+
+if (creditsRewindBtn) {
+  creditsRewindBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    initAudio();
+    if (creditsSpeed < 0 && !isCreditsPaused) {
+      creditsSpeed = 1; // Wieder vorwärts
+    } else {
+      creditsSpeed = -2.5; // Rückwärts spulen
+      isCreditsPaused = false;
+      isUserScrolling = false;
+      lastCreditsTime = performance.now();
+    }
+    updateCreditsUi();
+  });
+}
+
+if (creditsPauseBtn) {
+  creditsPauseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    initAudio();
+    if (isCreditsPaused) {
+      if (creditsSpeed < 0) creditsSpeed = 1; // Vorwärts fortsetzen
+      isCreditsPaused = false;
+      isUserScrolling = false;
+      lastCreditsTime = performance.now();
+    } else {
+      isCreditsPaused = true;
+    }
+    updateCreditsUi();
+  });
+}
+
+if (creditsSpeedBtn) {
+  creditsSpeedBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    initAudio();
+    isCreditsPaused = false;
+    isUserScrolling = false;
+    lastCreditsTime = performance.now();
+    if (creditsSpeed === 1) creditsSpeed = 2;
+    else if (creditsSpeed === 2) creditsSpeed = 4;
+    else creditsSpeed = 1;
+    updateCreditsUi();
+  });
+}
+
+if (creditsCloseBtn) {
+  creditsCloseBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    hideCredits();
+  });
+}
+
+// 🎬 Abspann starten
 function showCredits() {
   creditsScreen.classList.add('active');
-  creditsRoll.style.animation = 'none';
-  void creditsRoll.offsetHeight; // Animation neu starten
-  creditsRoll.style.animation = `credits-roll ${WISHES.length * 1.1 + 8}s linear forwards`;
+  creditsScreen.scrollTop = 0;
+  creditsSpeed = 1;
+  isCreditsPaused = false;
+  isUserScrolling = false;
+  updateCreditsUi();
+  lastCreditsTime = performance.now();
+  if (creditsRaf) cancelAnimationFrame(creditsRaf);
+  creditsRaf = requestAnimationFrame(creditsLoop);
 }
 
 function hideCredits() {
+  if (creditsRaf) {
+    cancelAnimationFrame(creditsRaf);
+    creditsRaf = null;
+  }
+  clearTimeout(userScrollTimer);
   creditsScreen.classList.remove('active');
 }
 
 buildCredits();
 creditsBtn.addEventListener('click', showCredits);
-document.getElementById('creditsStartBtn').addEventListener('click', showCredits); // Auch auf dem Startbildschirm
+document.getElementById('creditsStartBtn').addEventListener('click', showCredits);
+
+// Antippen auf den Hintergrund schaltet Pause/Weiter um (Links und Knöpfe bleiben normal klickbar!)
 creditsScreen.addEventListener('click', (event) => {
-  if (event.target.closest('a')) return; // Link antippen = Link öffnen, Abspann läuft weiter
-  hideCredits(); // Sonst: Antippen = zurück
+  if (event.target.closest('a') || event.target.closest('.credits-controls')) return;
+  initAudio();
+  isCreditsPaused = !isCreditsPaused;
+  if (!isCreditsPaused) {
+    if (creditsSpeed < 0) creditsSpeed = 1;
+    isUserScrolling = false;
+    lastCreditsTime = performance.now();
+  }
+  updateCreditsUi();
 });
-creditsRoll.addEventListener('animationend', hideCredits); // Ende = zurück

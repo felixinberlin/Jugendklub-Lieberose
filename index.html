@@ -140,10 +140,16 @@
         <button id="leaderboardBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
-      <!-- 🎬 Abspann (credits.js) – antippen = zurück -->
+      <!-- 🎬 Abspann (credits.js) – interaktiv mit Vor-/Zurückspulen & Tempo -->
       <div id="creditsScreen" class="overlay-screen credits-screen">
+        <div id="creditsControls" class="credits-controls">
+          <button id="creditsRewindBtn" class="credits-ctrl-btn" type="button" aria-label="Zurückspulen" title="Rückwärts spulen">⏪ Zurück</button>
+          <button id="creditsPauseBtn" class="credits-ctrl-btn" type="button" aria-label="Pause oder Weiter" title="Anhalten / Weiter">⏸️ Pause</button>
+          <button id="creditsSpeedBtn" class="credits-ctrl-btn" type="button" aria-label="Tempo umschalten" title="Tempo">⏩ 1x</button>
+          <button id="creditsCloseBtn" class="credits-ctrl-btn credits-close-btn" type="button" aria-label="Abspann schließen">✕ Zurück</button>
+        </div>
         <div id="creditsRoll" class="credits-roll"></div>
-        <p class="credits-hint">👆 Antippen = zurück</p>
+        <p class="credits-hint">👆 Mit dem Finger scrollen (hoch & runter) · ⏪ ⏸️ ⏩ Tempo & Richtung steuern</p>
       </div>
 
       <!-- ⚔️ Team-Auswahl (teams.js) -->
