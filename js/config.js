@@ -23,12 +23,14 @@ const GAME_CONFIG = {
   koboldBomb: '💰',      // 🧌 Der Kobold wirft einen Goldsack …
   koboldTrail: '🪙',     // … aus dem Goldmünzen purzeln
   katzeEmoji: '🐱',
+  katzeImage: 'katze.png', // 🐱🔥 Neues Design: wilde Katze mit Stachelkeule (Emoji nur, falls das Bild nicht lädt)
   katzeSize: 70,
   katzeBomb: '🐟',       // 🐱 Die Katze wirft Fische
   mausEmoji: '🐭',
   mausSize: 60,
   mausBomb: '🧀',        // 🐭 Die Maus wirft Käse!
   goblinEmoji: '👺',
+  goblinImage: 'goblin.png', // 👺🔥 Neues Design: Lava-Dämon mit brennendem Haar und Dreizack
   goblinSize: 68,
   goblinBomb: '🔥',      // 👺 Der Goblin wirft Feuer!
   musialaEmoji: '⚽',

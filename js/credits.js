@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.46';
+const GAME_VERSION = '2.47';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -67,7 +67,8 @@ const WISHES = [
   { v: '2.43', text: 'Dein Spielername bleibt gespeichert – auch wenn du den Tab schließt 💾👤' },
   { v: '2.44', text: 'Neues Design: feuerspeiender Drache im Feuersturm 🐉🔥 & wütender Mais mit Lanze 🌽😡' },
   { v: '2.45', text: 'Der Drache hat ganze Flügel 🪽 – sie schlagen hoch und runter, beim Fliegen extra schnell 🐉' },
-  { v: '2.46', text: 'Aufgeräumtes Hauptmenü: ☰-Knopf oben rechts mit Einstellungen, Punkten & Abspann · „Alle zusammen“ ist raus 🧹' }
+  { v: '2.46', text: 'Aufgeräumtes Hauptmenü: ☰-Knopf oben rechts mit Einstellungen, Punkten & Abspann · „Alle zusammen“ ist raus 🧹' },
+  { v: '2.47', text: 'Neue Designs: wilde Katze mit Stachelkeule 🐱🔥 & Goblin als Lava-Dämon mit Dreizack 👺🔱' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
