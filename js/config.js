@@ -13,7 +13,7 @@ const GAME_CONFIG = {
 
   // Charaktere auf beiden Seiten
   koboldEmoji: '🧌',
-  koboldImage: 'kobold.png', // 😠🗡️ Neues Design: Wütender Kobold mit gezackter Klinge (Emoji nur, falls das Bild nicht lädt)
+  koboldImage: 'kobold.png', // 😠🗡️ Neues Design: Wütender Kobold mit gezackter Klinge (ausgeschnitten, ohne Kreis) (Emoji nur, falls das Bild nicht lädt)
   koboldSize: 70,
   cornEmoji: '🌽',
   cornSize: 74,
@@ -207,9 +207,9 @@ const CHAR_STATS = {
   },
   fledermaus: {
     name: 'Fledermaus',
-    hp: 100,
-    attackDamage: 3,
-    attackCooldown: 1.0,
+    hp: 100,             // Pokal-Modus; im normalen Modus gilt die eingestellte Lebenszahl
+    attackDamage: 1.7,   // 🦇 1,7 Schaden pro Wurf …
+    attackCooldown: 1.2, // … alle 1,2 Sekunden
     abilityDamage: 15,   // Blutsaugen: 5 × 3 Schaden, heilt sich um 15
     speed: 1.4
   },

@@ -216,7 +216,7 @@ function drawActors(now) {
       drawProSkin(kindOf(name), actorSize(name), now); // ✨ Edler Pro-Skin (skins.js)
     } else if (actorImage(name)) {
       // 😠🗡️ Eigenes Bild, z. B. der wütende Kobold (sprites.js)
-      drawPortrait(actorImage(name), actorSize(name), teamMode ? TEAM_COLORS[teamOf(name)] : actor.color);
+      drawActorImage(actorImage(name), actorSize(name));
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }

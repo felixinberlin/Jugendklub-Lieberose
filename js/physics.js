@@ -63,11 +63,13 @@ function applyHit(victim, shooterName, damage, special) {
   actors[victim].wiggle = 1;
   const currentMax = actors[victim].maxHp || 100;
   if (typeof actors[victim].hp !== 'number') actors[victim].hp = currentMax;
-  actors[victim].hp = Math.max(0, actors[victim].hp - damage);
-  actors[victim].hitsTaken = currentMax - actors[victim].hp;
+  // Auf 1 Kommastelle runden: Schaden wie 1,7 ergibt sonst Zahlen wie 3,4000000001
+  const r1 = (v) => Math.round(v * 10) / 10;
+  actors[victim].hp = r1(Math.max(0, actors[victim].hp - damage));
+  actors[victim].hitsTaken = r1(currentMax - actors[victim].hp);
   const shooter = actors[shooterName];
   if (shooter) {
-    shooter.hitsGiven += damage;
+    shooter.hitsGiven = r1(shooter.hitsGiven + damage);
     if (!special) chargeSpecial(shooterName); // ⚡ Aufladen (specials.js)
     // 🤲 Fußballer mit sixSeven jubeln nach einem Treffer (footballer.js)
     const shirt = actorCfg(shooterName, 'Shirt');
@@ -78,7 +80,7 @@ function applyHit(victim, shooterName, damage, special) {
   }
   // TREFFER oben zählt nur deine eigenen (bei „Alle zusammen“: alle)
   if (playerTeam === null || playerTeam.includes(shooterName)) {
-    score += damage;
+    score = r1(score + damage);
     scoreEl.textContent = score;
     if (typeof addSavedScore === 'function') addSavedScore(damage);
   }

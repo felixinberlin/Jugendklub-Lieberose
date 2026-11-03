@@ -126,7 +126,7 @@ document.addEventListener('visibilitychange', () => {
 function addSavedScore(points) {
   const add = Number(points) || 0;
   if (add <= 0) return;
-  trophiesData.totalScore = (Number(trophiesData.totalScore) || 0) + add;
+  trophiesData.totalScore = Math.round(((Number(trophiesData.totalScore) || 0) + add) * 10) / 10;
   if (score > highScore) {
     highScore = score;
     if (highScoreEl) highScoreEl.textContent = highScore;

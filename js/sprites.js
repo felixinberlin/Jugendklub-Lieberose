@@ -88,13 +88,9 @@ function actorImage(name) {
   return img.complete && img.naturalWidth ? img : null;
 }
 
-// Malt ein rundes Figuren-Bild mit farbigem Rand, Mitte bei (0, 0)
-function drawPortrait(img, size, ringColor) {
-  const r = size * 0.72;
-  ctx.drawImage(img, -r, -r, r * 2, r * 2);
-  ctx.strokeStyle = ringColor;
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(0, 0, r - 1, 0, Math.PI * 2);
-  ctx.stroke();
+// Malt ein ausgeschnittenes Figuren-Bild (ohne Hintergrund), Mitte bei (0, 0)
+function drawActorImage(img, size) {
+  const h = size * 1.55; // etwas größer als Emojis, weil das Bild viel Rand und dunkle Farben hat
+  const w = h * img.naturalWidth / img.naturalHeight;
+  ctx.drawImage(img, -w / 2, -h / 2, w, h);
 }
