@@ -59,7 +59,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
 │   ├── teams.js      #   ⚔️ Team-Modus: mehrere Figuren, rote Gegner-Kopien, 8 Level
 │   ├── specials.js   #   ⚡ Spezialkräfte (Knopf unten links, lädt mit 20 Treffern): Riesenball, Mini-Kobolde, Wirbelsprung, Popcorn, Feuerspeer
-│   ├── credits.js    #   🎬 Abspann + GAME_VERSION – JEDER Kinder-Wunsch bekommt hier eine Zeile!
+│   ├── credits.js    #   🎬 Abspann + GAME_VERSION – JEDER Kinder-Wunsch bekommt hier eine Zeile! (Abspann-Knopf: ☰ → Einstellungen)
 │   ├── levels.js     #   🏅 5 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
 │   └── game.js       #   🎮 startGame, gameLoop, Initialisierung (wird ZULETZT geladen)

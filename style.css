@@ -968,3 +968,25 @@ body.in-round .hud-item {
   .hits-btn { min-height: 36px; }
   .mode-card { padding: 8px 12px; margin-bottom: 6px; gap: 4px; }
 }
+
+/* ☰ Menü-Knopf oben rechts im Hauptmenü (öffnet die Einstellungen) */
+.menu-btn {
+  position: absolute;
+  top: calc(10px + env(safe-area-inset-top));
+  right: calc(12px + env(safe-area-inset-right));
+  width: 52px;
+  height: 52px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+}
+.menu-btn:active { transform: scale(0.94); background: rgba(255, 222, 89, 0.25); }
+/* 📱 Schmale Handys: Platz oben lassen, damit ☰ nicht über dem Schild liegt */
+@media (max-width: 600px) {
+  #startScreen { padding-top: 72px; }
+}

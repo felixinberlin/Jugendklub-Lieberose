@@ -3,7 +3,7 @@
  *
  * Am Anfang tippst du auf eine Figur. Nur die steuerst du.
  * Alle anderen werfen von allein (Computer-Gegner).
- * „👥 ALLE ZUSAMMEN“ = alte Variante: jeder darf jede Figur antippen, kein Computer.
+ * („Alle zusammen“ gibt es im Menü nicht mehr – playerTeam = null bleibt nur intern erhalten.)
  */
 
 let playerActor = null; // Name der eigenen Figur (Solo), sonst null
@@ -298,7 +298,6 @@ for (const name in actors) {
 }
 refreshUnlockTiles();
 
-startBtn.addEventListener('click', () => chooseAndStart(null));
 changeBtn.addEventListener('click', () => {
   spectating = false; // 👀 Zurück ins Menü: Bots hören auf
   gameOverScreen.classList.remove('active');
