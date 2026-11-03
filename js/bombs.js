@@ -40,7 +40,15 @@ function shootBomb(actor, forcedTarget, shotOpts) {
   const isBolt = Boolean(actorCfg(actor, 'Bolt'));
   const scale = mapScale();
   const dmg = getCharStat(actor, 'attackDamage') || 4;
+  // 🗡️⛓️ Mehrere Waffen (z. B. Fledermaus)? Dann immer reihum abwechselnd
+  const weapons = actorCfg(actor, 'Weapons');
+  let weapon = null;
+  if (weapons && weapons.length) {
+    actors[actor].weaponIdx = ((actors[actor].weaponIdx ?? -1) + 1) % weapons.length;
+    weapon = weapons[actors[actor].weaponIdx];
+  }
   launchArc(actor, targetName, {
+    weapon,
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
     size: Math.round((actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize) * scale),
     trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
@@ -88,6 +96,7 @@ function launchArc(actor, targetName, opts) {
       trail: opts.trail,
       scratch: Boolean(opts.scratch),
       bolt: Boolean(opts.bolt),
+      weapon: opts.weapon || null,
       isPlayerBomb: true,
       shooter: actor,
       target: targetName,
@@ -233,6 +242,16 @@ function updateBombs(now) {
       ctx.translate(pos.x, pos.y);
       ctx.rotate(Math.atan2(b.velocity.y, b.velocity.x));
       drawClawLines(data.size || 38, 0.95);
+      ctx.restore();
+      continue;
+    }
+
+    // 🗡️⛓️ Speer (zeigt in Flugrichtung) oder Stachelkugel (dreht sich) der Fledermaus
+    if (data.weapon) {
+      ctx.save();
+      ctx.translate(pos.x, pos.y);
+      ctx.rotate(data.weapon === 'spear' ? Math.atan2(b.velocity.y, b.velocity.x) : angle * 2);
+      drawBatWeapon(data.weapon, data.size || 32);
       ctx.restore();
       continue;
     }

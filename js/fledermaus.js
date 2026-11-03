@@ -90,3 +90,70 @@ function drawBloodDrops(now) {
 }
 
 function clearBloodDrops() { bloodDrops = []; }
+
+// ---------- 🗡️⛓️ Normale Angriffe: Speer und Stachelkugel, immer abwechselnd ----------
+// (config.js: fledermausWeapons: ['spear', 'flail'] – shootBomb in bombs.js wählt reihum)
+// Malt die Waffe bei (0, 0); vorher wurde in Flugrichtung gedreht.
+function drawBatWeapon(kind, size) {
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  if (kind === 'spear') {
+    const L = size * 1.7;
+    // Holzschaft
+    ctx.strokeStyle = '#3b2412';
+    ctx.lineWidth = size * 0.16;
+    ctx.beginPath(); ctx.moveTo(-L / 2, 0); ctx.lineTo(L * 0.22, 0); ctx.stroke();
+    ctx.strokeStyle = '#7c4a21';
+    ctx.lineWidth = size * 0.09;
+    ctx.beginPath(); ctx.moveTo(-L / 2, 0); ctx.lineTo(L * 0.22, 0); ctx.stroke();
+    // Gezackte Eisenspitze
+    ctx.fillStyle = '#cbd5e1';
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = Math.max(1, size * 0.05);
+    ctx.beginPath();
+    ctx.moveTo(L / 2, 0);
+    ctx.lineTo(L * 0.3, -size * 0.2);
+    ctx.lineTo(L * 0.34, -size * 0.07);
+    ctx.lineTo(L * 0.2, -size * 0.13);
+    ctx.lineTo(L * 0.2, size * 0.13);
+    ctx.lineTo(L * 0.34, size * 0.07);
+    ctx.lineTo(L * 0.3, size * 0.2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    // Umwickelte Schnur
+    ctx.strokeStyle = '#d6b98c';
+    ctx.lineWidth = Math.max(1, size * 0.05);
+    for (let i = 0; i < 3; i++) {
+      const x = L * 0.12 + i * size * 0.08;
+      ctx.beginPath(); ctx.moveTo(x, -size * 0.09); ctx.lineTo(x + size * 0.04, size * 0.09); ctx.stroke();
+    }
+  } else {
+    // ⛓️ Kette mit Stachelkugel (Morgenstern)
+    const r = size * 0.32;
+    ctx.fillStyle = '#9ca3af';
+    for (let i = 1; i <= 3; i++) {
+      ctx.beginPath(); ctx.arc(-r - i * size * 0.13, 0, size * 0.06, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#e5e7eb';
+    ctx.strokeStyle = '#1f2937';
+    ctx.lineWidth = Math.max(1, size * 0.04);
+    for (let i = 0; i < 8; i++) {
+      const a = i * Math.PI / 4;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a - 0.28) * r * 0.85, Math.sin(a - 0.28) * r * 0.85);
+      ctx.lineTo(Math.cos(a) * r * 1.6, Math.sin(a) * r * 1.6);
+      ctx.lineTo(Math.cos(a + 0.28) * r * 0.85, Math.sin(a + 0.28) * r * 0.85);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    }
+    const g = ctx.createRadialGradient(-r * 0.35, -r * 0.35, r * 0.1, 0, 0, r);
+    g.addColorStop(0, '#9ca3af');
+    g.addColorStop(1, '#374151');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+  }
+  ctx.restore();
+}

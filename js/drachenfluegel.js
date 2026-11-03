@@ -82,17 +82,20 @@ function paintWing(len, dir, dark) {
 
 // Aus drawActors (actors.js): beide Flügel HINTER den Körper malen.
 // w, h = Größe, in der das Drachen-Bild gemalt wird.
-function drawDragonWings(actor, w, h) {
-  // Wie schnell bewegt sich der Drache gerade? (für kräftigeres Schlagen)
+// Flügelschlag für Drache UND Fledermaus: gibt -1 (ganz unten) … 1 (ganz oben) zurück.
+// Langsame, kräftige Schläge – beim Bewegen etwas schneller und weiter.
+function wingFlap(actor) {
   const pos = actor.body.position;
   const moved = actor.wingPrev ? Math.hypot(pos.x - actor.wingPrev.x, pos.y - actor.wingPrev.y) : 0;
   actor.wingPrev = { x: pos.x, y: pos.y };
-  const target = Math.min(1, moved / 2.5);
-  actor.wingEnergy = (actor.wingEnergy || 0) * 0.9 + target * 0.1;
-  const e = actor.wingEnergy;
-  actor.wingPhase = (actor.wingPhase || 0) + 0.035 + e * 0.1; // langsame, kräftige Schläge – beim Bewegen etwas schneller
-  const flap = Math.sin(actor.wingPhase);                      // 1 = ganz oben, -1 = ganz unten
-  const amp = 0.25 + e * 0.45;                                 // wie weit hoch und runter
+  actor.wingEnergy = (actor.wingEnergy || 0) * 0.9 + Math.min(1, moved / 2.5) * 0.1;
+  actor.wingPhase = (actor.wingPhase || 0) + 0.035 + actor.wingEnergy * 0.1;
+  return Math.sin(actor.wingPhase);
+}
+
+function drawDragonWings(actor, w, h) {
+  const flap = wingFlap(actor);                    // 1 = ganz oben, -1 = ganz unten
+  const amp = 0.25 + actor.wingEnergy * 0.45;      // wie weit hoch und runter
 
   const len = h * 0.85;
   const wings = [
@@ -107,5 +110,25 @@ function drawDragonWings(actor, w, h) {
     ctx.scale(1, 0.8 + flap * 0.2);
     paintWing(len * wing.scale, wing.dir, wing.dark);
     ctx.restore();
+  }
+}
+
+// 🦇 Bild mit Flügeln drin (Fledermaus): Das Bild wird in schmale Streifen geschnitten.
+// Die Mitte (Körper) bleibt stehen, nach außen wippen die Streifen immer weiter hoch und runter.
+// cfg (config.js `<name>Flap`): center = wo der Körper sitzt (0…1), body = halbe Körperbreite, amp = wie weit
+function drawFlappingImage(actor, img, w, h, cfg) {
+  const flap = wingFlap(actor);
+  const amp = (cfg.amp || 0.3) * (0.75 + actor.wingEnergy * 0.5);
+  const N = 28;
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  for (let i = 0; i < N; i++) {
+    const u0 = i / N;
+    const u = (i + 0.5) / N;
+    const side = u < cfg.center ? cfg.center : 1 - cfg.center;
+    const d = Math.abs(u - cfg.center) / side;               // 0 = Körpermitte, 1 = Flügelspitze
+    const k = Math.max(0, (d - cfg.body) / (1 - cfg.body));
+    const off = -flap * amp * h * Math.pow(k, 1.6);
+    ctx.drawImage(img, u0 * iw, 0, iw / N + 1, ih, -w / 2 + u0 * w, -h / 2 + off, w / N + 0.6, h);
   }
 }

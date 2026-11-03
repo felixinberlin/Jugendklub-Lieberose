@@ -231,11 +231,10 @@ function drawActors(now) {
     } else if (actorImage(name)) {
       // 😠🗡️ Eigenes Bild, z. B. der wütende Kobold (sprites.js)
       const img = actorImage(name);
-      if (actorCfg(name, 'Wings')) {
-        const box = actorImageBox(img, actorSize(name));
-        drawDragonWings(actor, box.w, box.h); // 🪽 Schlagende Flügel hinter dem Körper (drachenfluegel.js)
-      }
-      drawActorImage(img, actorSize(name));
+      const box = actorImageBox(img, actorSize(name));
+      if (actorCfg(name, 'Wings')) drawDragonWings(actor, box.w, box.h); // 🪽 Schlagende Flügel hinter dem Körper (drachenfluegel.js)
+      if (actorCfg(name, 'Flap')) drawFlappingImage(actor, img, box.w, box.h, actorCfg(name, 'Flap')); // 🦇 Flügel im Bild wippen
+      else drawActorImage(img, actorSize(name));
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }

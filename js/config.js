@@ -55,6 +55,7 @@ const GAME_CONFIG = {
   dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
   dracheBombSize: 38,
   dracheScratch: true,   // Malt glühende Krallen-Kratzer in die Luft
+  zeusImage: 'zeus.png', // ⚡ Neues Design: Zeus im Sturm der Götter mit Blitz-Speer
   zeusEmoji: '🧔🏼‍♂️',     // 🧔🏼‍♂️ Zeus hat jetzt ein echtes Zeus-Logo (kein Blitz als Figur)!
   zeusSize: 74,
   zeusBomb: '⚡',        // ⚡ Zeus schleudert gezackte Blitze!
@@ -63,8 +64,11 @@ const GAME_CONFIG = {
   zeusUnlockTrophies: 40, // 🔒 Für Zeus braucht man 40 Pokale!
   fledermausEmoji: '🦇',  // 🦇 Tobias' Fledermaus!
   fledermausSize: 68,
-  fledermausBomb: '🦇',   // Wirft kleine Mini-Fledermäuse
-  fledermausBombSize: 26,
+  fledermausImage: 'fledermaus.png', // 🦇 Neues Design: Kampf-Fledermaus mit Speer und Morgenstern
+  fledermausFlap: { center: 0.48, body: 0.22, amp: 0.3 }, // 🪽 Flügel im Bild wippen langsam hoch und runter (drachenfluegel.js)
+  fledermausWeapons: ['spear', 'flail'], // 🗡️⛓️ Wirft immer abwechselnd Speer und Stachelkugel (fledermaus.js)
+  fledermausBomb: '🗡️',   // Symbol auf dem Schieß-Knopf
+  fledermausBombSize: 32,
 
   // 🤝KOMBO: 15 Treffer im Team!
   comboChargeHits: 15,
