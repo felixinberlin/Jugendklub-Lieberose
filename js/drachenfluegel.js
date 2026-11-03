@@ -90,7 +90,7 @@ function drawDragonWings(actor, w, h) {
   const target = Math.min(1, moved / 2.5);
   actor.wingEnergy = (actor.wingEnergy || 0) * 0.9 + target * 0.1;
   const e = actor.wingEnergy;
-  actor.wingPhase = (actor.wingPhase || 0) + 0.07 + e * 0.23; // schneller schlagen, wenn er sich bewegt
+  actor.wingPhase = (actor.wingPhase || 0) + 0.035 + e * 0.1; // langsame, kräftige Schläge – beim Bewegen etwas schneller
   const flap = Math.sin(actor.wingPhase);                      // 1 = ganz oben, -1 = ganz unten
   const amp = 0.25 + e * 0.45;                                 // wie weit hoch und runter
 

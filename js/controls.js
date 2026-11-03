@@ -484,3 +484,25 @@ function updatePlayerControls() {
     }
   }
 }
+
+// ---------- 📱↕️ Hauptmenü bleibt IMMER hochkant (style.css: body.menu-rot-left / menu-rot-right) ----------
+// Hält man das Handy quer, dreht sich das Menü einfach mit – es bleibt also im Hochformat.
+// (Nur Menü-Bildschirme; im Kampf sind die versteckt, da bleibt das Querformat.)
+function updateMenuRotation() {
+  const touch = window.matchMedia('(pointer: coarse)').matches;
+  const landscape = window.innerWidth > window.innerHeight;
+  let dir = null;
+  if (touch && landscape) {
+    const angle = (screen.orientation && typeof screen.orientation.angle === 'number')
+      ? screen.orientation.angle
+      : Number(window.orientation) || 0; // iOS
+    // 90° = Handy nach links gekippt → Menü zurückdrehen (-90°); 270° / -90° = nach rechts gekippt
+    dir = (angle === 270 || angle === -90) ? 'right' : 'left';
+  }
+  document.body.classList.toggle('menu-rot-left', dir === 'left');
+  document.body.classList.toggle('menu-rot-right', dir === 'right');
+}
+window.addEventListener('resize', updateMenuRotation);
+window.addEventListener('orientationchange', updateMenuRotation);
+if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener('change', updateMenuRotation);
+updateMenuRotation();

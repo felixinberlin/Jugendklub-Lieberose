@@ -138,11 +138,17 @@ function pickCpuTarget(name) {
     if (Math.random() < 0.65) return nearestEnemy(name);
     return pool[Math.floor(Math.random() * pool.length)];
   }
-  // ⚖️ Solo: Fair! Jeder Bot sucht sich zufällig irgendeinen anderen aus –
-  // du wirst genauso oft angegriffen wie jeder Bot.
+  // ⚖️ Solo: Fair! Jeder Bot sucht sich zufällig einen anderen aus – du bist NICHT öfter dran.
+  // Wer noch viel Leben hat, wird öfter angegriffen (Gewicht = Leben), so kämpfen die Bots auch richtig gegeneinander.
   const others = Object.keys(actors).filter(n => n !== name && isAlive(n) && !isHidden(n));
-  if (others.length) return others[Math.floor(Math.random() * others.length)];
-  return targetOf(name);
+  if (!others.length) return targetOf(name);
+  const weight = (n) => Math.max(1, typeof actors[n].hp === 'number' ? actors[n].hp : 1);
+  let roll = Math.random() * others.reduce((sum, n) => sum + weight(n), 0);
+  for (const n of others) {
+    roll -= weight(n);
+    if (roll <= 0) return n;
+  }
+  return others[others.length - 1];
 }
 
 // 🛡️ Fliegt gerade eine feindliche Bombe direkt auf diese Figur zu?

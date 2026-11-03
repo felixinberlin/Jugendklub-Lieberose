@@ -181,12 +181,6 @@
         <button id="dismissRotateBtn" class="btn btn-small" type="button">Trotzdem so spielen ▶</button>
       </div>
 
-      <!-- 📱↕️ Hauptmenü gibt es NUR im Hochformat (Handy/Tablet quer → Hinweis, PC → schmale Hochformat-Spalte) -->
-      <div id="menuRotateOverlay" class="rotate-overlay menu-rotate-overlay">
-        <div class="rotate-icon">📱↕️</div>
-        <h2>BITTE HANDY HOCHKANT HALTEN!</h2>
-        <p>Das Hauptmenü gibt es nur im Hochformat. Im Kampf drehst du das Handy dann quer! 🎮</p>
-      </div>
 
       <button id="koboldBtn" class="actor-btn" type="button" aria-label="Kobold steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
       <button id="cornBtn" class="actor-btn" type="button" aria-label="Mais steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
@@ -208,14 +202,14 @@
           <span class="pad-arrow right">▶</span>
           <div id="moveStick" class="move-stick">🕹️</div>
         </div>
-        <!-- 🎯 Gegner wechseln (TAB): eckig wie der Fähigkeits-Knopf, links in der Mitte über dem Joystick (zielen.js) -->
-        <button id="targetBtn" class="ability-square-btn target-square-btn" type="button" aria-label="Anderen Gegner anvisieren (Taste Tab)">
-          <span class="ab-icon">🎯</span>
-          <span class="ab-count">WECHSELN</span>
-          <span id="targetBtnChar" class="ab-char"></span>
-          <span class="key-hint">TAB</span>
-        </button>
         <div class="right-controls">
+          <!-- 🎯 Gegner wechseln (TAB): eckig wie der Fähigkeits-Knopf, rechts GANZ OBEN über allen anderen Knöpfen (zielen.js) -->
+          <button id="targetBtn" class="ability-square-btn target-square-btn" type="button" aria-label="Anderen Gegner anvisieren (Taste Tab)">
+            <span class="ab-icon">🎯</span>
+            <span class="ab-count">WECHSELN</span>
+            <span id="targetBtnChar" class="ab-char"></span>
+            <span class="key-hint">TAB</span>
+          </button>
           <!-- 🤝 Extra-Kombo-Button: sitzt GENAU ÜBER den Fähigkeits-Buttons, selbe Form und Größe! -->
           <div id="comboBtnRow" class="combo-btn-row">
             <button id="comboSquareBtn" class="ability-square-btn combo-square-btn" type="button" aria-label="Team-Kombo" hidden>

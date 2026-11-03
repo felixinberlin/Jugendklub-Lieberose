@@ -991,35 +991,38 @@ body.in-round .hud-item {
   #startScreen { padding-top: 72px; }
 }
 
-/* 🎯 Gegner-wechseln-Knopf: eckig wie der Fähigkeits-Knopf, links in der Mitte über dem Joystick */
-.ability-square-btn.target-square-btn {
-  position: absolute;
-  left: calc(max(18px, env(safe-area-inset-left)) + 28px); /* mittig über dem 118px-Joystick */
-  top: 50%;
-  transform: translateY(-50%);
-  opacity: 0.9;
-  border-color: #facc15;
-}
+/* 🎯 Gegner-wechseln-Knopf: eckig wie der Fähigkeits-Knopf, rechts GANZ OBEN über allen anderen Knöpfen */
+.ability-square-btn.target-square-btn { opacity: 0.9; border-color: #facc15; }
 .ability-square-btn.target-square-btn .ab-icon { filter: none; }
 .ability-square-btn.target-square-btn .ab-count { font-size: 0.55rem; }
 .ability-square-btn.target-square-btn .ab-char { width: 24px; height: 24px; font-size: 0.95rem; overflow: hidden; }
 .ability-square-btn.target-square-btn .ab-char:empty { display: none; }
 .ability-square-btn.target-square-btn .pick-img { width: 20px; height: 20px; }
-.ability-square-btn.target-square-btn:active { transform: translateY(-50%) scale(0.94); }
+.ability-square-btn.target-square-btn:active { transform: scale(0.94); }
 
-/* 📱↕️ Hauptmenü NUR im Hochformat:
-   Handy/Tablet quer → Hinweis „Bitte hochkant halten“ (nur im Menü, nicht im Kampf) */
-@media (orientation: landscape) and (pointer: coarse) {
-  body:not(.in-round):has(#startScreen.active, #settingsScreen.active, #leaderboardScreen.active, #welcomeNameScreen.active) .menu-rotate-overlay {
-    display: flex;
-  }
+/* 📱↕️ Hauptmenü IMMER im Hochformat und über den GANZEN Bildschirm:
+   - Breite Bildschirme (PC, Tablet quer): ganzer Bildschirm, Inhalt als Hochformat-Spalte in der Mitte.
+   - Handy quer: Das Menü dreht sich mit (body.menu-rot-left/right, gesetzt in controls.js),
+     es bleibt also hochkant – man kann es nicht ins Querformat drehen. Im Kampf nie. */
+#startScreen, #settingsScreen, #leaderboardScreen, #welcomeNameScreen {
+  padding-left: max(24px, calc((100% - 480px) / 2));
+  padding-right: max(24px, calc((100% - 480px) / 2));
 }
-/* 🖥️ PC/Laptop (kann man nicht drehen): Menü als schmale Hochformat-Spalte in der Mitte */
-@media (orientation: landscape) and (pointer: fine) {
-  #startScreen, #settingsScreen, #leaderboardScreen, #welcomeNameScreen {
-    width: min(460px, 100%);
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.65);
-  }
+body.menu-rot-left #startScreen, body.menu-rot-left #settingsScreen,
+body.menu-rot-left #leaderboardScreen, body.menu-rot-left #welcomeNameScreen,
+body.menu-rot-right #startScreen, body.menu-rot-right #settingsScreen,
+body.menu-rot-right #leaderboardScreen, body.menu-rot-right #welcomeNameScreen {
+  width: 100vh;
+  height: 100vw;
+  padding: 72px 24px 30px;
+  transform-origin: top left;
+  z-index: 40;
+}
+body.menu-rot-left #startScreen, body.menu-rot-left #settingsScreen,
+body.menu-rot-left #leaderboardScreen, body.menu-rot-left #welcomeNameScreen {
+  top: 100%; left: 0; transform: rotate(-90deg);
+}
+body.menu-rot-right #startScreen, body.menu-rot-right #settingsScreen,
+body.menu-rot-right #leaderboardScreen, body.menu-rot-right #welcomeNameScreen {
+  top: 0; left: 100%; transform: rotate(90deg);
 }
