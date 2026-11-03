@@ -201,6 +201,13 @@
           <span class="pad-arrow right">▶</span>
           <div id="moveStick" class="move-stick">🕹️</div>
         </div>
+        <!-- 🎯 Gegner wechseln (TAB): eckig wie der Fähigkeits-Knopf, links in der Mitte über dem Joystick (zielen.js) -->
+        <button id="targetBtn" class="ability-square-btn target-square-btn" type="button" aria-label="Anderen Gegner anvisieren (Taste Tab)">
+          <span class="ab-icon">🎯</span>
+          <span class="ab-count">WECHSELN</span>
+          <span id="targetBtnChar" class="ab-char"></span>
+          <span class="key-hint">TAB</span>
+        </button>
         <div class="right-controls">
           <!-- 🤝 Extra-Kombo-Button: sitzt GENAU ÜBER den Fähigkeits-Buttons, selbe Form und Größe! -->
           <div id="comboBtnRow" class="combo-btn-row">
@@ -263,6 +270,7 @@
   <script src="js/specials.js"></script>
   <script src="js/special-ui.js"></script>
   <script src="js/controls.js"></script>
+  <script src="js/zielen.js"></script>
   <script src="js/credits.js"></script>
   <script src="js/game.js"></script>
 </body>

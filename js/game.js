@@ -28,7 +28,8 @@ function startGame(keepCharge = false) {
   scoreEl.textContent = score;
 
   removeClones(); // Alte Gegner-Kopien weg (teams.js)
-  resetSpecials(keepCharge); // ⚡ Mini-Kobolde weg, Wirbel aus (specials.js)
+  resetSpecials(keepCharge);
+  resetAim(); // 🎯 Ziel-Auswahl vergessen (zielen.js) // ⚡ Mini-Kobolde weg, Wirbel aus (specials.js)
   clearAllBodies();
   particles = [];
   resetActors();
@@ -93,6 +94,7 @@ function gameLoop(now) {
   drawWeather(now);
   drawActors(now);
   drawSpecials(now); // 🧌🌪️ Mini-Kobolde & Wirbelwolken (specials.js)
+  drawAim(now); // 🎯 Fadenkreuz (zielen.js)
 
   if (battleRunning() && !isPaused) {
     // 2. Matter.js Physik-Schritt
@@ -102,6 +104,7 @@ function gameLoop(now) {
     updatePlayerControls(); // 🕹️ WASD & Joystick-Bewegung (controls.js)
     updateFootballers();
     updateCpu(now); // 🤖 Computer-Figuren werfen (cpu.js)
+    updateAim(now); // 🎯 Tempo messen & Ziel-Modus (zielen.js)
     updateSpecials(now); // ⚡ Riesenball lenken, Minis, Katzensprung (specials.js)
     updateBombs(now);
     if (typeof updateControlHud === 'function') updateControlHud(); // ⏱️ Schuss-Cooldown & Fähigkeiten auffrischen

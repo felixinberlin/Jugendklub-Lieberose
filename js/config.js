@@ -94,6 +94,7 @@ const GAME_CONFIG = {
     { title: 'Endboss-Horde 💀',    enemies: 10, throwMs: 3300 }
   ],
   cpuThrowMs: 1200,      // 🤖 Schnelleres Wurf-Tempo der Bots
+  aim: { holdMs: 220, fullMs: 1000, fastFrames: 22 }, // 🎯 Ziel-Modus (zielen.js): ab holdMs gedrückt = zielen, nach fullMs voll; voll = Flug 22 statt 42 Bilder
   throwCooldownMs: 240,  // Mindestpause zwischen zwei Würfen derselben Figur
   playerMoveSpeed: 4.4,  // 🕹️ Bewegungs-Tempo mit Joystick / WASD
   // ⚡ Spezialkräfte – specials.js (15 Treffer statt 20!)

@@ -8,7 +8,8 @@
  *
  * ⌨️ Tastatur & Maus:
  *   - W, A, S, D (oder Pfeiltasten): Bewegen
- *   - Linke Maustaste: Schießen
+ *   - Linke Maustaste: Schießen (gedrückt halten = zielen, zielen.js)
+ *   - TAB: anderen Gegner anvisieren
  *   - Taste F: Spezialfähigkeit auslösen
  */
 
@@ -151,32 +152,32 @@ dismissRotateBtn.addEventListener('click', () => {
 });
 
 // 🎯 Schießen auslösen (runder Knopf unten rechts oder linke Maustaste)
-function triggerPlayerShoot(aimX, aimY) {
+// `shot` (optional, aus zielen.js): { target, charge } = gezielter Schuss nach dem Gedrückthalten
+function triggerPlayerShoot(aimX, aimY, shot) {
   if (!isPlaying || isPaused) return;
   const mine = myControlledActors();
   if (!mine.length) return;
   const lead = mine[0];
   const cdSec = getCharStat(lead, 'attackCooldown') || 1.2;
   const now = performance.now();
-  if (now - (actors[lead]?.lastThrow || 0) < cdSec * 1000) {
-    return; // ⏳ Noch im Cooldown!
+  // Noch nie geworfen = sofort bereit (sonst blockiert der Cooldown kurz nach dem Laden der Seite)
+  const wait = cdSec * 1000 - (now - (actors[lead]?.lastThrow ?? -Infinity));
+  if (wait > 0) {
+    // ⏳ Noch im Cooldown! Ein gezielter Schuss geht nicht verloren – er fliegt, sobald es geht.
+    if (shot) {
+      clearTimeout(aimQueueTimer);
+      aimQueueTimer = setTimeout(() => triggerPlayerShoot(aimX, aimY, shot), wait + 10);
+    }
+    return;
   }
   initAudio();
 
-  // Wenn mit der Maus in die Nähe eines Gegners geklickt wurde, dorthin zielen
-  let aimedEnemy = null;
-  if (typeof aimX === 'number' && typeof aimY === 'number') {
-    let bestD = 120;
-    for (const n in actors) {
-      if (!isAlive(n) || mine.includes(n)) continue;
-      if (teamMode && teamOf(n) === 'mine') continue;
-      const d = Math.hypot(actors[n].body.position.x - aimX, actors[n].body.position.y - aimY);
-      if (d < bestD) { bestD = d; aimedEnemy = n; }
-    }
-  }
+  // Mit der Maus in die Nähe eines Gegners geklickt? Dann wird er dein Ziel (zielen.js)
+  if (typeof aimX === 'number' && typeof aimY === 'number') pickAimTargetAt(aimX, aimY);
+  const aimedEnemy = (shot && shot.target) || currentAimTarget();
 
   for (const name of mine) {
-    shootBomb(name, aimedEnemy);
+    shootBomb(name, aimedEnemy, shot ? { charge: shot.charge } : null);
   }
   shootBtn.classList.add('pressed');
   setTimeout(() => shootBtn.classList.remove('pressed'), 110);
@@ -390,16 +391,10 @@ shootBtn.addEventListener('pointerdown', (event) => {
   event.preventDefault();
   event.stopPropagation();
   tryLockLandscape();
-  triggerPlayerShoot();
-  clearInterval(shootHoldTimer);
-  shootHoldTimer = setInterval(() => {
-    if (!isPlaying) { clearInterval(shootHoldTimer); return; }
-    triggerPlayerShoot();
-  }, GAME_CONFIG.throwCooldownMs + 20);
+  // 🎯 Kurz tippen = Schuss, gedrückt halten = Ziel-Modus (zielen.js). Geschossen wird beim Loslassen.
+  if (shootBtn.hasPointerCapture && !shootBtn.hasPointerCapture(event.pointerId)) shootBtn.setPointerCapture(event.pointerId);
+  startAim(event.pointerId);
 });
-for (const type of ['pointerup', 'pointercancel', 'pointerleave']) {
-  shootBtn.addEventListener(type, () => clearInterval(shootHoldTimer));
-}
 
 abilityBtn.addEventListener('pointerdown', (event) => {
   event.preventDefault();
@@ -455,7 +450,9 @@ canvas.addEventListener('pointerdown', (event) => {
   }
 
   if (event.pointerType === 'mouse' && event.button === 0) {
-    triggerPlayerShoot(x, y);
+    // 🖱️ In die Nähe eines Gegners klicken = er wird dein Ziel; gedrückt halten = zielen (zielen.js)
+    pickAimTargetAt(x, y);
+    startAim(event.pointerId);
   }
 });
 

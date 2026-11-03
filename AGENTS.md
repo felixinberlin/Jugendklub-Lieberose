@@ -225,6 +225,7 @@ btn.addEventListener('click', async () => {
 28. **Eigene Bilder für Figuren:** `<name>Image: 'datei.png'` in `GAME_CONFIG` → `actorImage(name)` / `drawActorImage()` (`js/sprites.js`) malt es ausgeschnitten (ohne Kreis); Kacheln nutzen `actorIconHtml(name)`. Fotos/KI-Bilder vorher mit `convert … -crop … -resize 192x192` verkleinern; Hintergrund weg per `-fuzz 8% … floodfill` von den Rändern + `-connected-components` gegen Krümel/Löcher (höhere Fuzz-Werte fressen Löcher in dunkle Figuren) (Original 2,2 MB wäre fürs Jugendklub-WLAN zu schwer). Lädt das Bild nicht, wird das Emoji gemalt. Größen immer über `mapScale()` holen, nie `GAME_CONFIG.mapScale` direkt.
 29. **Kommazahlen-Schaden (z. B. Fledermaus 1,7):** `applyHit` rundet `hp`, `hitsTaken`, `hitsGiven` und `score` auf 1 Kommastelle (`r1`), sonst stehen Zahlen wie 3,4000000001 im Spiel.
 30. **Handy-Zoom (`phoneZoom`, `viewZoom()` in `js/actors.js`):** Auf Handys (`min(innerWidth, innerHeight) < 500`) ist die Welt (`width`/`height`) um 1/Zoom größer als der Bildschirm; `resizeCanvas` skaliert `ctx` mit `dpr * zoom`. Bildschirm → Welt: `(clientX - rect.left) / viewZoom()`. Welt → DOM (Figuren-Knöpfe): `x * viewZoom()`. Neue Finger-/Maus-Eingaben auf dem Spielfeld IMMER so umrechnen!
+31. **`lastThrow` am Anfang:** `now - (lastThrow || 0)` blockierte den ersten Wurf, solange `performance.now()` < Cooldown war (kurz nach dem Laden). Richtig: `lastThrow ?? -Infinity`.
 
 ---
 
@@ -263,6 +264,7 @@ Die lange Beschreibung oben nennt die Funktionen; ihre Dateien sind jetzt:
 | `js/specials.js` | `SPECIALS`, Aufladen, Auslösen, `updateSpecials`, `drawSpecials`, `resetSpecials` |
 | `js/special-ui.js` | Kraft-Knöpfe, `drawSpecialBadge`, Finger-Ereignisse, `buildSpecialsInfo` |
 | `js/drachenfluegel.js` | 🪽 `drawDragonWings(actor, w, h)` – malt 2 Flügel (Knochen + Hautsegel) hinter dem Drachen-Bild, Schlag-Tempo aus der Bewegung (`wingEnergy`, `wingPhase`). Schalter `<name>Wings`, Ansatzpunkte `WING_ROOTS` (Anteil vom Bild) |
+| `js/zielen.js` | 🎯 Ziel-Modus: `aimTarget`, `currentAimTarget()` (ohne Auswahl = nächster Gegner), `cycleAimTarget()` (TAB / `#targetBtn` links über dem Joystick), `startAim`/`releaseAim` (kurz = Schuss, ab `aim.holdMs` = zielen, `aimCharge` → `shootBomb(name, target, { charge })` → schnellerer Flug + `leadPosition` vorhalten), `updateAim` (misst `actor.vel`), `drawAim` (Fadenkreuz). Lädt nach `controls.js` |
 | `js/fledermaus.js` | 🦇 `batSuck` (Blutsaugen, `jump.type === 'suck'` → `updateBatSuck` aus `updateJumps`), `healActor(name, amount)` (Leben zurück, max `maxHp`), `drawBloodDrops`, `clearBloodDrops`. Lädt nach `special-moves.js`, vor `specials.js` |
 
 Ladereihenfolge: Waffen → Bewegungen → Zentrale → Anzeige → Credits → game.js. Funktionskörper dürfen spätere Globals verwenden; sofort ausgeführter Code darf das nicht. `SPECIALS` braucht beim Laden bereits die Kraft-Funktionen; `buildSpecialsInfo()` braucht die Auswahl-Kacheln.

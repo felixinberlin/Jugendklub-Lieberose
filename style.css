@@ -990,3 +990,19 @@ body.in-round .hud-item {
 @media (max-width: 600px) {
   #startScreen { padding-top: 72px; }
 }
+
+/* 🎯 Gegner-wechseln-Knopf: eckig wie der Fähigkeits-Knopf, links in der Mitte über dem Joystick */
+.ability-square-btn.target-square-btn {
+  position: absolute;
+  left: calc(max(18px, env(safe-area-inset-left)) + 28px); /* mittig über dem 118px-Joystick */
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.9;
+  border-color: #facc15;
+}
+.ability-square-btn.target-square-btn .ab-icon { filter: none; }
+.ability-square-btn.target-square-btn .ab-count { font-size: 0.55rem; }
+.ability-square-btn.target-square-btn .ab-char { width: 24px; height: 24px; font-size: 0.95rem; overflow: hidden; }
+.ability-square-btn.target-square-btn .ab-char:empty { display: none; }
+.ability-square-btn.target-square-btn .pick-img { width: 20px; height: 20px; }
+.ability-square-btn.target-square-btn:active { transform: translateY(-50%) scale(0.94); }

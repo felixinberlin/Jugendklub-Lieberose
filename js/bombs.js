@@ -21,7 +21,8 @@ function everyoneExcept(actor) {
 // Eine angeklickte Figur wirft eine Bombe zu ihrem Ziel (siehe `target` in actors.js).
 // Unterwegs trifft die Bombe aber jede Figur, die im Weg steht!
 // `forcedTarget` (optional): auf diese Figur zielen statt aufs normale Ziel.
-function shootBomb(actor, forcedTarget) {
+// `shotOpts` (optional): { charge } aus dem Ziel-Modus (zielen.js) – schneller + vorhalten
+function shootBomb(actor, forcedTarget, shotOpts) {
   if (!battleRunning() || document.hidden) return;
   if (!isAlive(actor)) return;
   if (isStunned(actor) || actors[actor].jump) return; // 🌪️ Im Wirbel / im Sprung wird nicht geworfen (specials.js)
@@ -29,7 +30,7 @@ function shootBomb(actor, forcedTarget) {
   const now = performance.now();
   const cdSec = getCharStat(actor, 'attackCooldown') || 1.2;
   const cooldownMs = cdSec * 1000;
-  if (now - (actors[actor].lastThrow || 0) < cooldownMs) return;
+  if (now - (actors[actor].lastThrow ?? -Infinity) < cooldownMs) return;
   actors[actor].lastThrow = now;
   const targetName = (forcedTarget && isAlive(forcedTarget) && forcedTarget !== actor)
     ? forcedTarget
@@ -45,7 +46,11 @@ function shootBomb(actor, forcedTarget) {
     trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
     scratch: isScratch,
     bolt: isBolt,
-    damage: dmg
+    damage: dmg,
+    // 🎯 Gezielt: je voller aufgeladen, desto schneller (weniger Bilder Flug) und mit Vorhalten
+    flightFrames: shotOpts && shotOpts.charge
+      ? Math.round(42 - shotOpts.charge * (42 - GAME_CONFIG.aim.fastFrames)) : undefined,
+    lead: shotOpts ? shotOpts.charge : 0
   });
   actors[actor].wiggle = 1;
   playAttackSound(actor);
@@ -57,7 +62,9 @@ function launchArc(actor, targetName, opts) {
   const source = actors[actor].body;
   const flightFrames = opts.flightFrames || 42;
   // 🧌 Hat das Ziel Mini-Kobolde? Dann fliegt die Bombe zum Lockvogel (specials.js)
-  const target = decoyFor(targetName, source.position, flightFrames) || actors[targetName].body;
+  // 🎯 Gezielter Schuss (opts.lead > 0): dorthin werfen, wo der Gegner gleich sein wird (zielen.js)
+  const target = decoyFor(targetName, source.position, flightFrames)
+    || (opts.lead > 0 ? { position: leadPosition(targetName, flightFrames, opts.lead) } : actors[targetName].body);
   const dx = target.position.x - source.position.x;
   const dy = target.position.y - source.position.y;
   const distance = Math.hypot(dx, dy);
