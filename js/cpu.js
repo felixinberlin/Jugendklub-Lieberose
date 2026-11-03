@@ -95,7 +95,8 @@ function setupPlayers() {
   // 🎯 Im Solo-Modus (Rangliste & Normal) gibt es nur noch 5 Gegner!
   if (!teamMode && playerTeam !== null && playerActor) {
     const maxFoes = GAME_CONFIG.soloEnemies || 5;
-    const allFoes = Object.keys(actors).filter(n => !actors[n].kind && n !== playerActor);
+    // 🎲 Zufällig: Welche Figuren gegen dich kämpfen, wird jede Runde neu ausgelost!
+    const allFoes = shuffled(Object.keys(actors).filter(n => !actors[n].kind && n !== playerActor));
     allFoes.forEach((n, idx) => {
       if (idx >= maxFoes) {
         actors[n].alive = false;

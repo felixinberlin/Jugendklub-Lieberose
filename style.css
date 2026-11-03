@@ -950,7 +950,7 @@ body.in-round .hud-item {
 }
 .rotate-icon { font-size: 3.6rem; animation: pulse 0.8s infinite alternate; }
 @media (orientation: portrait) and (max-width: 650px) {
-  body.in-round .rotate-overlay:not(.dismissed) {
+  body.in-round #rotateOverlay:not(.dismissed) {
     display: flex;
   }
 }
@@ -1006,3 +1006,20 @@ body.in-round .hud-item {
 .ability-square-btn.target-square-btn .ab-char:empty { display: none; }
 .ability-square-btn.target-square-btn .pick-img { width: 20px; height: 20px; }
 .ability-square-btn.target-square-btn:active { transform: translateY(-50%) scale(0.94); }
+
+/* 📱↕️ Hauptmenü NUR im Hochformat:
+   Handy/Tablet quer → Hinweis „Bitte hochkant halten“ (nur im Menü, nicht im Kampf) */
+@media (orientation: landscape) and (pointer: coarse) {
+  body:not(.in-round):has(#startScreen.active, #settingsScreen.active, #leaderboardScreen.active, #welcomeNameScreen.active) .menu-rotate-overlay {
+    display: flex;
+  }
+}
+/* 🖥️ PC/Laptop (kann man nicht drehen): Menü als schmale Hochformat-Spalte in der Mitte */
+@media (orientation: landscape) and (pointer: fine) {
+  #startScreen, #settingsScreen, #leaderboardScreen, #welcomeNameScreen {
+    width: min(460px, 100%);
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.65);
+  }
+}

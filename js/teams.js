@@ -85,7 +85,8 @@ function setupTeams() {
   }
 
   // Gegner-Kopien: erst Figuren, die nicht in deinem Team sind, dann alle der Reihe nach
-  const kinds = Object.keys(actors).filter(n => !chosenTeam.includes(n)).concat(Object.keys(actors));
+  // 🎲 Zufällig gemischt: erst Figuren, die nicht in deinem Team sind, dann alle
+  const kinds = shuffled(Object.keys(actors).filter(n => !chosenTeam.includes(n))).concat(shuffled(Object.keys(actors)));
   const count = Math.max(1, chosenTeam.length); // ⚖️ Genauso viele Gegner wie Figuren in deinem Team
   const enemyNames = [];
   const perKind = {};

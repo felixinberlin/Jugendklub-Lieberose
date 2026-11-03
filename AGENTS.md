@@ -226,6 +226,7 @@ btn.addEventListener('click', async () => {
 29. **Kommazahlen-Schaden (z. B. Fledermaus 1,7):** `applyHit` rundet `hp`, `hitsTaken`, `hitsGiven` und `score` auf 1 Kommastelle (`r1`), sonst stehen Zahlen wie 3,4000000001 im Spiel.
 30. **Handy-Zoom (`phoneZoom`, `viewZoom()` in `js/actors.js`):** Auf Handys (`min(innerWidth, innerHeight) < 500`) ist die Welt (`width`/`height`) um 1/Zoom größer als der Bildschirm; `resizeCanvas` skaliert `ctx` mit `dpr * zoom`. Bildschirm → Welt: `(clientX - rect.left) / viewZoom()`. Welt → DOM (Figuren-Knöpfe): `x * viewZoom()`. Neue Finger-/Maus-Eingaben auf dem Spielfeld IMMER so umrechnen!
 31. **`lastThrow` am Anfang:** `now - (lastThrow || 0)` blockierte den ersten Wurf, solange `performance.now()` < Cooldown war (kurz nach dem Laden). Richtig: `lastThrow ?? -Infinity`.
+32. **Hauptmenü nur hochkant:** `#menuRotateOverlay` erscheint per CSS (`orientation: landscape` + `pointer: coarse` + `body:not(.in-round):has(#startScreen.active, …)`) – im Kampf nie. Am PC (`pointer: fine`) sind Menü-Bildschirme eine 460px-Hochformat-Spalte. Regeln für `.rotate-overlay` immer per ID (`#rotateOverlay`) schreiben, sonst erscheinen beide Hinweise. Bot-Figuren (Solo & Team) werden mit `shuffled()` (`js/actors.js`) jede Runde neu ausgelost.
 
 ---
 

@@ -116,7 +116,7 @@ const GAME_CONFIG = {
   nameChangeCooldownDays: 7, // 🔒 Name erst nach 7 Tagen wieder änderbar!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
-  phoneZoom: 0.7, // 🔭📱 Handy: ganze Kampf-Welt herausgezoomt (0.7 = alles 30 % kleiner, viel mehr Platz). 1 = kein Zoom
+  phoneZoom: 0.6, // 🔭📱 Handy: ganze Kampf-Welt herausgezoomt (0.6 = alles 40 % kleiner, viel mehr Platz). 1 = kein Zoom
   maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte
   maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.

@@ -60,6 +60,16 @@ const actors = {
   }
 };
 
+// 🎲 Gibt eine zufällig gemischte Kopie der Liste zurück (z. B. für zufällige Bot-Figuren)
+function shuffled(list) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // Welche Figur steckt dahinter? Bei Gegner-Kopien (teams.js) z. B. 'katze_3' → 'katze'
 function kindOf(name) { return (actors[name] && actors[name].kind) || name; }
 // Einstellung aus config.js für diese Figur, z. B. actorCfg('katze', 'Emoji') → katzeEmoji
