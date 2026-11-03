@@ -4,7 +4,7 @@
 
 ![QR Code](qr-code.png)
 
-Ein mobiles HTML5-Webspiel (**Kobold, Mais, Katze, Maus, Goblin & Musiala**), das gemeinsam mit den Kindern im **Jugendklub Lieberose** live auf der Bühne per „Vibecoding“ entwickelt wird – ohne Login, ohne Installation, ohne Datensammeln!
+**The Fightzone** – ein mobiles HTML5-Webspiel, das gemeinsam mit den Kindern im **Jugendklub Lieberose** live auf der Bühne per „Vibecoding“ entwickelt wird – ohne Login, ohne Installation, ohne Datensammeln!
 
 ## 📱 Auf dem Smartphone oder Laptop spielen
 1. [jugendklub.vercel.app](https://jugendklub.vercel.app/) öffnen oder den QR-Code scannen (läuft direkt in jedem Browser).

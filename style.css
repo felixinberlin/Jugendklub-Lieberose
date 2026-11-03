@@ -1026,3 +1026,11 @@ body.menu-rot-right #startScreen, body.menu-rot-right #settingsScreen,
 body.menu-rot-right #leaderboardScreen, body.menu-rot-right #welcomeNameScreen {
   top: 0; left: 100%; transform: rotate(90deg);
 }
+
+/* 🥊 Spielname „The Fightzone“ groß und knallig */
+h1.game-title {
+  font-size: 2.6rem;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
+}
+h1.game-title .title-emoji { -webkit-text-fill-color: initial; }

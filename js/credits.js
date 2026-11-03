@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.54';
+const GAME_VERSION = '2.55';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -75,12 +75,13 @@ const WISHES = [
   { v: '2.51', text: 'Neues Design: Kriegermaus mit Stachelhelm und Lanze 🐭⚔️' },
   { v: '2.52', text: '🎯-Knopf rechts oben, Bots greifen Figuren mit viel Leben öfter an ❤️, Menü bildschirmfüllend & immer hochkant 📱, ruhigere Drachenflügel 🐉' },
   { v: '2.53', text: 'Neue Kampf-Fledermaus 🦇 mit wippenden Flügeln, wirft abwechselnd Speer 🗡️ & Stachelkugel ⛓️ · neuer Zeus im Götter-Sturm ⚡' },
-  { v: '2.54', text: 'Neue Designs für die zwei Fußballer: GOAT im Sturmlicht ⚽⚡ & Yamal als goldener Fußballheld 🌟' }
+  { v: '2.54', text: 'Neue Designs für die zwei Fußballer: GOAT im Sturmlicht ⚽⚡ & Yamal als goldener Fußballheld 🌟' },
+  { v: '2.55', text: 'Das Spiel hat einen Namen: THE FIGHTZONE 🥊⚡' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
 function buildCredits() {
-  let html = '<p class="credits-title">🎬 KOBOLD, MAIS & CO.</p>' +
+  let html = '<p class="credits-title">🎬 THE FIGHTZONE</p>' +
     `<p class="credits-version">Version ${GAME_VERSION}</p>` +
     '<p class="credits-sub">Ein Spiel vom Jugendklub Lieberose 🏰</p>' +
     '<p class="credits-head">✨ Eure Wünsche & Spielversionen ✨</p>';
