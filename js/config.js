@@ -36,6 +36,7 @@ const GAME_CONFIG = {
   goblinBomb: '🔥',      // 👺 Der Goblin wirft Feuer!
   musialaEmoji: '⚽',
   // 👕 Musiala / GOAT trägt das Trikot mit der Nummer 10!
+  musialaImage: 'goat.png', // ⚽⚡ Neues Design: GOAT im Sturmlicht (ohne Bild: gemalte Trikot-Figur)
   musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#1e293b', head: '⚽', stripe: true, sixSeven: false },
   musialaRuns: true,     // 🏃 Dribbelt über das Feld
   musialaRunSpeed: 2.2,
@@ -43,6 +44,7 @@ const GAME_CONFIG = {
   musialaBomb: '⚽',
   // ⚽🌟 Lamine Yamal (#19)
   yamalEmoji: '🌟',
+  yamalImage: 'yamal.png', // ⚽🌟 Neues Design: goldener Fußballheld im Sturm (ohne Bild: gemalte Trikot-Figur)
   yamalShirt: { color: '#dc2626', number: '19', numberColor: '#facc15', shorts: '#1d4ed8', head: '🌟', stripe: false, sixSeven: false },
   yamalRuns: true,
   yamalRunSpeed: 2.35,

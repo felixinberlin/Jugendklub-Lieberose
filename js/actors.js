@@ -217,7 +217,7 @@ function drawActors(now) {
     if (shirt && teamMode && teamOf(name) === 'enemy') {
       shirt = { ...shirt, color: TEAM_COLORS.enemy, numberColor: '#ffffff' }; // Gegner: rotes Trikot
     }
-    if (shirt) {
+    if (shirt && !actorImage(name)) {
       drawFootballer(shirt, actorSize(name), now, actor.runDir || 1, actor.wiggle, shirt.sixSeven && isSixSeven(actor)); // ⚽ GOAT im #10 Trikot (footballer.js)
     } else if (isHidden(name)) {
       // 🐀🕳️ Versteckt: Mauseloch, die Figur guckt nur ganz blass heraus
@@ -233,8 +233,12 @@ function drawActors(now) {
       const img = actorImage(name);
       const box = actorImageBox(img, actorSize(name));
       if (actorCfg(name, 'Wings')) drawDragonWings(actor, box.w, box.h); // 🪽 Schlagende Flügel hinter dem Körper (drachenfluegel.js)
+      ctx.save();
+      // ⚽ Dribbelnde Fußballer schauen in ihre Laufrichtung (Bild spiegeln, wenn sie nach links rennen)
+      if (actorCfg(name, 'Runs') && actor.runDir === -1) ctx.scale(-1, 1);
       if (actorCfg(name, 'Flap')) drawFlappingImage(actor, img, box.w, box.h, actorCfg(name, 'Flap')); // 🦇 Flügel im Bild wippen
       else drawActorImage(img, actorSize(name));
+      ctx.restore();
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }
