@@ -216,7 +216,12 @@ function drawActors(now) {
       drawProSkin(kindOf(name), actorSize(name), now); // ✨ Edler Pro-Skin (skins.js)
     } else if (actorImage(name)) {
       // 😠🗡️ Eigenes Bild, z. B. der wütende Kobold (sprites.js)
-      drawActorImage(actorImage(name), actorSize(name));
+      const img = actorImage(name);
+      if (actorCfg(name, 'Wings')) {
+        const box = actorImageBox(img, actorSize(name));
+        drawDragonWings(actor, box.w, box.h); // 🪽 Schlagende Flügel hinter dem Körper (drachenfluegel.js)
+      }
+      drawActorImage(img, actorSize(name));
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }

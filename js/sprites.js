@@ -89,8 +89,11 @@ function actorImage(name) {
 }
 
 // Malt ein ausgeschnittenes Figuren-Bild (ohne Hintergrund), Mitte bei (0, 0)
-function drawActorImage(img, size) {
+function actorImageBox(img, size) {
   const h = size * 1.55; // etwas größer als Emojis, weil das Bild viel Rand und dunkle Farben hat
-  const w = h * img.naturalWidth / img.naturalHeight;
+  return { w: h * img.naturalWidth / img.naturalHeight, h };
+}
+function drawActorImage(img, size) {
+  const { w, h } = actorImageBox(img, size);
   ctx.drawImage(img, -w / 2, -h / 2, w, h);
 }

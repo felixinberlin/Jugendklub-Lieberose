@@ -46,6 +46,7 @@ const GAME_CONFIG = {
   yamalSize: 65,
   yamalBomb: '⚽',
   dracheEmoji: '🐉',
+  dracheWings: true,       // 🪽 Ganze Flügel, die hoch und runter schlagen (drachenfluegel.js)
   dracheImage: 'drache.png', // 🐉🔥 Neues Design: Dramatischer Drache im Feuersturm (Emoji nur, falls das Bild nicht lädt)
   dracheSize: 74,
   dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!

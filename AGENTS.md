@@ -261,6 +261,7 @@ Die lange Beschreibung oben nennt die Funktionen; ihre Dateien sind jetzt:
 | `js/special-moves.js` | `MINI_BIT`, `minis`, `steer`, Mini-Kobolde/Lockvögel, Katzensprung, Mauseloch |
 | `js/specials.js` | `SPECIALS`, Aufladen, Auslösen, `updateSpecials`, `drawSpecials`, `resetSpecials` |
 | `js/special-ui.js` | Kraft-Knöpfe, `drawSpecialBadge`, Finger-Ereignisse, `buildSpecialsInfo` |
+| `js/drachenfluegel.js` | 🪽 `drawDragonWings(actor, w, h)` – malt 2 Flügel (Knochen + Hautsegel) hinter dem Drachen-Bild, Schlag-Tempo aus der Bewegung (`wingEnergy`, `wingPhase`). Schalter `<name>Wings`, Ansatzpunkte `WING_ROOTS` (Anteil vom Bild) |
 | `js/fledermaus.js` | 🦇 `batSuck` (Blutsaugen, `jump.type === 'suck'` → `updateBatSuck` aus `updateJumps`), `healActor(name, amount)` (Leben zurück, max `maxHp`), `drawBloodDrops`, `clearBloodDrops`. Lädt nach `special-moves.js`, vor `specials.js` |
 
 Ladereihenfolge: Waffen → Bewegungen → Zentrale → Anzeige → Credits → game.js. Funktionskörper dürfen spätere Globals verwenden; sofort ausgeführter Code darf das nicht. `SPECIALS` braucht beim Laden bereits die Kraft-Funktionen; `buildSpecialsInfo()` braucht die Auswahl-Kacheln.
