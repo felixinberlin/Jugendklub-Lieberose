@@ -7,8 +7,8 @@
  * - Die Rangliste zeigt nur echte Spieler mit Pokalen (keine ausgedachten Bot-Namen).
  * - Pokale & Punkte kann man NICHT auf 0 setzen (Wunsch aus dem Workshop).
  *
- * Datenschutz-Hinweis (AGENTS.md): In localStorage werden ausschließlich anonyme
- * Spielzahlen (Pokal-Zähler & Zeitstempel) gespeichert, niemals personenbezogene Daten.
+ * Datenschutz-Hinweis (AGENTS.md): In localStorage stehen Spielzahlen (Pokale, Punkte, Zeitstempel)
+ * und – vom Betreuer erlaubt – der selbst gewählte Spielername. Nichts davon verlässt das Gerät.
  */
 
 let trophyMode = false; // true = Pokal-Modus (immer 50 Leben, keine Pause), false = Normal
@@ -74,10 +74,11 @@ function loadTrophies() {
       totalScore: Number(raw.totalScore) || 0,
       highScore: savedHigh,
       nameChangedAt: Number(raw.nameChangedAt) || 0,
+      playerName: typeof raw.playerName === 'string' ? raw.playerName.slice(0, 24) : '', // 👤 Gespeicherter Spielername
       actors: (raw.actors && typeof raw.actors === 'object') ? raw.actors : {}
     };
   } catch (e) {
-    return { total: 0, solo: 0, team: 0, totalScore: 0, highScore: 0, nameChangedAt: 0, actors: {} };
+    return { total: 0, solo: 0, team: 0, totalScore: 0, highScore: 0, nameChangedAt: 0, playerName: '', actors: {} };
   }
 }
 
@@ -206,6 +207,7 @@ function registerOrUpdatePlayerName(newName, isInitial) {
   if (clean.length < 2) return false;
   if (!isInitial && cooldownMsRemaining() > 0) return false;
   currentPlayerName = clean;
+  trophiesData.playerName = clean; // 💾 bleibt im Browser, auch nach Tab-Schließen
   trophiesData.nameChangedAt = Date.now();
   getOrCreatePlayerEntry(clean);
   playerNameInput.value = clean;
@@ -268,6 +270,14 @@ function updateTrophyHud() {
 
 // 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen, falls noch kein Fortschritt im Browser gespeichert ist!
 function initWelcomeRegistration() {
+  // 💾 Gespeicherten Namen aus dem Browser zurückholen
+  if (!currentPlayerName && trophiesData.playerName) {
+    currentPlayerName = trophiesData.playerName;
+    playerNameInput.value = currentPlayerName;
+    getOrCreatePlayerEntry(currentPlayerName);
+    updateTrophyHud();
+    return;
+  }
   const hasSavedProgress = Boolean(
     trophiesData.nameChangedAt > 0 ||
     trophiesData.total > 0 ||
@@ -528,6 +538,11 @@ function buildCharacterLeaderboardHtml() {
   }).join('');
 }
 
+// Namen sicher anzeigen (z. B. „<b>“ im Namen wird als Text gezeigt, nicht als HTML)
+function escapeHtml(text) {
+  return String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 // 🌍 Globale Spieler-Rangliste bauen und anzeigen:
 // Sobald man mindestens 1 Pokal hat, wird man in der globalen Rangliste für alle angezeigt (auch nach Browser-Neuladen)!
 function showLeaderboard() {
@@ -542,7 +557,7 @@ function showLeaderboard() {
   const isListedGlobally = Boolean(activeCount > 0);
 
   myTrophyBanner.innerHTML =
-    `<div class="my-trophy-total">👤 ${activeName}: <b>${activeCount} 🏆</b> · 🎯 <b>${totalPts}</b> Punkte · 🏅 Rekord: <b>${bestRecord}</b></div>` +
+    `<div class="my-trophy-total">👤 ${escapeHtml(activeName)}: <b>${activeCount} 🏆</b> · 🎯 <b>${totalPts}</b> Punkte · 🏅 Rekord: <b>${bestRecord}</b></div>` +
     `<div class="my-trophy-sub">${
       isListedGlobally
         ? '✅ Deine Pokale & Punkte sind auf diesem Gerät gespeichert und stehen in der Rangliste!'
@@ -567,7 +582,7 @@ function showLeaderboard() {
       `<span class="lb-rank">${rank}</span>` +
       `<span class="lb-emoji">${isMe ? '⭐' : '🎮'}</span>` +
       `<div class="lb-info">` +
-        `<div class="lb-name">${p.name}${isMe ? ' (DU · GESPEICHERT)' : ''}</div>` +
+        `<div class="lb-name">${escapeHtml(p.name)}${isMe ? ' (DU · GESPEICHERT)' : ''}</div>` +
         `<div class="lb-bar"><i style="width:${pct}%;background:${isMe ? '#ffde59' : '#38bdf8'}"></i></div>` +
       `</div>` +
       `<span class="lb-count">${p.trophies} 🏆</span>` +

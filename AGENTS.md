@@ -23,7 +23,7 @@ If a user request would violate any of these, stop and clarify first:
 1. **NEVER introduce a build step.** No npm bundlers (Webpack, Vite, Rollup), no `package.json` scripts, no TypeScript compilation. The site must run by opening static HTML directly in any browser.
 2. **NEVER add a heavy framework.** No React, Vue, Svelte, Tailwind CLI, Phaser, or Unity WebGL. Pure Vanilla HTML5 + CSS + Modern JS only.
 3. **NEVER add a backend.** No API routes, no serverless functions, no external database. Everything runs client-side in the browser.
-4. **NEVER transmit or store personal data.** No analytics, no cookies, no tracking, no names, no photos, no telemetry. If sensors/mic/camera are used, data remains purely in memory on the device and vanishes upon tab close.
+4. **NEVER transmit or store personal data.** No analytics, no cookies, no tracking, no photos, no telemetry. **Ausnahme (vom Betreuer erlaubt):** der selbst gewählte Spielername darf im `localStorage` des Geräts gespeichert werden (`trophiesData.playerName`) – er wird nie übertragen. If sensors/mic/camera are used, data remains purely in memory on the device and vanishes upon tab close.
 5. **NEVER rely on flaky external CDNs.** Vendor libraries locally (like `matter.min.js`), or pin reliable CDNs (`cdn.jsdelivr.net` / `cdnjs.cloudflare.com`). Youth club Wi-Fi can drop at any moment.
 6. **NEVER write English UI text.** All user-facing strings, buttons, instructions, and error messages MUST be in **German**. Code comments may be German or English.
 7. **NEVER require authentication.** Everything is open and anonymous.
@@ -187,7 +187,7 @@ btn.addEventListener('click', async () => {
 - **Bright, high-contrast arcade colors:** Fun gradients, neon highlights, particles.
 - **Hilarious fail states:** Losing should be funny, never punishing.
 - **Instant Restart:** Single, prominent *"NOCHMAL SPIELEN 🔄"* button.
-- **Score Memory:** Only non-identifying game numbers (e.g. `lieberose_highscore`) in `localStorage`.
+- **Score Memory:** Only game numbers (e.g. `lieberose_highscore`) plus the self-chosen player name in `localStorage` – never sent anywhere.
 
 ---
 
