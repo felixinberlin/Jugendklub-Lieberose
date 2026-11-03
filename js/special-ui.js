@@ -93,9 +93,6 @@ function buildSpecialsInfo() {
     }
   }
   list.innerHTML = html;
-  for (const tile of document.querySelectorAll('#pickGrid .pick-btn, #teamGrid .pick-btn')) {
-    const sp = SPECIALS[tile.dataset.name];
-    if (sp) tile.insertAdjacentHTML('beforeend', `<span class="pick-special">${sp.icon}</span>`);
-  }
+  // (Früher stand das Kraft-Symbol, z. B. 🍿, oben rechts auf jeder Figuren-Kachel – auf Kinder-Wunsch entfernt.)
 }
 buildSpecialsInfo();

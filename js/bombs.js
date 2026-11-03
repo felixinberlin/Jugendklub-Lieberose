@@ -252,7 +252,7 @@ function updateBombs(now) {
       ctx.save();
       ctx.translate(pos.x, pos.y);
       ctx.rotate(SPINNING_WEAPONS.includes(data.weapon) ? angle * 2 : Math.atan2(b.velocity.y, b.velocity.x));
-      drawWeapon(data.weapon, data.size || 32);
+      drawWeapon(data.weapon, (data.size || 32) * (GAME_CONFIG.weaponScale || 1)); // ⚔️ größer = besser sichtbar
       ctx.restore();
       continue;
     }

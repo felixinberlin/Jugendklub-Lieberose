@@ -94,6 +94,7 @@ const GAME_CONFIG = {
   // Die angeklickte Figur wirft, ganz ohne Gegenstände vom Himmel.
   bombEmoji: '💣',
   bombSize: 36,
+  weaponScale: 1.9, // ⚔️ So viel größer werden die gemalten Waffen gezeichnet (waffen.js) – gut sichtbar auch auf dem Handy
   // 🏅 Solo-Modus hat jetzt 1 direktes Match (keine Level-Anzeige im Solo-Modus)
   levels: [
     { title: 'Arena-Match ⚡', throwMs: 1200 } // Bots greifen dich genauso oft an wie sich gegenseitig (cpu.js)
