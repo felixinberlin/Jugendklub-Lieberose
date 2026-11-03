@@ -142,7 +142,9 @@ function drawSpecials(now) {
     ctx.save();
     ctx.translate(m.body.position.x, m.body.position.y);
     ctx.rotate(Math.sin(now / 150 + m.angle) * 0.2 + m.wiggle * 0.5);
-    drawEmoji(actorEmoji('kobold'), 0, 0, 30); // 🖼️ sprites.js
+    const koboldPic = actorImage('kobold');
+    if (koboldPic) drawPortrait(koboldPic, 30, '#6ee7b7'); // 😠 Mini-Wut-Kobolde
+    else drawEmoji(actorEmoji('kobold'), 0, 0, 30); // 🖼️ sprites.js
     ctx.restore();
   }
   for (const name in actors) {

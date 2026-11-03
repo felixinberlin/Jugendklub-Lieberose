@@ -11,12 +11,12 @@ const actors = {
   kobold: {
     name: 'KOBOLD', color: '#6ee7b7', category: 4, target: 'corn',
     sway: 420, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: Math.max(42, width * 0.12), y: height * 0.52 })
+    start: () => ({ x: Math.max(42, width * 0.12), y: height * 0.42 }) // etwas höher: nicht auf dem Joystick
   },
   corn: {
     name: 'MAIS', color: '#fef08a', category: 8, target: 'katze',
     sway: 480, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
-    start: () => ({ x: width - Math.max(42, width * 0.12), y: height * 0.52 })
+    start: () => ({ x: width - Math.max(42, width * 0.12), y: height * 0.42 }) // nicht auf dem Schieß-Knopf
   },
   katze: {
     name: 'KATZE', color: '#f9a8d4', category: 16, target: 'maus',
@@ -68,8 +68,17 @@ function actorCfg(name, key) { return GAME_CONFIG[`${kindOf(name)}${key}`]; }
 function actorBtn(name) { return document.getElementById(`${name}Btn`); }
 
 // Emoji und Größe kommen aus config.js (z. B. koboldEmoji, katzeSize) + mapScale für größere Map-Übersicht.
-function mapScale() { return GAME_CONFIG.mapScale || 0.72; }
+// 📱 Handy (kleiner Bildschirm) = noch kleinere Figuren, damit mehr Platz zum Kämpfen ist
+function mapScale() {
+  const phone = Math.min(window.innerWidth, window.innerHeight) < 500;
+  return (phone && GAME_CONFIG.phoneMapScale) || GAME_CONFIG.mapScale || 0.72;
+}
 function actorEmoji(name) { return actorCfg(name, 'Emoji'); }
+// Für Auswahl-Kacheln: eigenes Bild (z. B. Kobold) oder Emoji
+function actorIconHtml(name) {
+  const src = actorCfg(name, 'Image');
+  return src ? `<img class="pick-img" src="${src}" alt="">` : actorEmoji(name);
+}
 function actorSize(name) { return actorCfg(name, 'Size') * teamScale() * mapScale(); }
 
 // Baut die Physik-Körper der Figuren und setzt sie in die Welt.
@@ -205,6 +214,9 @@ function drawActors(now) {
       drawLabel(`🙈 ${Math.ceil((actor.hiddenUntil - now) / 1000)}`, 0, -28, { size: 14, fill: '#ffffff', stroke: '#111827', lineWidth: 3 });
     } else if (GAME_CONFIG.proSkins && typeof drawProSkin === 'function') {
       drawProSkin(kindOf(name), actorSize(name), now); // ✨ Edler Pro-Skin (skins.js)
+    } else if (actorImage(name)) {
+      // 😠🗡️ Eigenes Bild, z. B. der wütende Kobold (sprites.js)
+      drawPortrait(actorImage(name), actorSize(name), teamMode ? TEAM_COLORS[teamOf(name)] : actor.color);
     } else {
       drawEmoji(actorEmoji(name), 0, 0, actorSize(name)); // 🖼️ aus dem Bilder-Speicher (sprites.js)
     }

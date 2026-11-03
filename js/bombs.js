@@ -37,7 +37,7 @@ function shootBomb(actor, forcedTarget) {
   if (!targetName) return;
   const isScratch = Boolean(actorCfg(actor, 'Scratch'));
   const isBolt = Boolean(actorCfg(actor, 'Bolt'));
-  const scale = GAME_CONFIG.mapScale || 0.76;
+  const scale = mapScale();
   const dmg = getCharStat(actor, 'attackDamage') || 4;
   launchArc(actor, targetName, {
     emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
@@ -63,7 +63,7 @@ function launchArc(actor, targetName, opts) {
   const distance = Math.hypot(dx, dy);
   const direction = distance ? dx / distance : 1;
   const radius = opts.size * 0.42;
-  const actorR = 34 * (GAME_CONFIG.mapScale || 0.76);
+  const actorR = 34 * (mapScale());
   const x = source.position.x + direction * (actorR + radius + 4);
   const y = source.position.y + (distance ? dy / distance : 0) * (actorR + radius + 4);
   const gravityPerFrame = engine.gravity.y * engine.gravity.scale * (1000 / 60) ** 2;

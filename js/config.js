@@ -13,6 +13,7 @@ const GAME_CONFIG = {
 
   // Charaktere auf beiden Seiten
   koboldEmoji: '🧌',
+  koboldImage: 'kobold.png', // 😠🗡️ Neues Design: Wütender Kobold mit gezackter Klinge (Emoji nur, falls das Bild nicht lädt)
   koboldSize: 70,
   cornEmoji: '🌽',
   cornSize: 74,
@@ -109,6 +110,7 @@ const GAME_CONFIG = {
   nameChangeCooldownDays: 7, // 🔒 Name erst nach 7 Tagen wieder änderbar!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
+  phoneMapScale: 0.56, // 📱 Auf dem Handy noch kleinere Figuren = viel mehr Platz zum Kämpfen!
   maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte
   maxParticles: 300, // 🚀 Tempo: höchstens so viele Funken gleichzeitig
   dragThreshold: 8, // Kleine Fingerbewegungen zählen weiterhin als Antippen.

@@ -72,3 +72,29 @@ function drawLabel(text, x, y, o) {
   }
   ctx.drawImage(sprite.canvas, x - sprite.w / 2, y - sprite.h / 2, sprite.w, sprite.h);
 }
+
+// 🖼️ Eigene Bilder für Figuren (z. B. koboldImage: 'kobold.png' in config.js).
+// Lädt jedes Bild nur EINMAL. Solange es noch lädt (oder fehlt), gibt es null → dann wird das Emoji gemalt.
+const actorImages = {};
+function actorImage(name) {
+  const src = actorCfg(name, 'Image');
+  if (!src) return null;
+  let img = actorImages[src];
+  if (!img) {
+    img = new Image();
+    img.src = src;
+    actorImages[src] = img;
+  }
+  return img.complete && img.naturalWidth ? img : null;
+}
+
+// Malt ein rundes Figuren-Bild mit farbigem Rand, Mitte bei (0, 0)
+function drawPortrait(img, size, ringColor) {
+  const r = size * 0.72;
+  ctx.drawImage(img, -r, -r, r * 2, r * 2);
+  ctx.strokeStyle = ringColor;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(0, 0, r - 1, 0, Math.PI * 2);
+  ctx.stroke();
+}

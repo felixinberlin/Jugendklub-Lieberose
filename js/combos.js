@@ -302,7 +302,7 @@ function triggerVolleyCombo(a, b, emojiA, emojiB, count, damage, title) {
     const target = targets[i % targets.length];
     launchArc(shooter, target, {
       emoji: i % 2 === 0 ? emojiA : emojiB,
-      size: Math.round(38 * (GAME_CONFIG.mapScale || 0.72)),
+      size: Math.round(38 * (mapScale())),
       damage,
       special: true,
       trail: '✨',

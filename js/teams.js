@@ -165,7 +165,7 @@ for (const name in actors) {
   btn.className = 'pick-btn';
   btn.type = 'button';
   btn.dataset.name = name;
-  btn.innerHTML = `<span class="pick-emoji">${actorEmoji(name)}</span>${actors[name].name}`;
+  btn.innerHTML = `<span class="pick-emoji">${actorIconHtml(name)}</span>${actors[name].name}`;
   btn.addEventListener('click', () => {
     if (chosenTeam.includes(name)) return; // Schon fest im Team!
     // ⚡ Level 7 (currentLevel === 6): Hier kann man NUR Zeus auswählen!

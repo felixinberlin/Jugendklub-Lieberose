@@ -350,7 +350,7 @@ function yamalMusialaCombo(name, partnerName) {
     const target = targets[i % targets.length];
     launchArc(shooter, target, {
       emoji: i % 2 === 0 ? '⚽' : '🌟',
-      size: Math.round(cfg.size * (GAME_CONFIG.mapScale || 0.72)),
+      size: Math.round(cfg.size * (mapScale())),
       damage: cfg.damage,
       special: true,
       trail: '✨',
