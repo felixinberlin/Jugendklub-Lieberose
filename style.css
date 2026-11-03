@@ -1034,3 +1034,12 @@ h1.game-title {
   line-height: 1.1;
 }
 h1.game-title .title-emoji { -webkit-text-fill-color: initial; }
+
+/* 🌕⛩️ Hauptmenü-Hintergrund: Samurai-Arena. Bleibt beim Runterscrollen stehen
+   (Hintergrund gehört zum Kasten, nicht zum Inhalt), dunkler Schleier für gute Lesbarkeit. */
+#startScreen, #settingsScreen, #leaderboardScreen, #welcomeNameScreen {
+  background: linear-gradient(rgba(7, 10, 20, 0.5), rgba(7, 10, 20, 0.72)), url('arena.jpg') 62% center / cover no-repeat;
+  background-color: #12060a;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

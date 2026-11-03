@@ -130,6 +130,7 @@ const GAME_CONFIG = {
 
   // 🌲 Wald & Bäume Hintergrund (Lieberoser Zauberwald)
   forestTheme: true,
+  arenaImage: 'arena.jpg', // 🌕⛩️ Map: Samurai-Arena unter dem roten Blutmond ('' = wieder der gemalte Wald)
   dayMode: true,        // true = ☀️ Tag, false = 🌙 Nacht
   moonEmoji: '🌙',
   sunEmoji: '☀️',

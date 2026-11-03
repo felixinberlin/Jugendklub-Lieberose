@@ -207,7 +207,31 @@ function getSkyGradient(colors, day) {
 }
 
 // Malt den ganzen Hintergrund – von hinten (Himmel) nach vorne (Glühwürmchen).
+// 🌕⛩️ Arena-Bild als Map-Hintergrund (config.js: arenaImage). Lädt es nicht, wird der Wald gemalt.
+const arenaImg = new Image();
+if (GAME_CONFIG.arenaImage) arenaImg.src = GAME_CONFIG.arenaImage;
+let arenaCache = null; // Fertig skaliertes Bild in Bildschirmgröße (Tempo: nur bei Größenänderung neu)
+
+function drawArena() {
+  if (!GAME_CONFIG.arenaImage || !arenaImg.complete || !arenaImg.naturalWidth) return false;
+  const key = `${width}x${height}x${renderDpr}`;
+  if (!arenaCache || arenaCache.key !== key) {
+    const c = document.createElement('canvas');
+    c.width = Math.ceil(width * renderDpr);
+    c.height = Math.ceil(height * renderDpr);
+    // „cover“: Bild füllt alles, Überstand wird gleichmäßig abgeschnitten
+    const s = Math.max(c.width / arenaImg.naturalWidth, c.height / arenaImg.naturalHeight);
+    const dw = arenaImg.naturalWidth * s;
+    const dh = arenaImg.naturalHeight * s;
+    c.getContext('2d').drawImage(arenaImg, (c.width - dw) / 2, (c.height - dh) / 2, dw, dh);
+    arenaCache = { key, canvas: c };
+  }
+  ctx.drawImage(arenaCache.canvas, 0, 0, width, height);
+  return true;
+}
+
 function drawForest(now) {
+  if (drawArena()) return; // ⛩️ Samurai-Arena statt Wald
   const colors = forestColors();
   const day = GAME_CONFIG.dayMode;
 
