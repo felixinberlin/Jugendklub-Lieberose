@@ -18,22 +18,30 @@ const GAME_CONFIG = {
   cornEmoji: '🌽',
   cornImage: 'mais.png', // 🌽😡 Neues Design: wütender Mais mit gezackter Lanze (Emoji nur, falls das Bild nicht lädt)
   cornSize: 74,
-  cornBomb: '🟡',        // 🌽 Der Mais schießt einzelne Maiskörner
-  cornBombSize: 18,
-  koboldBomb: '💰',      // 🧌 Der Kobold wirft einen Goldsack …
-  koboldTrail: '🪙',     // … aus dem Goldmünzen purzeln
+  cornBomb: '🗡️',        // 🌽 Symbol auf dem Schieß-Knopf
+  cornWeapons: ['lance'], // 🌽 Wirft seine grüne Zacken-Lanze (waffen.js)
+  cornBombSize: 32,
+  koboldBomb: '🗡️',      // 🧌 Symbol auf dem Schieß-Knopf
+  koboldWeapons: ['blade'], // 🧌 Wirft seine gezackte Klinge (waffen.js)
+  koboldBombSize: 32,
   katzeEmoji: '🐱',
   katzeImage: 'katze.png', // 🐱🔥 Neues Design: wilde Katze mit Stachelkeule (Emoji nur, falls das Bild nicht lädt)
   katzeSize: 70,
-  katzeBomb: '🐟',       // 🐱 Die Katze wirft Fische
+  katzeBomb: '🏏',       // 🐱 Symbol auf dem Schieß-Knopf
+  katzeWeapons: ['club'], // 🐱 Wirft ihre Stachelkeule, die sich dreht (waffen.js)
+  katzeBombSize: 34,
   mausEmoji: '🐭',
   mausImage: 'maus.png', // 🐭⚔️ Neues Design: Kriegermaus mit Stachelhelm und Lanze
   mausSize: 60,
-  mausBomb: '🧀',        // 🐭 Die Maus wirft Käse!
+  mausBomb: '🪓',        // 🐭 Symbol auf dem Schieß-Knopf
+  mausWeapons: ['glaive'], // 🐭 Wirft ihre Lanze mit Hackmesser-Klinge (waffen.js)
+  mausBombSize: 32,
   goblinEmoji: '👺',
   goblinImage: 'goblin.png', // 👺🔥 Neues Design: Lava-Dämon mit brennendem Haar und Dreizack
   goblinSize: 68,
-  goblinBomb: '🔥',      // 👺 Der Goblin wirft Feuer!
+  goblinBomb: '🔱',      // 👺 Symbol auf dem Schieß-Knopf
+  goblinWeapons: ['trident'], // 👺 Wirft seinen glühenden Lava-Dreizack (waffen.js)
+  goblinBombSize: 34,
   musialaEmoji: '⚽',
   // 👕 Musiala / GOAT trägt das Trikot mit der Nummer 10!
   musialaImage: 'goat.png', // ⚽⚡ Neues Design: GOAT im Sturmlicht (ohne Bild: gemalte Trikot-Figur)
@@ -54,9 +62,10 @@ const GAME_CONFIG = {
   dracheWings: true,       // 🪽 Ganze Flügel, die hoch und runter schlagen (drachenfluegel.js)
   dracheImage: 'drache.png', // 🐉🔥 Neues Design: Dramatischer Drache im Feuersturm (Emoji nur, falls das Bild nicht lädt)
   dracheSize: 74,
-  dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
+  dracheBomb: '🔥',      // 🐉 Symbol auf dem Schieß-Knopf
+  dracheWeapons: ['fireball'], // 🐉 Spuckt Feuerbälle (waffen.js)
   dracheBombSize: 38,
-  dracheScratch: true,   // Malt glühende Krallen-Kratzer in die Luft
+  dracheScratch: false,  // true = alte Krallen-Kratzspur statt Feuerball
   zeusImage: 'zeus.png', // ⚡ Neues Design: Zeus im Sturm der Götter mit Blitz-Speer
   zeusEmoji: '🧔🏼‍♂️',     // 🧔🏼‍♂️ Zeus hat jetzt ein echtes Zeus-Logo (kein Blitz als Figur)!
   zeusSize: 74,

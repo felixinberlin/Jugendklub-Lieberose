@@ -246,12 +246,13 @@ function updateBombs(now) {
       continue;
     }
 
-    // 🗡️⛓️ Speer (zeigt in Flugrichtung) oder Stachelkugel (dreht sich) der Fledermaus
+    // ⚔️ Eigene Waffe der Figur (waffen.js): Spitze zeigt in Flugrichtung, Keulen & Kugeln drehen sich
     if (data.weapon) {
+      if (data.weapon === 'fireball' && Math.random() < 0.5) spawnParticles(pos.x, pos.y, '#f97316', 1);
       ctx.save();
       ctx.translate(pos.x, pos.y);
-      ctx.rotate(data.weapon === 'spear' ? Math.atan2(b.velocity.y, b.velocity.x) : angle * 2);
-      drawBatWeapon(data.weapon, data.size || 32);
+      ctx.rotate(SPINNING_WEAPONS.includes(data.weapon) ? angle * 2 : Math.atan2(b.velocity.y, b.velocity.x));
+      drawWeapon(data.weapon, data.size || 32);
       ctx.restore();
       continue;
     }

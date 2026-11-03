@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.56';
+const GAME_VERSION = '2.57';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -77,7 +77,8 @@ const WISHES = [
   { v: '2.53', text: 'Neue Kampf-Fledermaus 🦇 mit wippenden Flügeln, wirft abwechselnd Speer 🗡️ & Stachelkugel ⛓️ · neuer Zeus im Götter-Sturm ⚡' },
   { v: '2.54', text: 'Neue Designs für die zwei Fußballer: GOAT im Sturmlicht ⚽⚡ & Yamal als goldener Fußballheld 🌟' },
   { v: '2.55', text: 'Das Spiel hat einen Namen: THE FIGHTZONE 🥊⚡' },
-  { v: '2.56', text: 'Neuer Hintergrund im Hauptmenü & auf der Map: Samurai-Arena unter dem roten Blutmond 🌕⛩️' }
+  { v: '2.56', text: 'Neuer Hintergrund im Hauptmenü & auf der Map: Samurai-Arena unter dem roten Blutmond 🌕⛩️' },
+  { v: '2.57', text: 'Alle schießen mit ihren eigenen Waffen ⚔️: Klinge 🗡️, Lanze, Stachelkeule 🏏, Hackmesser-Lanze 🪓, Lava-Dreizack 🔱 & Feuerball 🔥' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
