@@ -525,6 +525,7 @@ h2 {
 #yamalBtn { left: 82%; top: 74%; }
 #dracheBtn { left: 25%; top: 72%; }
 #zeusBtn { left: 75%; top: 72%; }
+#fledermausBtn { left: 50%; top: 50%; }
 .actor-btn:focus-visible { outline: 3px solid #ffde59; }
 .actor-btn:active { cursor: grabbing; background: rgba(255, 222, 89, 0.15); }
 .instructions { font-size: 16px; line-height: 1.6; }

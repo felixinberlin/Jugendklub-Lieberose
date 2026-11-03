@@ -54,6 +54,10 @@ const GAME_CONFIG = {
   zeusBombSize: 38,
   zeusBolt: true,        // Malt echte leuchtende Zickzack-Blitze
   zeusUnlockTrophies: 40, // 🔒 Für Zeus braucht man 40 Pokale!
+  fledermausEmoji: '🦇',  // 🦇 Tobias' Fledermaus!
+  fledermausSize: 68,
+  fledermausBomb: '🦇',   // Wirft kleine Mini-Fledermäuse
+  fledermausBombSize: 26,
 
   // 🤝KOMBO: 15 Treffer im Team!
   comboChargeHits: 15,
@@ -98,6 +102,7 @@ const GAME_CONFIG = {
   fireSpear: { damage: 10, speed: 12, burnSeconds: 3, burnDamage: 1, burnEveryMs: 500 }, // 👺🔱 Goblin: Dreizack macht 10 Schaden
   dragonBite: { damage: 14, stunSeconds: 1.5 },              // 🐉🦷 Tobis Drachenbiss
   zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 5 }, // ⚡🌩️ Zeus: Blitzregen pro Treffer 5 Schaden!
+  batSuck: { sips: 5, sipMs: 220, damage: 3, heal: 3 },    // 🦇🩸 Fledermaus: saugt 5-mal je 3 Leben ab und heilt sich selbst!
   yamalStar: { damage: 12, speed: 8.5, size: 48 },          // 🌟💥 Yamal: Stern explodiert in der Mitte & fügt zufälligem Spieler 12 Schaden zu
   maxHits: 20, // 💀 Treffer im normalen Modus (wenn benutzerdefiniert angepasst)
   trophyLives: 50, // 🏆 Pokal-Modus nutzt die exakten Charakter-Leben!
@@ -197,6 +202,14 @@ const CHAR_STATS = {
     attackCooldown: 1.4, // 4/1.4s
     abilityDamage: 12,   // Sternen-Explosion in der Mitte: 12 Schaden
     speed: 1.3           // 1.3 speed
+  },
+  fledermaus: {
+    name: 'Fledermaus',
+    hp: 100,
+    attackDamage: 3,
+    attackCooldown: 1.0,
+    abilityDamage: 15,   // Blutsaugen: 5 × 3 Schaden, heilt sich um 15
+    speed: 1.4
   },
   drache: {
     name: 'Drache',

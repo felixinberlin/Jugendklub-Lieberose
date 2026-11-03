@@ -43,6 +43,8 @@ const SPECIALS = {
     desc: () => `Versteckt sich ${GAME_CONFIG.hideSeconds} Sek. im Mauseloch – kein Schaden!` },
   drache: { name: 'DRACHENBISS', icon: '🦷', use: dragonBite,
     desc: () => `Fliegt zum Gegner und beißt kräftig zu (${GAME_CONFIG.dragonBite.damage} Schaden)!` },
+  fledermaus: { name: 'BLUTSAUGEN', icon: '🩸', use: batSuck,
+    desc: () => `Saugt einem Gegner ${GAME_CONFIG.batSuck.sips}-mal je ${GAME_CONFIG.batSuck.damage} Leben ab – und heilt sich selbst damit! 🦇` },
   zeus: { name: 'BLITZ-REGEN', icon: '🌩️', use: zeusStorm,
     desc: () => `Lässt einen Blitzregen niedergehen (pro Treffer ${GAME_CONFIG.zeusStorm.damage} Schaden)!` }
 };
@@ -162,6 +164,7 @@ function drawSpecials(now) {
     drawEmoji('💫', p.x + Math.cos(now / 200) * 30, p.y - 40 + Math.sin(now / 200) * 6, 18);
   }
   drawDragonBites(now); // 🐉🦷 Schnappendes Drachengebiss
+  drawBloodDrops(now); // 🦇🩸 Bluttropfen der Fledermaus
   ctx.restore();
 }
 
@@ -170,6 +173,7 @@ function drawSpecials(now) {
 function resetSpecials(keepCharge = false) {
   clearMinis();
   clearStorms();
+  clearBloodDrops();
   if (typeof clearYamalStars === 'function') clearYamalStars();
   if (typeof clearCombos === 'function') clearCombos();
   for (const name in actors) {

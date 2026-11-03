@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.38';
+const GAME_VERSION = '2.39';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -59,7 +59,8 @@ const WISHES = [
   { v: '2.35', text: 'Team-Bots mit Klick-Wechsel 🤖👆 & 19 Mega-Combos (Kobold wirft Mais 🧌🌽, Drache+Goblin Brand-Aura 🐉👺🔥 uvm.!) 💥' },
   { v: '2.36', text: 'Pokale 🏆 & Punkte 🎯 bleiben beim Neuladen im Browser gespeichert – mit „Auf 0 setzen“-Knopf 🔄' },
   { v: '2.37', text: 'Exakte Werte für alle 8 Figuren 📊, Yamals Sternen-Explosion in der Mitte (12 Schaden) 🌟💥, 5 Popcorn je 4 Schaden 🍿, Dreizack 10 Schaden 🔱, Blitzregen 5 Schaden 🌩️ & Wirbel 5 Schaden 🌪️' },
-  { v: '2.38', text: 'Interaktiver Kino-Abspann 🎬 (Spulen, Tempo 1x/2x/4x, Pause) & die große Ehren-Rolle für Kevin, Felix, Skoogi & Grit! 🎮🐶' }
+  { v: '2.38', text: 'Interaktiver Kino-Abspann 🎬 (Spulen, Tempo 1x/2x/4x, Pause) & die große Ehren-Rolle für Kevin, Felix, Skoogi & Grit! 🎮🐶' },
+  { v: '2.39', text: 'Tobias\' Wunsch: die Fledermaus 🦇 mit Blutsaugen 🩸 – klaut Gegnern Leben und heilt sich selbst ❤️' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

@@ -72,7 +72,8 @@ function paintProSkin(g, kind) {
     maus: '#94a3b8',
     goblin: '#fb923c',
     drache: '#22c55e',
-    zeus: '#38bdf8'
+    zeus: '#38bdf8',
+    fledermaus: '#a78bfa'
   };
   const glow = g.createRadialGradient(0, 0, 14, 0, 0, 42);
   glow.addColorStop(0, (ringColors[kind] || '#38bdf8') + '44');

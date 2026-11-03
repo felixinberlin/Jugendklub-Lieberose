@@ -151,6 +151,15 @@ function playSound(type) {
     setTimeout(() => playTone(659, 'triangle', 0.09, 0.2), 70);
     setTimeout(() => playTone(784, 'triangle', 0.11, 0.22), 140);
     setTimeout(() => playTone(1046, 'square', 0.22, 0.24), 210);
+  } else if (type === 'squeak') {
+    // 🦇 Fledermaus-Fiepen (Ultraschall … fast!)
+    playTone(2600, 'sine', 0.05, 0.14);
+    setTimeout(() => playTone(3100, 'sine', 0.05, 0.12), 55);
+  } else if (type === 'suck') {
+    // 🩸 Schlürf! Tief rutschender Saug-Ton
+    playTone(320, 'triangle', 0.08, 0.2);
+    setTimeout(() => playTone(220, 'triangle', 0.08, 0.18), 50);
+    setTimeout(() => playTone(150, 'sine', 0.1, 0.16), 100);
   } else if (type === 'boom') {
     playTone(120, 'sawtooth', 0.28, 0.28);
     playTone(70, 'square', 0.28, 0.2);
@@ -169,7 +178,8 @@ function playAttackSound(actorName) {
     musiala: 'kick',     // ⚽ Fußball-Kick
     yamal: 'kick',       // 🌟⚽ Lamine Yamal Fußball-Kick
     drache: 'scratch',   // 🐉🐾 Krallen-Kratzer
-    zeus: 'zap'          // ⚡ Elektrischer Blitz
+    zeus: 'zap',         // ⚡ Elektrischer Blitz
+    fledermaus: 'squeak' // 🦇 Fiepsiges Fledermaus-Quietschen
   };
   playSound(map[kind] || 'throw');
 }

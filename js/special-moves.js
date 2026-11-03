@@ -109,6 +109,9 @@ function updateJumps(now) {
     if (!isAlive(name)) { actor.jump = null; continue; }
     const victimPos = isAlive(j.victim) ? actors[j.victim].body.position : j.from;
 
+    // 🦇🩸 Fledermaus saugt Blut (fledermaus.js)
+    if (j.type === 'suck') { updateBatSuck(name, now); continue; }
+
     // 🐉🦷 Tobis Drachenbiss: Hinfliegen, 3-mal kräftig zubeißen, zurückfliegen
     if (j.type === 'bite') {
       const goal = { x: victimPos.x, y: victimPos.y - 12 };
