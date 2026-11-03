@@ -25,9 +25,9 @@
 
       <!-- 👤 Willkommens-Fenster beim Reinkommen: Namen eingeben & als Benutzer registrieren -->
       <div id="welcomeNameScreen" class="overlay-screen">
-        <div class="badge">🌍 WELTWEITE ARENA</div>
+        <div class="badge">🏆 ARENA</div>
         <h2>WIE HEISST DU? 👤</h2>
-        <p class="team-hint">Gib deinen Spielernamen ein! Sobald du Pokale 🏆 sammelst, bist du in der <b>globalen Rangliste</b> für alle sichtbar.<br><small>🔒 Hinweis: Deinen Namen kannst du danach in den Einstellungen erst nach <b>7 Tagen</b> wieder ändern!</small></p>
+        <p class="team-hint">Gib deinen Spielernamen ein! Sobald du Pokale 🏆 sammelst, stehst du in der <b>Rangliste</b> (auf diesem Gerät).<br><small>🔒 Hinweis: Deinen Namen kannst du danach in den Einstellungen erst nach <b>7 Tagen</b> wieder ändern!</small></p>
         <div class="mode-card trophy-card">
           <div class="name-input-wrap">
             <label for="welcomeNameInput">👤 Dein Spielername:</label>
@@ -47,7 +47,6 @@
         </div>
         <div class="saved-stats-bar">
           <span id="savedStatsBadge">🏆 0 Pokale · 🎯 0 Gesamtpunkte · 🏅 Rekord: 0</span>
-          <button id="resetStatsStartBtn" class="btn-reset-inline" type="button">🔄 Auf 0 setzen</button>
         </div>
         <details class="specials-info">
           <summary>⚡ Spezialkräfte & Kombos – antippen zum Lesen</summary>
@@ -60,7 +59,7 @@
         <p class="pick-title">Wen spielst DU? 👇 (Solo-Match)</p>
         <div id="pickGrid" class="pick-grid"></div>
         <button id="teamModeBtn" class="btn">⚔️ TEAM-MODUS</button>
-        <button id="leaderboardStartBtn" class="btn btn-trophy">🌍 GLOBALE RANGLISTE</button>
+        <button id="leaderboardStartBtn" class="btn btn-trophy">🏆 RANGLISTE</button>
         <button id="settingsStartBtn" class="btn btn-small">⚙️ EINSTELLUNGEN</button>
         <button id="startBtn" class="btn btn-small">👥 ALLE ZUSAMMEN</button>
         <button id="creditsStartBtn" class="btn btn-small">🎬 ABSPANN</button>
@@ -84,7 +83,6 @@
         <div class="mode-card normal-card">
           <h3>💾 GESPEICHERTE POKALE & PUNKTE</h3>
           <p id="settingsStatsText">🏆 0 Pokale · 🎯 0 Gesamtpunkte · 🏅 Rekord: 0</p>
-          <button id="settingsResetStatsBtn" class="btn btn-small" type="button">🗑️ POKALE & PUNKTE AUF 0 SETZEN</button>
         </div>
         <div class="mode-card normal-card">
           <h3>⛶ ANZEIGE & VOLLBILD</h3>
@@ -131,12 +129,11 @@
 
       <!-- 🏆 Globale Spieler-Rangliste (trophies.js) -->
       <div id="leaderboardScreen" class="overlay-screen">
-        <h2>🌍 GLOBALE RANGLISTE 🏆</h2>
+        <h2>🏆 RANGLISTE 🏆</h2>
         <div id="myTrophyBanner" class="trophy-banner"></div>
         <div id="leaderboardList" class="leaderboard-list"></div>
         <!-- Charakter-Rangliste: nicht gelöscht, nur versteckt (kann später wiederkommen) -->
         <div id="charLeaderboardSection" class="leaderboard-list" hidden></div>
-        <button id="leaderboardResetBtn" class="btn btn-small" type="button">🗑️ Eigene Pokale & Punkte auf 0 setzen</button>
         <button id="leaderboardBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
@@ -170,7 +167,7 @@
         <p>Treffer: <span id="finalScore">0</span></p>
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
-        <button id="leaderboardOverBtn" class="btn btn-trophy btn-small">🌍 GLOBALE RANGLISTE</button>
+        <button id="leaderboardOverBtn" class="btn btn-trophy btn-small">🏆 RANGLISTE</button>
         <button id="changeBtn" class="btn btn-small">🎭 Andere Figur</button>
         <button id="creditsBtn" class="btn btn-small">🎬 ABSPANN</button>
       </div>

@@ -137,16 +137,10 @@ function pickCpuTarget(name) {
     if (Math.random() < 0.65) return nearestEnemy(name);
     return pool[Math.floor(Math.random() * pool.length)];
   }
-  const lv = level();
-  const huntChance = lv ? lv.huntPlayer : 0.45;
-  if (playerActor && isAlive(playerActor) && !isHidden(playerActor) && Math.random() < huntChance) {
-    return playerActor;
-  }
-  // Quer über das Feld auf einen anderen sichtbaren Gegner werfen
-  if (Math.random() < 0.4) {
-    const others = Object.keys(actors).filter(n => n !== name && isAlive(n) && !isHidden(n));
-    if (others.length) return others[Math.floor(Math.random() * others.length)];
-  }
+  // ⚖️ Solo: Fair! Jeder Bot sucht sich zufällig irgendeinen anderen aus –
+  // du wirst genauso oft angegriffen wie jeder Bot.
+  const others = Object.keys(actors).filter(n => n !== name && isAlive(n) && !isHidden(n));
+  if (others.length) return others[Math.floor(Math.random() * others.length)];
   return targetOf(name);
 }
 
@@ -306,6 +300,7 @@ refreshUnlockTiles();
 
 startBtn.addEventListener('click', () => chooseAndStart(null));
 changeBtn.addEventListener('click', () => {
+  spectating = false; // 👀 Zurück ins Menü: Bots hören auf
   gameOverScreen.classList.remove('active');
   startScreen.classList.add('active');
   refreshUnlockTiles();

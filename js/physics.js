@@ -27,7 +27,7 @@ function initPhysics() {
 
   // Kollisions-Events
   Events.on(engine, 'collisionStart', (event) => {
-    if (!isPlaying) return;
+    if (!battleRunning()) return;
 
     for (const pair of event.pairs) {
       const { bodyA, bodyB } = pair;

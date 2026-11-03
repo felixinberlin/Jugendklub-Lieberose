@@ -22,7 +22,7 @@ function everyoneExcept(actor) {
 // Unterwegs trifft die Bombe aber jede Figur, die im Weg steht!
 // `forcedTarget` (optional): auf diese Figur zielen statt aufs normale Ziel.
 function shootBomb(actor, forcedTarget) {
-  if (!isPlaying || document.hidden) return;
+  if (!battleRunning() || document.hidden) return;
   if (!isAlive(actor)) return;
   if (isStunned(actor) || actors[actor].jump) return; // 🌪️ Im Wirbel / im Sprung wird nicht geworfen (specials.js)
   // Individuelle Angriffs-Pause je nach Charakter (z. B. Goat = alle 1.2s, Mais = alle 0.6s)

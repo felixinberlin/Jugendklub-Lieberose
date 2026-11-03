@@ -22,6 +22,7 @@ function startGame(keepCharge = false) {
   initAudio();
   applyModeLives(); // 🏆 50 Leben im Pokal-Modus, sonst die gewählten Leben (trophies.js)
   isPlaying = true;
+  spectating = false;
   isPaused = false;
   score = 0;
   scoreEl.textContent = score;
@@ -93,7 +94,7 @@ function gameLoop(now) {
   drawActors(now);
   drawSpecials(now); // 🧌🌪️ Mini-Kobolde & Wirbelwolken (specials.js)
 
-  if (isPlaying && !isPaused) {
+  if (battleRunning() && !isPaused) {
     // 2. Matter.js Physik-Schritt
     Engine.update(engine, dt);
 

@@ -96,7 +96,7 @@ function drawLevelBanner(now) {
   if (teamMode) {
     ctx.font = '800 18px -apple-system, sans-serif';
     ctx.fillStyle = TEAM_COLORS.enemy;
-    const sub = `${chosenTeam.length} gegen ${lv.enemies} Gegner!`;
+    const sub = `${chosenTeam.length} gegen ${chosenTeam.length} Gegner!`;
     ctx.strokeText(sub, 0, 76);
     ctx.fillText(sub, 0, 76);
   }

@@ -266,7 +266,7 @@ function getPlayerTeamComboPairs() {
 
 // 💥 Löst gezielt die Team-Combo zwischen `a` und `b` aus (über den Extra-Kombo-Button!)
 function triggerTeamComboPair(a, b) {
-  if (!isPlaying || isPaused || !areCombosEnabled()) return false;
+  if (!battleRunning() || isPaused || !areCombosEnabled()) return false;
   if (!isAlive(a) || !isAlive(b)) return false;
   const spec = getComboSpec(kindOf(a), kindOf(b));
   if (!spec) return false;

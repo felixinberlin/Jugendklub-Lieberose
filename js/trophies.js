@@ -1,11 +1,11 @@
 /**
- * 🏆 trophies.js – Globale Rangliste, Benutzer-Registrierung, 7-Tage-Namenssperre & Pokal-Modus
+ * 🏆 trophies.js – Rangliste, Benutzer-Registrierung, 7-Tage-Namenssperre & Pokal-Modus
  *
  * - Beim Reinkommen ins Spiel gibst du deinen Spielernamen ein und wirst registriert.
  * - Im Hauptmenü unter ⚙️ EINSTELLUNGEN kannst du den Namen ändern – aber erst
  *   7 Tage nachdem du ihn ausgewählt oder zuletzt geändert hast!
- * - Sobald du einen Namen eingegeben UND Pokale (≥ 1 🏆) gesammelt hast, wirst du
- *   in der globalen Rangliste für alle sichtbar angezeigt!
+ * - Die Rangliste zeigt nur echte Spieler mit Pokalen (keine ausgedachten Bot-Namen).
+ * - Pokale & Punkte kann man NICHT auf 0 setzen (Wunsch aus dem Workshop).
  *
  * Datenschutz-Hinweis (AGENTS.md): In localStorage werden ausschließlich anonyme
  * Spielzahlen (Pokal-Zähler & Zeitstempel) gespeichert, niemals personenbezogene Daten.
@@ -15,17 +15,6 @@ let trophyMode = false; // true = Pokal-Modus (immer 50 Leben, keine Pause), fal
 let normalLives = GAME_CONFIG.maxHits; // Eingestellte Leben für den normalen Modus
 let pendingMode = null; // Merkt sich, ob gerade Solo oder Team-Modus angeklickt wurde
 let currentPlayerName = ''; // Aktueller registrierter Benutzername
-
-// 🌍 Weltweite Spieler in der globalen Rangliste (nur Spieler mit ≥ 1 Pokal werden gelistet!)
-const globalChallengers = [
-  { name: 'MadridKing_19 🇪🇸', trophies: 18, region: '🌍 Spanien', isGlobal: true },
-  { name: 'BavariaGOAT_10 🇩🇪', trophies: 14, region: '🌍 Deutschland', isGlobal: true },
-  { name: 'TokyoStriker 🇯🇵', trophies: 11, region: '🌍 Japan', isGlobal: true },
-  { name: 'RioSamba_7 🇧🇷', trophies: 8, region: '🌍 Brasilien', isGlobal: true },
-  { name: 'LieberosePro 🏰', trophies: 5, region: '🌍 Brandenburg', isGlobal: true },
-  { name: 'NordicThunder ⚡', trophies: 3, region: '🌍 Schweden', isGlobal: true },
-  { name: 'DragonTobi 🐉', trophies: 1, region: '🌍 Deutschland', isGlobal: true }
-];
 
 // Registrierte Benutzer dieser Sitzung
 const sessionPlayers = [];
@@ -65,10 +54,7 @@ const settingsNameSaveBtn = document.getElementById('settingsNameSaveBtn');
 const settingsFullscreenBtn = document.getElementById('settingsFullscreenBtn');
 const settingsBackBtn = document.getElementById('settingsBackBtn');
 const settingsStatsText = document.getElementById('settingsStatsText');
-const settingsResetStatsBtn = document.getElementById('settingsResetStatsBtn');
 const savedStatsBadge = document.getElementById('savedStatsBadge');
-const resetStatsStartBtn = document.getElementById('resetStatsStartBtn');
-const leaderboardResetBtn = document.getElementById('leaderboardResetBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
 
 // 🔄 Anonyme Pokal- & Punkt-Zahlen aus dem Browser-Speicher (localStorage) laden – bleiben beim Neuladen erhalten!
@@ -149,43 +135,6 @@ function addSavedScore(points) {
   saveTrophies(false); // Sanft gebündelt statt 10-mal pro Sekunde auf die Festplatte
 }
 
-// 🗑️ Setzt alle gespeicherten Pokale, Gesamtpunkte & Rekorde im Browser einfach auf 0 zurück!
-function resetTrophiesAndScores() {
-  initAudio();
-  trophiesData = {
-    total: 0,
-    solo: 0,
-    team: 0,
-    totalScore: 0,
-    highScore: 0,
-    nameChangedAt: trophiesData.nameChangedAt || 0,
-    actors: {}
-  };
-  score = 0;
-  highScore = 0;
-  if (scoreEl) scoreEl.textContent = '0';
-  if (highScoreEl) highScoreEl.textContent = '0';
-  if (finalScoreEl) finalScoreEl.textContent = '0';
-  for (const p of sessionPlayers) {
-    if (p.isMe) p.trophies = 0;
-  }
-  try {
-    localStorage.setItem(TROPHY_STORAGE_KEY, JSON.stringify(trophiesData));
-    localStorage.setItem('lieberose_highscore', '0');
-  } catch (e) {}
-  playSound('bounce');
-  updateTrophyHud();
-  if (savedStatsBadge) {
-    savedStatsBadge.textContent = '✅ Pokale & Punkte wurden auf 0 gesetzt!';
-  }
-  if (settingsStatsText) {
-    settingsStatsText.textContent = '✅ Pokale & Punkte wurden auf 0 gesetzt!';
-  }
-  if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
-    showLeaderboard();
-  }
-}
-
 // ⛶ Vollbild-Modus: Versteckt die Browser-Adressleiste oben!
 function requestGameFullscreen() {
   try {
@@ -219,15 +168,6 @@ if (fullscreenBtn) {
 }
 if (settingsFullscreenBtn) {
   settingsFullscreenBtn.addEventListener('click', () => toggleGameFullscreen());
-}
-if (resetStatsStartBtn) {
-  resetStatsStartBtn.addEventListener('click', resetTrophiesAndScores);
-}
-if (settingsResetStatsBtn) {
-  settingsResetStatsBtn.addEventListener('click', resetTrophiesAndScores);
-}
-if (leaderboardResetBtn) {
-  leaderboardResetBtn.addEventListener('click', resetTrophiesAndScores);
 }
 
 // ⏳ 7-Tage-Sperre für Namensänderung prüfen
@@ -318,7 +258,7 @@ function updateTrophyHud() {
   if (highScoreEl) highScoreEl.textContent = bestRecord;
   trophyHudEl.classList.toggle('active-trophy', trophyMode);
   playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
-  leaderboardStartBtn.textContent = `🌍 GLOBALE RANGLISTE (${count} 🏆)`;
+  leaderboardStartBtn.textContent = `🏆 RANGLISTE (${count} 🏆)`;
   if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Spieler 1';
   const summaryText = `🏆 ${count} Pokale · 🎯 ${totalPts} Gesamtpunkte · 🏅 Rekord: ${bestRecord}`;
   if (savedStatsBadge) savedStatsBadge.textContent = summaryText;
@@ -557,7 +497,7 @@ function awardLevelTrophies(won) {
 
   saveTrophies();
   playSound('gem');
-  trophyRewardMsgEl.textContent = `🌍🏆 +${gained} POKAL! ${pEntry.name.toUpperCase()} IST JETZT MIT ${pEntry.trophies} 🏆 IN DER GLOBALEN RANGLISTE SICHTBAR!`;
+  trophyRewardMsgEl.textContent = `🏆 +${gained} POKAL! ${pEntry.name.toUpperCase()} HAT JETZT ${pEntry.trophies} 🏆 IN DER RANGLISTE!`;
 }
 
 // 🎭 Alte Charakter-Rangliste: Logik bleibt komplett erhalten, ist aber versteckt (kann später wiederkommen!)
@@ -605,12 +545,12 @@ function showLeaderboard() {
     `<div class="my-trophy-total">👤 ${activeName}: <b>${activeCount} 🏆</b> · 🎯 <b>${totalPts}</b> Punkte · 🏅 Rekord: <b>${bestRecord}</b></div>` +
     `<div class="my-trophy-sub">${
       isListedGlobally
-        ? '🌍✅ Deine Pokale & Punkte sind im Browser gespeichert und in der globalen Rangliste sichtbar!'
-        : 'ℹ️ Deine Pokale & Punkte werden automatisch im Browser gespeichert. Ab 1 Pokal 🏆 stehst du in der globalen Rangliste!'
+        ? '✅ Deine Pokale & Punkte sind auf diesem Gerät gespeichert und stehen in der Rangliste!'
+        : 'ℹ️ Deine Pokale & Punkte werden auf diesem Gerät gespeichert. Ab 1 Pokal 🏆 stehst du in der Rangliste!'
     }</div>`;
 
-  // Alle weltweiten Spieler mit Pokalen + der gespeicherte Benutzer (sobald er ≥ 1 Pokal hat!)
-  const pool = [...globalChallengers];
+  // Nur echte Spieler mit Pokalen – keine ausgedachten Bot-Namen!
+  const pool = [];
   for (const p of sessionPlayers) {
     if (p.name && p.trophies > 0) {
       pool.push(p);
@@ -619,20 +559,20 @@ function showLeaderboard() {
   const sortedPlayers = pool.sort((a, b) => b.trophies - a.trophies);
   const maxT = Math.max(1, sortedPlayers[0]?.trophies || 1);
   const medals = ['🥇', '🥈', '🥉'];
-  leaderboardList.innerHTML = sortedPlayers.map((p, idx) => {
+  leaderboardList.innerHTML = sortedPlayers.length ? sortedPlayers.map((p, idx) => {
     const rank = medals[idx] || `#${idx + 1}`;
     const pct = Math.round((p.trophies / maxT) * 100);
     const isMe = Boolean(p.isMe);
     return `<div class="lb-row ${idx === 0 && p.trophies > 0 ? 'lb-first' : ''} ${isMe ? 'lb-me' : ''}">` +
       `<span class="lb-rank">${rank}</span>` +
-      `<span class="lb-emoji">${isMe ? '⭐' : '🌍'}</span>` +
+      `<span class="lb-emoji">${isMe ? '⭐' : '🎮'}</span>` +
       `<div class="lb-info">` +
         `<div class="lb-name">${p.name}${isMe ? ' (DU · GESPEICHERT)' : ''}</div>` +
         `<div class="lb-bar"><i style="width:${pct}%;background:${isMe ? '#ffde59' : '#38bdf8'}"></i></div>` +
       `</div>` +
       `<span class="lb-count">${p.trophies} 🏆</span>` +
     `</div>`;
-  }).join('');
+  }).join('') : '<p class="my-trophy-sub">Noch hat niemand einen Pokal – hol dir den ersten! 🏆</p>';
 
   if (charLeaderboardSection) {
     charLeaderboardSection.innerHTML = buildCharacterLeaderboardHtml();

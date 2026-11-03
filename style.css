@@ -921,19 +921,6 @@ h2 {
   font-weight: 800;
 }
 
-.btn-reset-inline {
-  background: rgba(239, 68, 68, 0.25);
-  border: 1.5px solid rgba(248, 113, 113, 0.65);
-  color: #fecaca;
-  font-size: 0.8rem;
-  font-weight: 800;
-  padding: 5px 10px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-.btn-reset-inline:active {
-  transform: scale(0.95);
-}
 
 /* 🗺️ In der Runde: Kompaktes HUD für maximale Sicht auf die größere Map */
 body.in-round #hud {

@@ -74,9 +74,9 @@ const GAME_CONFIG = {
   bombSize: 36,
   // 🏅 Solo-Modus hat jetzt 1 direktes Match (keine Level-Anzeige im Solo-Modus)
   levels: [
-    { title: 'Arena-Match ⚡', throwMs: 1200, huntPlayer: 0.38 }
+    { title: 'Arena-Match ⚡', throwMs: 1200 } // Bots greifen dich genauso oft an wie sich gegenseitig (cpu.js)
   ],
-  // ⚔️ Team-Modus: 8 Level mit immer mehr Gegnern!
+  // ⚔️ Team-Modus: 8 Level. Gegner-Zahl = so viele Figuren, wie du im Team hast (teams.js) – `enemies` wird nicht mehr benutzt.
   teamLevels: [
     { title: 'Erste Schlacht 🌱',  enemies: 2,  throwMs: 1550 },
     { title: 'Zu zweit 🙂',        enemies: 3,  throwMs: 1450 },

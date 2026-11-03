@@ -43,6 +43,10 @@ let height = 640;
 // Game State
 let isPlaying = false;
 let isPaused = false;
+// 👀 Du bist raus, aber die Bots kämpfen im Hintergrund weiter, bis nur noch einer steht (knockout.js)
+let spectating = false;
+// Läuft gerade ein Kampf? (Du spielst – oder die Bots kämpfen ohne dich weiter)
+function battleRunning() { return isPlaying || spectating; }
 let score = 0;
 let highScore = 0;
 try {

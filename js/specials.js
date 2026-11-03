@@ -84,7 +84,7 @@ function isStunned(name) {
 
 // ⚡ Löst NUR die einzelne Spezialfähigkeit von `name` aus (für die Fähigkeits-Buttons nebeneinander!)
 function trySpecialOnly(name) {
-  if (!isPlaying || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
+  if (!battleRunning() || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
   if (!specialReady(name)) return false;
   const used = SPECIALS[kindOf(name)].use(name);
   if (used === false) return false;
@@ -96,7 +96,7 @@ function trySpecialOnly(name) {
 
 // Kraft oder Team-Combo auslösen (für Bots oder allgemeinen Auslöser).
 function trySpecial(name) {
-  if (!isPlaying || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
+  if (!battleRunning() || isPaused || !isAlive(name) || isStunned(name) || actors[name].jump) return false;
   if (!specialReady(name)) return false;
   const comboInfo = typeof findComboPartnerInfo === 'function' ? findComboPartnerInfo(name) : null;
   let used = false;

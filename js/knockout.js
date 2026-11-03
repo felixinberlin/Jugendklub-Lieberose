@@ -64,12 +64,26 @@ function checkKnockout(name) {
     return;
   }
 
-  // 😵 Deine eigene Figur ist raus? Dann ist das Spiel für dich vorbei.
-  if (name === playerActor) { endGame(null); return; }
+  const alive = Object.keys(actors).filter(isAlive);
+
+  // 😵 Deine eigene Figur ist raus? Dann ist das Spiel für dich vorbei –
+  // aber die Bots kämpfen im Hintergrund weiter, bis nur noch einer steht! 👀
+  if (name === playerActor) {
+    endGame(null);
+    if (alive.length > 1) spectating = true;
+    return;
+  }
 
   // 🏆 Nur noch eine Figur übrig? Dann hat sie gewonnen!
-  const alive = Object.keys(actors).filter(isAlive);
-  if (alive.length <= 1) endGame(alive[0]);
+  if (alive.length <= 1) {
+    if (spectating) {
+      // Du warst schon raus: nur noch verkünden, welcher Bot am Ende gewonnen hat
+      spectating = false;
+      if (alive[0]) winnerMsgEl.textContent = `😵 Du bist raus! · 🏆 ${actors[alive[0]].name} gewinnt am Ende!`;
+      return;
+    }
+    endGame(alive[0]);
+  }
 }
 
 // Spiel vorbei: Gewinner anzeigen.
