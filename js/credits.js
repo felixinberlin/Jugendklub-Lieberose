@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.43';
+const GAME_VERSION = '2.44';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -64,7 +64,8 @@ const WISHES = [
   { v: '2.40', text: 'Faire Kämpfe ⚖️: gleich große Teams, Bots greifen alle gleich oft an & kämpfen weiter, bis nur einer übrig ist 🤖 · Rangliste nur mit echten Spielern 🏆 · kein Auf-0-Setzen mehr 🔒' },
   { v: '2.41', text: 'Größere Map 🗺️ – mehr Platz zum Kämpfen auf dem Handy 📱 & neues Design: wütender Kobold mit gezackter Klinge 😠🗡️' },
   { v: '2.42', text: 'Kobold als ganze Figur ohne Kreis 😠🗡️ · Fledermaus: 100 Leben, 1,7 Schaden alle 1,2 Sekunden 🦇' },
-  { v: '2.43', text: 'Dein Spielername bleibt gespeichert – auch wenn du den Tab schließt 💾👤' }
+  { v: '2.43', text: 'Dein Spielername bleibt gespeichert – auch wenn du den Tab schließt 💾👤' },
+  { v: '2.44', text: 'Neues Design: feuerspeiender Drache im Feuersturm 🐉🔥 & wütender Mais mit Lanze 🌽😡' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

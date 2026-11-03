@@ -16,6 +16,7 @@ const GAME_CONFIG = {
   koboldImage: 'kobold.png', // 😠🗡️ Neues Design: Wütender Kobold mit gezackter Klinge (ausgeschnitten, ohne Kreis) (Emoji nur, falls das Bild nicht lädt)
   koboldSize: 70,
   cornEmoji: '🌽',
+  cornImage: 'mais.png', // 🌽😡 Neues Design: wütender Mais mit gezackter Lanze (Emoji nur, falls das Bild nicht lädt)
   cornSize: 74,
   cornBomb: '🟡',        // 🌽 Der Mais schießt einzelne Maiskörner
   cornBombSize: 18,
@@ -45,6 +46,7 @@ const GAME_CONFIG = {
   yamalSize: 65,
   yamalBomb: '⚽',
   dracheEmoji: '🐉',
+  dracheImage: 'drache.png', // 🐉🔥 Neues Design: Dramatischer Drache im Feuersturm (Emoji nur, falls das Bild nicht lädt)
   dracheSize: 74,
   dracheBomb: '🐾',      // 🐉 Tobis Drache macht eine scharfe Kratzspur!
   dracheBombSize: 38,
