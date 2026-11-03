@@ -68,10 +68,13 @@ function actorCfg(name, key) { return GAME_CONFIG[`${kindOf(name)}${key}`]; }
 function actorBtn(name) { return document.getElementById(`${name}Btn`); }
 
 // Emoji und Größe kommen aus config.js (z. B. koboldEmoji, katzeSize) + mapScale für größere Map-Übersicht.
-// 📱 Handy (kleiner Bildschirm) = noch kleinere Figuren, damit mehr Platz zum Kämpfen ist
-function mapScale() {
+function mapScale() { return GAME_CONFIG.mapScale || 0.72; }
+
+// 🔭 Handy (kleiner Bildschirm): Die ganze Kampf-Welt wird herausgezoomt gemalt.
+// Die Welt ist dann größer als der Bildschirm in Pixeln: Welt-Punkt × viewZoom() = Bildschirm-Punkt.
+function viewZoom() {
   const phone = Math.min(window.innerWidth, window.innerHeight) < 500;
-  return (phone && GAME_CONFIG.phoneMapScale) || GAME_CONFIG.mapScale || 0.72;
+  return phone ? (GAME_CONFIG.phoneZoom || 1) : 1;
 }
 function actorEmoji(name) { return actorCfg(name, 'Emoji'); }
 // Für Auswahl-Kacheln: eigenes Bild (z. B. Kobold) oder Emoji
@@ -110,8 +113,9 @@ function moveActor(name, x, y) {
   Body.setPosition(actor.body, position);
   const button = actorBtn(name);
   if (!button) return;
-  button.style.left = `${position.x}px`;
-  button.style.top = `${position.y}px`;
+  // Knopf liegt auf dem Bildschirm → Welt-Position mal Zoom
+  button.style.left = `${position.x * viewZoom()}px`;
+  button.style.top = `${position.y * viewZoom()}px`;
 }
 
 // Alle Figuren zurück an ihren Startplatz und Lebenspunkte setzen!
@@ -157,9 +161,9 @@ for (const name in actors) {
   });
   button.addEventListener('pointermove', (event) => {
     if (!drag || drag.id !== event.pointerId) return;
-    const dx = event.clientX - drag.startX;
-    const dy = event.clientY - drag.startY;
-    if (Math.hypot(dx, dy) >= GAME_CONFIG.dragThreshold) drag.moved = true;
+    const dx = (event.clientX - drag.startX) / viewZoom(); // Finger-Weg in Welt-Pixeln
+    const dy = (event.clientY - drag.startY) / viewZoom();
+    if (Math.hypot(dx, dy) * viewZoom() >= GAME_CONFIG.dragThreshold) drag.moved = true;
     if (drag.moved) {
       suppressClick = true;
       moveActor(name, drag.x + dx, drag.y + dy);

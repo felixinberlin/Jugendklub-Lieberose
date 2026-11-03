@@ -125,5 +125,5 @@ function handleSkyTap(x, y) {
 canvas.addEventListener('pointerdown', (event) => {
   initAudio();
   const rect = canvas.getBoundingClientRect();
-  handleSkyTap(event.clientX - rect.left, event.clientY - rect.top);
+  handleSkyTap((event.clientX - rect.left) / viewZoom(), (event.clientY - rect.top) / viewZoom());
 });

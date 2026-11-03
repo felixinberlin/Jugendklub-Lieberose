@@ -62,13 +62,13 @@ window.addEventListener('scroll', () => { steerCanvasRect = null; }, { passive: 
 // 👆 Finger verfolgen, damit du den Riesenball lenken kannst
 canvas.addEventListener('pointerdown', (event) => {
   steerCanvasRect = canvas.getBoundingClientRect();
-  steer = { active: true, id: event.pointerId, x: event.clientX - steerCanvasRect.left, y: event.clientY - steerCanvasRect.top };
+  steer = { active: true, id: event.pointerId, x: (event.clientX - steerCanvasRect.left) / viewZoom(), y: (event.clientY - steerCanvasRect.top) / viewZoom() };
 });
 window.addEventListener('pointermove', (event) => {
   if (!steer.active || event.pointerId !== steer.id) return;
   const rect = getSteerCanvasRect();
-  steer.x = event.clientX - rect.left;
-  steer.y = event.clientY - rect.top;
+  steer.x = (event.clientX - rect.left) / viewZoom(); // Bildschirm → Welt
+  steer.y = (event.clientY - rect.top) / viewZoom();
 });
 for (const type of ['pointerup', 'pointercancel']) {
   window.addEventListener(type, (event) => {

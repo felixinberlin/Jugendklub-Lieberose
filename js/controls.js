@@ -440,8 +440,8 @@ window.addEventListener('blur', () => {
 canvas.addEventListener('pointerdown', (event) => {
   if (!isPlaying || isPaused) return;
   const rect = canvas.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
+  const x = (event.clientX - rect.left) / viewZoom(); // Bildschirm → Welt
+  const y = (event.clientY - rect.top) / viewZoom();
 
   if (teamMode) {
     for (const mate of chosenTeam) {

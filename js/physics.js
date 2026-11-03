@@ -92,18 +92,20 @@ function resizeCanvas() {
   // Höchstens 2-fache Pixeldichte: Bei 3 müsste das Handy 2,25-mal so viele Pixel malen,
   // ohne dass man den Unterschied sieht. Das spart viel Tempo!
   const dpr = Math.min(window.devicePixelRatio || 1, GAME_CONFIG.maxPixelRatio);
-  if (renderDpr !== dpr && typeof spriteCache !== 'undefined') {
+  const zoom = viewZoom(); // 🔭 Handy: herausgezoomt (actors.js)
+  if (renderDpr !== dpr * zoom && typeof spriteCache !== 'undefined') {
     spriteCache.clear();
   }
-  renderDpr = dpr; // Für den Bilder-Speicher (sprites.js)
+  renderDpr = dpr * zoom; // Für den Bilder-Speicher (sprites.js)
   const oldWidth = width;
   const oldHeight = height;
-  width = rect.width;
-  height = rect.height;
+  // Die Welt ist um den Zoom größer als der Bildschirm → mehr Platz zum Kämpfen
+  width = rect.width / zoom;
+  height = rect.height / zoom;
 
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
-  ctx.scale(dpr, dpr);
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr * zoom, dpr * zoom);
 
   for (const name in actors) {
     const body = actors[name].body;
