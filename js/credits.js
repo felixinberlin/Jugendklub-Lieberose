@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.50';
+const GAME_VERSION = '2.51';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -71,7 +71,8 @@ const WISHES = [
   { v: '2.47', text: 'Neue Designs: wilde Katze mit Stachelkeule 🐱🔥 & Goblin als Lava-Dämon mit Dreizack 👺🔱' },
   { v: '2.48', text: 'Auf dem Handy herausgezoomt 🔭📱 – viel mehr Platz zum Kämpfen' },
   { v: '2.49', text: 'Ziel-Modus 🎯: gedrückt halten = besser zielen, TAB oder 🎯-Knopf wechselt den Gegner' },
-  { v: '2.50', text: 'Hauptmenü nur im Hochformat 📱↕️, noch mehr Platz auf dem Handy 🔭 & zufällige Bot-Figuren 🎲' }
+  { v: '2.50', text: 'Hauptmenü nur im Hochformat 📱↕️, noch mehr Platz auf dem Handy 🔭 & zufällige Bot-Figuren 🎲' },
+  { v: '2.51', text: 'Neues Design: Kriegermaus mit Stachelhelm und Lanze 🐭⚔️' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

@@ -27,6 +27,7 @@ const GAME_CONFIG = {
   katzeSize: 70,
   katzeBomb: '🐟',       // 🐱 Die Katze wirft Fische
   mausEmoji: '🐭',
+  mausImage: 'maus.png', // 🐭⚔️ Neues Design: Kriegermaus mit Stachelhelm und Lanze
   mausSize: 60,
   mausBomb: '🧀',        // 🐭 Die Maus wirft Käse!
   goblinEmoji: '👺',
