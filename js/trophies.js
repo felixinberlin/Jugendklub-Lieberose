@@ -4,7 +4,8 @@
  * - 100% DATENSCHUTZ: Niemand muss echte Namen eingeben! Coole Zufalls-Spitznamen zum Auswählen.
  * - ÖFFENTLICHE HIGHSCORES: Treffer-Rekorde (🎯) und Meister-Pokale (🏆) für alle sichtbar.
  * - SPITZNAME WÄHLEN: Beim Start, vor jedem Match, in den Einstellungen oder direkt in der Rangliste mit 🎲 würfeln.
- * - LOKAL GESPEICHERT: Alles bleibt sicher im Browser auf dem Gerät (localStorage), ohne Server.
+ * - NUR ZUFALLS-NAMEN: Freier Text ist gesperrt – erlaubt sind nur Namen aus den Wortlisten (prüft auch der Server).
+ * - ONLINE-RANGLISTE: Spitzname + Punkte + Pokale gehen an /api/highscores (Upstash). Sonst bleibt alles im Browser.
  */
 
 // 🎭 4 kuratierte Wortlisten für den Zufalls-Namensgenerator (Datenschutz)
@@ -93,6 +94,20 @@ function generateRandomNickname() {
 
   const emoji = NICKNAME_EMOJIS[Math.floor(Math.random() * NICKNAME_EMOJIS.length)];
   return `${emoji} ${prefix}-${ending}`;
+}
+
+// ✅ Ist das ein Name aus unseren Wortlisten? (Gleiche Prüfung wie in api/highscores.js)
+const NICK_PREFIX_SET = new Set([...NICKNAME_COOL_PREFIXES, ...NICKNAME_FUNNY_PREFIXES]);
+const NICK_ENDING_SET = new Set([...NICKNAME_COOL_ENDINGS, ...NICKNAME_FUNNY_ENDINGS]);
+const NICK_EMOJI_SET = new Set(NICKNAME_EMOJIS);
+function isValidNickname(name) {
+  if (typeof name !== 'string') return false;
+  const space = name.indexOf(' ');
+  const dash = name.indexOf('-', space + 1);
+  if (space < 1 || dash < 0) return false;
+  return NICK_EMOJI_SET.has(name.slice(0, space)) &&
+    NICK_PREFIX_SET.has(name.slice(space + 1, dash)) &&
+    NICK_ENDING_SET.has(name.slice(dash + 1));
 }
 
 function getNicknameSuggestions(count = 5, exclude = '') {
@@ -234,7 +249,7 @@ function clearPendingSync() {
 // Sobald der Browser wieder online geht: Vormerkte Offline-Highscores sofort in die Cloud schicken!
 async function tryFlushPendingSync() {
   const pending = getPendingSync();
-  if (!pending || !pending.name) return;
+  if (!pending || !isValidNickname(pending.name)) { clearPendingSync(); return; }
   if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
 
   try {
@@ -361,7 +376,7 @@ async function sendScoreToOnlineDb(name, score, trophies, actor) {
 // 🔒 Reserviert den Spitznamen atomar in der Online-Datenbank (Redis SET ... NX)
 async function reserveNicknameOnline(name) {
   const clean = (name || '').trim();
-  if (!clean || clean.length < 2) return { ok: false, error: 'Zu kurz' };
+  if (!isValidNickname(clean)) return { ok: false, error: 'Kein Zufalls-Name' };
 
   const pid = getOrCreatePlayerId();
   const secret = getOrCreatePlayerSecret();
@@ -470,6 +485,7 @@ function recordPublicHighScore(name, matchScore, totalTrophies, actorName, isTea
   }
 
   savePublicHighScoresList(list);
+  if (!isValidNickname(cleanName)) return list; // Alte/freie Namen nicht hochladen
 
   const pid = getOrCreatePlayerId();
   const secret = getOrCreatePlayerSecret();
@@ -556,7 +572,7 @@ function loadTrophies() {
       totalScore: Number(raw.totalScore) || 0,
       highScore: savedHigh,
       nameChangedAt: Number(raw.nameChangedAt) || 0,
-      playerName: typeof raw.playerName === 'string' ? raw.playerName.slice(0, 32) : '', // 👤 Gespeicherter Spielername
+      playerName: typeof raw.playerName === 'string' ? raw.playerName.slice(0, 40) : '', // 👤 Gespeicherter Spielername
       actors: (raw.actors && typeof raw.actors === 'object') ? raw.actors : {}
     };
   } catch (e) {
@@ -686,7 +702,7 @@ function getOrCreatePlayerEntry(name) {
 
 function registerOrUpdatePlayerName(newName, isInitial) {
   const clean = (newName || '').trim();
-  if (clean.length < 2) return false;
+  if (!isValidNickname(clean)) return false; // 🛡️ Nur Zufalls-Namen, kein freier Text
   if (!isInitial && cooldownMsRemaining() > 0) return false;
   currentPlayerName = clean;
   trophiesData.playerName = clean; // 💾 bleibt im Browser, auch nach Tab-Schließen
@@ -754,6 +770,12 @@ function updateTrophyHud() {
 
 // 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen mit Zufalls-Vorschlägen
 function initWelcomeRegistration() {
+  // 🛡️ Alte, selbst getippte Namen gibt es nicht mehr → neuen Zufalls-Namen wählen lassen
+  if (trophiesData.playerName && !isValidNickname(trophiesData.playerName)) {
+    trophiesData.playerName = '';
+    currentPlayerName = '';
+    trophiesData.nameChangedAt = 0;
+  }
   // 💾 Gespeicherten Namen aus dem Browser zurückholen
   if (!currentPlayerName && trophiesData.playerName) {
     currentPlayerName = trophiesData.playerName;
@@ -1140,7 +1162,7 @@ function renderLeaderboardRows(allScores) {
   if (lbTabHighscore) lbTabHighscore.classList.toggle('active', isHighscoreTab);
   if (lbTabTrophies) lbTabTrophies.classList.toggle('active', !isHighscoreTab);
 
-  const sorted = [...(allScores || [])].sort((a, b) => {
+  const sorted = [...(allScores || [])].filter(p => isValidNickname(p.name)).sort((a, b) => {
     if (isHighscoreTab) {
       return (b.score - a.score) || (b.trophies - a.trophies);
     }

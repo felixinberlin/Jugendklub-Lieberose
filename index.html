@@ -27,12 +27,12 @@
       <div id="welcomeNameScreen" class="overlay-screen">
         <div class="badge">🔒 100% DATENSCHUTZ</div>
         <h2>WÄHLE DEINEN SPITZNAMEN! 🎭</h2>
-        <p class="team-hint">Wähle einen coolen Namen für die <b>öffentliche Rangliste & Highscores</b>!<br><small>🛡️ Bitte <b>keinen echten Namen</b> eingeben – such dir einfach einen Zufalls-Namen aus!</small></p>
+        <p class="team-hint">Wähle einen coolen Namen für die <b>öffentliche Rangliste & Highscores</b>!<br><small>🛡️ Tipp einen Vorschlag an oder würfle mit 🎲 neue Namen!</small></p>
         <div class="mode-card trophy-card">
           <div class="name-input-wrap">
             <label for="welcomeNameInput">🎭 Dein Spitzname (Adjektiv + Nomen):</label>
             <div class="name-input-row">
-              <input id="welcomeNameInput" class="player-name-input" type="text" maxlength="32" placeholder="Zufalls-Name..." autocomplete="off">
+              <input id="welcomeNameInput" class="player-name-input" type="text" readonly placeholder="Zufalls-Name..." autocomplete="off">
               <button id="welcomeRandomBtn" class="btn btn-dice" type="button" title="5 andere Namen würfeln">🎲 5 andere Namen</button>
             </div>
           </div>
@@ -80,7 +80,7 @@
           <div class="name-input-wrap">
             <label for="settingsNameInput">Neuer Spitzname (Adjektiv + Nomen):</label>
             <div class="name-input-row">
-              <input id="settingsNameInput" class="player-name-input" type="text" maxlength="32" placeholder="Neuer Spitzname..." autocomplete="off">
+              <input id="settingsNameInput" class="player-name-input" type="text" readonly placeholder="Neuer Spitzname..." autocomplete="off">
               <button id="settingsRandomBtn" class="btn btn-dice" type="button" title="5 andere Namen würfeln">🎲 5 andere Namen</button>
             </div>
           </div>
@@ -128,7 +128,7 @@
           <div class="name-input-wrap">
             <label for="playerNameInput">👤 Registrierter Spieler:</label>
             <div class="name-input-row">
-              <input id="playerNameInput" class="player-name-input" type="text" maxlength="24" placeholder="Dein Name..." autocomplete="off">
+              <input id="playerNameInput" class="player-name-input" type="text" readonly placeholder="Dein Name..." autocomplete="off">
               <button id="modeRandomBtn" class="btn btn-dice" type="button" title="Zufälligen Namen würfeln">🎲</button>
             </div>
           </div>

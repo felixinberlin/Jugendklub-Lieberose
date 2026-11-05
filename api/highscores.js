@@ -6,9 +6,8 @@
  * - Interne Identifikation über geheime Spieler-Credentials (playerId + playerSecret).
  * - Generiert 5 verifizierte, freie Namens-Vorschläge auf Knopfdruck.
  * - Unterstützt Offline-Queue, Namens-Löschung und Download-Version (CORS).
+ * - NUR Namen aus den Wortlisten (isValidNickname), Bremse pro IP (isRateLimited).
  */
-
-const fs = require('fs');
 
 // --- 4 kuratierte Wortlisten für den Zufalls-Namensgenerator ---
 // 1. Coole Vorsilben (123 Wörter)
@@ -97,44 +96,66 @@ function generateCandidateNickname() {
   return `${emoji} ${prefix}-${ending}`;
 }
 
-function getEnv(key) {
-  if (process.env[key]) return process.env[key];
-  try {
-    if (fs.existsSync('vercel.env')) {
-      const content = fs.readFileSync('vercel.env', 'utf8');
-      for (const line of content.split(/\r?\n/)) {
-        const idx = line.indexOf('=');
-        if (idx > 0 && line.slice(0, idx).trim() === key) {
-          let v = line.slice(idx + 1).trim();
-          if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
-            v = v.slice(1, -1);
-          }
-          return v;
-        }
-      }
-    }
-  } catch (e) {}
-  return null;
+// ✅ Nur Namen aus den Wortlisten sind erlaubt – kein freier Text (Datenschutz & keine Beleidigungen)
+const PREFIX_SET = new Set([...NICKNAME_COOL_PREFIXES, ...NICKNAME_FUNNY_PREFIXES]);
+const ENDING_SET = new Set([...NICKNAME_COOL_ENDINGS, ...NICKNAME_FUNNY_ENDINGS]);
+const EMOJI_SET = new Set(NICKNAME_EMOJIS);
+function isValidNickname(name) {
+  if (typeof name !== 'string') return false;
+  const space = name.indexOf(' ');
+  const dash = name.indexOf('-', space + 1);
+  if (space < 1 || dash < 0) return false;
+  return EMOJI_SET.has(name.slice(0, space)) &&
+    PREFIX_SET.has(name.slice(space + 1, dash)) &&
+    ENDING_SET.has(name.slice(dash + 1));
 }
 
-const REDIS_URL = getEnv('KV_REST_API_URL') || getEnv('UPSTASH_REDIS_REST_URL');
-const REDIS_TOKEN = getEnv('KV_REST_API_TOKEN') || getEnv('UPSTASH_REDIS_REST_TOKEN');
+// 🔑 Zugangsdaten NUR aus den Vercel-Umgebungsvariablen (nie aus einer Datei im Projektordner –
+// die würde sonst von serve.sh / als statische Datei mit ausgeliefert).
+const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 
-async function redisExec(command, ...args) {
+async function redisCall(path, payload) {
   if (!REDIS_URL || !REDIS_TOKEN) {
     throw new Error('KV_REST_API_URL oder KV_REST_API_TOKEN nicht konfiguriert');
   }
-  const res = await fetch(REDIS_URL, {
+  const res = await fetch(REDIS_URL.replace(/\/$/, '') + path, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${REDIS_TOKEN}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify([command, ...args])
+    body: JSON.stringify(payload)
   });
-  const data = await res.json();
+  return res.json();
+}
+
+async function redisExec(command, ...args) {
+  const data = await redisCall('', [command, ...args]);
   if (data.error) throw new Error(data.error);
   return data.result;
+}
+
+// Mehrere Befehle in EINER Anfrage (Upstash-Pipeline)
+async function redisPipeline(commands) {
+  const data = await redisCall('/pipeline', commands);
+  if (!Array.isArray(data)) throw new Error((data && data.error) || 'Pipeline-Fehler');
+  return data.map(r => {
+    if (r.error) throw new Error(r.error);
+    return r.result;
+  });
+}
+
+// 🚦 Bremse: höchstens RATE_LIMIT Anfragen pro Minute und IP.
+// Großzügig, weil im Jugendklub alle Handys über DIESELBE IP ins Internet gehen.
+const RATE_LIMIT = 120;
+async function isRateLimited(req) {
+  if (!REDIS_URL || !REDIS_TOKEN) return false;
+  const h = req.headers || {};
+  const ip = String(h['x-real-ip'] || String(h['x-forwarded-for'] || '').split(',')[0] || 'unknown').trim().slice(0, 64);
+  const key = `rl:${ip}:${Math.floor(Date.now() / 60000)}`;
+  const [count] = await redisPipeline([['INCR', key], ['EXPIRE', key, 120]]);
+  return Number(count) > RATE_LIMIT;
 }
 
 // Authentifiziert den Spieler über sein privates Secret
@@ -152,45 +173,35 @@ async function verifyPlayerAuth(playerId, playerSecret) {
   return stored === playerSecret;
 }
 
-// Holt 5 freie, verfügbare Zufalls-Namen
+// Holt 5 freie, verfügbare Zufalls-Namen – mit EINER Datenbank-Abfrage (MGET)
 async function getUniqueSuggestions(count = 5) {
-  const suggestions = [];
-  const tried = new Set();
-  let attempts = 0;
+  const candidates = new Set();
+  for (let i = 0; i < 100 && candidates.size < count * 3; i++) candidates.add(generateCandidateNickname());
+  let list = [...candidates];
 
-  while (suggestions.length < count && attempts < 40) {
-    attempts++;
-    const candidate = generateCandidateNickname();
-    if (tried.has(candidate)) continue;
-    tried.add(candidate);
-
-    if (REDIS_URL && REDIS_TOKEN) {
-      const norm = candidate.toLowerCase();
-      const exists = await redisExec('EXISTS', `nickname:${norm}`);
-      if (Number(exists) === 1) continue; // Bereits von jemandem reserviert
-    }
-    suggestions.push(candidate);
+  if (REDIS_URL && REDIS_TOKEN) {
+    const owners = await redisExec('MGET', ...list.map(c => `nickname:${c.toLowerCase()}`));
+    if (Array.isArray(owners)) list = list.filter((_, i) => !owners[i]);
   }
 
-  // Fallback, falls DB nicht antwortet oder Set voll ist
-  while (suggestions.length < count) {
-    suggestions.push(generateCandidateNickname());
-  }
-
-  return suggestions;
+  // Fallback, falls (sehr unwahrscheinlich) fast alles belegt ist
+  while (list.length < count) list.push(generateCandidateNickname());
+  return list.slice(0, count);
 }
 
 // Holt die Top 20 Highscores aus Redis
 async function getTopScores(limit = 20) {
   if (!REDIS_URL || !REDIS_TOKEN) return [];
 
-  const rawPairs = await redisExec('ZREVRANGE', 'fightzone_scores', 0, limit - 1, 'WITHSCORES');
+  // Etwas mehr holen, weil alte, frei getippte Namen ausgeblendet werden
+  const rawPairs = await redisExec('ZREVRANGE', 'fightzone_scores', 0, limit * 3 - 1, 'WITHSCORES');
   if (!Array.isArray(rawPairs) || rawPairs.length === 0) return [];
 
   const players = [];
   const names = [];
-  for (let i = 0; i < rawPairs.length; i += 2) {
+  for (let i = 0; i < rawPairs.length && players.length < limit; i += 2) {
     const name = rawPairs[i];
+    if (!isValidNickname(name)) continue;
     const score = Number(rawPairs[i + 1]) || 0;
     players.push({ name, score, trophies: 0, actor: 'katze', date: Date.now() });
     names.push(name);
@@ -229,6 +240,10 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    if (await isRateLimited(req)) {
+      return res.status(429).json({ ok: false, error: 'TOO_MANY', message: 'Zu viele Anfragen – kurz durchatmen und gleich nochmal! ⏳' });
+    }
+
     const action = req.query?.action || (req.body && req.body.action) || 'get';
 
     // --- GET /api/highscores (mit Option ?action=suggestions) ---
@@ -250,6 +265,9 @@ module.exports = async function handler(req, res) {
       body = body || {};
 
       const postAction = body.action || 'submit';
+      if (!['suggestions', 'submit', 'reserve_name', 'delete_name'].includes(postAction)) {
+        return res.status(400).json({ ok: false, error: 'Unbekannte Aktion.' });
+      }
 
       // 1. Namens-Vorschläge anfordern
       if (postAction === 'suggestions') {
@@ -270,13 +288,17 @@ module.exports = async function handler(req, res) {
         return res.status(401).json({ ok: false, error: 'UNAUTHORIZED', message: 'Zugriff verweigert (falsches playerSecret für diese playerId).' });
       }
 
-      const rawName = String(body.name || '').trim();
-      if (rawName.length < 2 || rawName.length > 36) {
-        return res.status(400).json({ ok: false, error: 'Name muss 2 bis 36 Zeichen lang sein.' });
-      }
-
-      const cleanName = rawName.replace(/[<>"']/g, ''); // XSS-Schutz
+      const cleanName = String(body.name || '').trim().slice(0, 40);
       const normName = cleanName.toLowerCase();
+
+      // Löschen geht auch für alte, frei getippte Namen (damit man sie loswird) –
+      // alles andere NUR mit Namen aus den Wortlisten.
+      if (postAction !== 'delete_name' && !isValidNickname(cleanName)) {
+        return res.status(400).json({ ok: false, error: 'INVALID_NAME', message: 'Bitte wähle einen Zufalls-Namen aus den Vorschlägen 🎲.' });
+      }
+      if (cleanName.length < 2) {
+        return res.status(400).json({ ok: false, error: 'Name fehlt.' });
+      }
 
       // --- AKTION: Namen löschen / freigeben ---
       if (postAction === 'delete_name') {
@@ -361,6 +383,6 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ ok: false, error: 'Methode nicht erlaubt' });
   } catch (err) {
     console.error('API-Fehler:', err);
-    return res.status(500).json({ ok: false, error: err.message });
+    return res.status(500).json({ ok: false, error: 'Serverfehler – bitte später nochmal versuchen.' });
   }
 };
