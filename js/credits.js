@@ -80,9 +80,7 @@ const WISHES = [
   { v: '2.56', text: 'Neuer Hintergrund im Hauptmenü & auf der Map: Samurai-Arena unter dem roten Blutmond 🌕⛩️' },
   { v: '2.57', text: 'Alle schießen mit ihren eigenen Waffen ⚔️: Klinge 🗡️, Lanze, Stachelkeule 🏏, Hackmesser-Lanze 🪓, Lava-Dreizack 🔱 & Feuerball 🔥' },
   { v: '2.58', text: 'Größere, gut sichtbare Waffen ⚔️ & saubere Figuren-Kacheln ohne Kraft-Zeichen' },
-  { v: '2.59', text: 'Öffentliche Highscore-Rangliste 🏆 & 100% Datenschutz mit coolen Zufalls-Spitznamen 🎲🎭' },
-  { v: '2.60', text: 'Live-Cloud-Rangliste ☁️🏆 & 4-Listen-Zufallsgenerator 🎲 mit atomarer Namens-Reservierung (SET NX) und Offline-Sync!' },
-  { v: '2.61', text: 'Wunsch per WhatsApp 📱: Rangliste aufgeräumt 🧹 (keine 0-Punkte-Einträge), nur noch Zufalls-Namen 🎲 & Schutz vor Spam 🛡️' }
+  { v: '2.61', text: 'Wunsch per WhatsApp 📱: Online-Rangliste ☁️🏆 für alle Handys – mit coolen Zufalls-Namen 🎲, ohne echte Namen 🛡️ & ohne 0-Punkte-Einträge 🧹' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
