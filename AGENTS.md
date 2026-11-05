@@ -22,8 +22,8 @@ If a user request would violate any of these, stop and clarify first:
 
 1. **NEVER introduce a build step.** No npm bundlers (Webpack, Vite, Rollup), no `package.json` scripts, no TypeScript compilation. The site must run by opening static HTML directly in any browser.
 2. **NEVER add a heavy framework.** No React, Vue, Svelte, Tailwind CLI, Phaser, or Unity WebGL. Pure Vanilla HTML5 + CSS + Modern JS only.
-3. **NEVER add a backend.** No API routes, no serverless functions, no external database. Everything runs client-side in the browser.
-4. **NEVER transmit or store personal data.** No analytics, no cookies, no tracking, no photos, no telemetry. **Ausnahme (vom Betreuer erlaubt):** der selbst gewählte Spielername darf im `localStorage` des Geräts gespeichert werden (`trophiesData.playerName`) – er wird nie übertragen. If sensors/mic/camera are used, data remains purely in memory on the device and vanishes upon tab close.
+3. **NEVER add a backend.** No API routes, no serverless functions, no external database. Everything runs client-side in the browser. **Einzige Ausnahme (vom Betreuer entschieden, 5.11.2026):** die Online-Rangliste `api/highscores.js` (Vercel Function + Upstash Redis). Sie bleibt die EINZIGE Server-Datei – keine weiteren Endpunkte, und das Spiel muss ohne sie (offline / `file://`) voll spielbar bleiben.
+4. **NEVER transmit or store personal data.** No analytics, no cookies, no tracking, no photos, no telemetry. **Ausnahme (vom Betreuer erlaubt):** der selbst gewählte Spielername darf im `localStorage` des Geräts gespeichert werden (`trophiesData.playerName`) Für die **Online-Rangliste** werden übertragen und gespeichert: Zufalls-Spitzname, Punkte, Pokale, Figur, Datum sowie eine zufällige Geräte-ID + Geheimnis (`playerId`/`playerSecret`, nur zur Namens-Zuordnung). Der Spitzname darf NUR aus den Wortlisten kommen (`isValidNickname()` im Browser UND im Server) – **niemals freie Texteingabe** (Kinder würden echte Namen/Beleidigungen tippen); Namensfelder sind `readonly`. If sensors/mic/camera are used, data remains purely in memory on the device and vanishes upon tab close.
 5. **NEVER rely on flaky external CDNs.** Vendor libraries locally (like `matter.min.js`), or pin reliable CDNs (`cdn.jsdelivr.net` / `cdnjs.cloudflare.com`). Youth club Wi-Fi can drop at any moment.
 6. **NEVER write English UI text.** All user-facing strings, buttons, instructions, and error messages MUST be in **German**. Code comments may be German or English.
 7. **NEVER require authentication.** Everything is open and anonymous.
@@ -38,7 +38,8 @@ If a user request would violate any of these, stop and clarify first:
 ├── README.md         # Human-facing overview with live link and QR code
 ├── vercel.json       # Cache-Control: max-age=0 (ensures fresh code on refresh)
 ├── deploy.sh         # 1-command git add/commit/push script (updates Vercel in 15s)
-├── serve.sh          # Lokale Vorschau ohne Cache: ./serve.sh → http://localhost:8000
+├── serve.sh          # Lokale Vorschau ohne Cache: ./serve.sh → http://localhost:8000 (liefert keine .env/.git/api aus)
+├── api/highscores.js # ☁️ EINZIGE Server-Datei: Online-Rangliste (Vercel Function + Upstash Redis), siehe §2.3 / Lesson 27
 ├── qr-code.png       # Scannable QR code for the projector screen
 ├── index.html        # Main landing page / active live game
 ├── style.css         # Arcade styling, safe-area insets, mobile touch lock
@@ -59,6 +60,7 @@ If a user request would violate any of these, stop and clarify first:
 │   ├── cpu.js        #   🎮 Figuren-Auswahl, Computer-Gegner, „⭐ DU“
 │   ├── teams.js      #   ⚔️ Team-Modus: mehrere Figuren, rote Gegner-Kopien, 8 Level
 │   ├── specials.js   #   ⚡ Spezialkräfte (Knopf unten links, lädt mit 20 Treffern): Riesenball, Mini-Kobolde, Wirbelsprung, Popcorn, Feuerspeer
+│   ├── trophies.js   #   🏆 Pokale, Zufalls-Spitznamen (nur Wortlisten!), Rangliste online + offline
 │   ├── credits.js    #   🎬 Abspann + GAME_VERSION – JEDER Kinder-Wunsch bekommt hier eine Zeile! (Abspann-Knopf: ☰ → Einstellungen)
 │   ├── levels.js     #   🏅 5 Level, Level-Schild, Weiter/Nochmal
 │   ├── README.md     #   📖 Kinder-Doku auf Deutsch – bei neuen Dateien/Funktionen mitpflegen!
@@ -187,7 +189,7 @@ btn.addEventListener('click', async () => {
 - **Bright, high-contrast arcade colors:** Fun gradients, neon highlights, particles.
 - **Hilarious fail states:** Losing should be funny, never punishing.
 - **Instant Restart:** Single, prominent *"NOCHMAL SPIELEN 🔄"* button.
-- **Score Memory:** Only game numbers (e.g. `lieberose_highscore`) plus the self-chosen player name in `localStorage` – never sent anywhere.
+- **Score Memory:** Only game numbers (e.g. `lieberose_highscore`) plus the chosen random nickname in `localStorage`. Only the online leaderboard (Lesson 27) sends nickname + score to the server.
 
 ---
 
@@ -221,7 +223,7 @@ btn.addEventListener('click', async () => {
 24. **Bewegte Ziele & Flugzeit:** Bomben fliegen 42 Bilder lang. Kreist/rennt das Ziel weiter, landet die Bombe dort, wo es VORHER war. Lösung: Zielposition vorausberechnen (`decoyFor(..., 42)`). Ohne das fingen die Mini-Kobolde nur 7/12 Bomben, mit 12/12.
 25. **Tempo bei vielen Figuren:** Gemessen (Playwright, Pixeldichte 3, Team-Level 8 mit 13 Figuren): 26 fps mit Rucklern bis 267 ms. Ursache: farbige Emojis per `fillText` jedes Bild neu rastern + 2,6 Mio. Pixel Leinwand. Lösung: Bilder-Speicher (`sprites.js`) + `maxPixelRatio: 2` → 58 fps. Messen mit `requestAnimationFrame`-Zähler; headless-Chromium malt ohne GPU, also nur Vorher/Nachher vergleichen.
 26. **Zuschauer-Modus (Solo):** Ist die eigene Figur raus, setzt `checkKnockout` nach `endGame(null)` `spectating = true` (`js/state.js`) – die Bots kämpfen hinter dem Game-Over-Bildschirm weiter, bis einer übrig ist. Alles, was Kämpfe antreibt (Kollisionen, `shootBomb`, `trySpecial`, Combos, `gameLoop`), fragt deshalb `battleRunning()` statt `isPlaying`; Spieler-Eingaben fragen weiter `isPlaying`.
-27. **Keine echte globale Rangliste:** Über alle Handys ginge nur mit Server (verboten, §2). Die Rangliste zeigt nur Spieler mit Pokalen von diesem Gerät, KEINE ausgedachten Bot-Namen. Auf 0 setzen gibt es absichtlich nicht mehr (Kinder-Wunsch). Solo-Bots wählen ihr Ziel zufällig unter ALLEN Lebenden (fair, kein `huntPlayer` mehr); Team-Gegner = `chosenTeam.length`.
+27. **Online-Rangliste (seit v2.60, Ausnahme zu §2.3):** `api/highscores.js` + `js/trophies.js`. Regeln: (a) Namen nur aus den 4 Wortlisten + Emoji – die Listen stehen DOPPELT (Browser + Server) und müssen identisch bleiben, sonst lehnt der Server gültige Namen ab. (b) Datenbank-Token NUR aus Vercel-Umgebungsvariablen (`process.env`), nie eine Env-Datei im Projektordner – `serve.sh` und die statische Seite würden sie ausliefern. (c) Bremse: 120 Anfragen/Minute pro IP (großzügig, weil der Jugendklub hinter EINER IP hängt). (d) Online ist die Server-Liste die Wahrheit; jeder Tab zeigt nur Einträge > 0. (e) Punkte kommen vom Handy und sind fälschbar – Obergrenzen im Server, keine Preise für Platz 1. KEINE ausgedachten Bot-Namen in der Rangliste. Auf 0 setzen gibt es absichtlich nicht mehr (Kinder-Wunsch). Solo-Bots wählen ihr Ziel zufällig unter ALLEN Lebenden (fair, kein `huntPlayer` mehr); Team-Gegner = `chosenTeam.length`.
 28. **Eigene Bilder für Figuren:** `<name>Image: 'datei.png'` in `GAME_CONFIG` → `actorImage(name)` / `drawActorImage()` (`js/sprites.js`) malt es ausgeschnitten (ohne Kreis); Kacheln nutzen `actorIconHtml(name)`. Fotos/KI-Bilder vorher mit `convert … -crop … -resize 192x192` verkleinern; Hintergrund weg per `-fuzz 8% … floodfill` von den Rändern + `-connected-components` gegen Krümel/Löcher (höhere Fuzz-Werte fressen Löcher in dunkle Figuren) (Original 2,2 MB wäre fürs Jugendklub-WLAN zu schwer). Lädt das Bild nicht, wird das Emoji gemalt (bzw. bei Fußballern die gemalte Trikot-Figur; Bild hat Vorrang, gespiegelt nach `runDir`). Große Originale mit echten Logos/Gesichtern stehen in `.gitignore` (Betreuer-Entscheidung). Größen immer über `mapScale()` holen, nie `GAME_CONFIG.mapScale` direkt.
 29. **Kommazahlen-Schaden (z. B. Fledermaus 1,7):** `applyHit` rundet `hp`, `hitsTaken`, `hitsGiven` und `score` auf 1 Kommastelle (`r1`), sonst stehen Zahlen wie 3,4000000001 im Spiel.
 30. **Handy-Zoom (`phoneZoom`, `viewZoom()` in `js/actors.js`):** Auf Handys (`min(innerWidth, innerHeight) < 500`) ist die Welt (`width`/`height`) um 1/Zoom größer als der Bildschirm; `resizeCanvas` skaliert `ctx` mit `dpr * zoom`. Bildschirm → Welt: `(clientX - rect.left) / viewZoom()`. Welt → DOM (Figuren-Knöpfe): `x * viewZoom()`. Neue Finger-/Maus-Eingaben auf dem Spielfeld IMMER so umrechnen!
