@@ -7,40 +7,100 @@
  * - LOKAL GESPEICHERT: Alles bleibt sicher im Browser auf dem Gerät (localStorage), ohne Server.
  */
 
-// 🎭 Listen für abwechslungsreiche, lustige und heldenhafte Zufalls-Spitznamen
-const NICKNAME_ADJECTIVES = [
-  'Blitz', 'Turbo', 'Mega', 'Schatten', 'Feuer', 'Frost', 'Ninja',
-  'Cyber', 'Cosmic', 'Zauber', 'Ultra', 'Lava', 'Sturm', 'Donner',
-  'Gold', 'Super', 'Phantom', 'Raketen', 'Sternen', 'Galaxy',
-  'Drachen', 'Samurai', 'Hyper', 'Laser', 'Pixel', 'Sonic', 'Kometen'
+// 🎭 4 kuratierte Wortlisten für den Zufalls-Namensgenerator (Datenschutz)
+// 1. Coole Vorsilben (123 Wörter)
+const NICKNAME_COOL_PREFIXES = [
+  'Feuer', 'Blitz', 'Eis', 'Donner', 'Schatten', 'Sturm', 'Nebel', 'Mond', 'Stern', 'Nacht',
+  'Flammen', 'Kristall', 'Drachen', 'Geister', 'Sonnen', 'Wolken', 'Frost', 'Funken', 'Rauch', 'Lava',
+  'Meteor', 'Komet', 'Titan', 'Phantom', 'Cyber', 'Pixel', 'Laser', 'Turbo', 'Neon', 'Plasma',
+  'Atom', 'Stahl', 'Eisen', 'Silber', 'Gold', 'Rubin', 'Smaragd', 'Magma', 'Vulkan', 'Orkan',
+  'Runen', 'Zauber', 'Wüsten', 'Dschungel', 'Tiefsee', 'Nordlicht', 'Polar', 'Wirbel', 'Raben', 'Himmels',
+  'Mega', 'Ninja', 'Cosmic', 'Ultra', 'Super', 'Raketen', 'Sternen', 'Galaxy', 'Samurai', 'Hyper',
+  'Sonic', 'Kometen', 'Mystik', 'Astral', 'Radioaktiv', 'Solar', 'Alpha', 'Omega', 'Vortex', 'Chrono',
+  'Dynamo', 'Atomic', 'Cybernetik', 'Quanten', 'Blizzard', 'Tornado', 'Taifun', 'Diamant', 'Obsidian', 'Bronze',
+  'Platin', 'Panzer', 'Kaiser', 'Königs', 'Helden', 'Mutanten', 'Wilder', 'Schneller', 'Furchtloser', 'Unbesiegbarer',
+  'Schlauer', 'Starker', 'Flotter', 'Lockerer', 'Kühner', 'Geheimer', 'Dunkler', 'Heller', 'Leuchtender', 'Flammender',
+  'Glühender', 'Eisiger', 'Frostiger', 'Stürmischer', 'Magischer', 'Epischer', 'Legendärer', 'Mythischer', 'Kosmischer', 'Galaktischer',
+  'Unendlicher', 'Taktischer', 'Lautloser', 'Geschickter', 'Spritziger', 'Mächtiger', 'Todesmutiger', 'Elektrischer', 'Magnetischer', 'Gravitations',
+  'Techno', 'Viper', 'Phoenix'
 ];
 
-const NICKNAME_NOUNS = [
-  'Katze', 'Mais', 'Kobold', 'Maus', 'Goblin', 'Musiala', 'Yamal',
-  'Drache', 'Tiger', 'Wolf', 'Falke', 'Fuchs', 'Ritter', 'Panda',
-  'Löwe', 'Champion', 'Legende', 'Kicker', 'Samurai', 'Titan',
-  'Phönix', 'Krieger', 'Gamer', 'Bär', 'Adler', 'Viper', 'Meteor'
+// 2. Coole Endungen (124 Wörter)
+const NICKNAME_COOL_ENDINGS = [
+  'Drache', 'Wolf', 'Fuchs', 'Falke', 'Tiger', 'Panther', 'Löwe', 'Adler', 'Rabe', 'Phönix',
+  'Kobold', 'Goblin', 'Ninja', 'Samurai', 'Ronin', 'Ritter', 'Krieger', 'Jäger', 'Wächter', 'Held',
+  'Magier', 'Zauberer', 'Hexer', 'Schurke', 'Geist', 'Dämon', 'Titan', 'Gnom', 'Troll', 'Golem',
+  'Roboter', 'Cyborg', 'Pilot', 'Kapitän', 'Pirat', 'Gladiator', 'Bogenschütze', 'Schwertmeister', 'Drachenreiter', 'Blitzläufer',
+  'Skorpion', 'Hydra', 'Krake', 'Greif', 'Chimäre', 'Vampir', 'Werwolf', 'Schattenjäger', 'Feuervogel', 'Eisriese',
+  'Katze', 'Mais', 'Maus', 'Musiala', 'Yamal', 'GOAT', 'Panda', 'Champion', 'Legende', 'Kicker',
+  'Gamer', 'Bär', 'Viper', 'Meteor', 'Gepard', 'Jaguar', 'Kobra', 'Python', 'Krokodil', 'Hai',
+  'Wal', 'Delfin', 'Spinne', 'Wespe', 'Hornisse', 'Bison', 'Nashorn', 'Mammut', 'Dino', 'T-Rex',
+  'Raptor', 'Drachenlord', 'Scharfschütze', 'Pionier', 'Kommandant', 'Meister', 'Hexenmeister', 'Druide', 'Schamane', 'Paladin',
+  'Berserker', 'Waldläufer', 'Spion', 'Agent', 'Hüter', 'Beschützer', 'Verteidiger', 'Stürmer', 'Torwart', 'Dribbler',
+  'Stratege', 'Phantom', 'Schattenkrieger', 'Lichtbringer', 'Sternenjäger', 'Weltenbummler', 'Abenteurer', 'Entdecker', 'Rebell', 'Rächer',
+  'Komet', 'Asteroid', 'Kometenreiter', 'Blizzard', 'Taifun', 'Vulkanier', 'Zyklop', 'Gargoyle', 'Pegasus', 'Zentaur',
+  'Kraken', 'Leviathan', 'Koloss', 'Behemoth'
 ];
 
+// 3. Lustige Vorsilben (50 Wörter)
+const NICKNAME_FUNNY_PREFIXES = [
+  'Keks', 'Wackel', 'Pups', 'Quatsch', 'Matsch', 'Krümel', 'Schnarch', 'Knuddel', 'Glitzer', 'Zappel',
+  'Gummi', 'Waffel', 'Gurken', 'Kartoffel', 'Käse', 'Pudding', 'Nudel', 'Popcorn', 'Zucker', 'Marmeladen',
+  'Kicher', 'Schlabber', 'Schlürf', 'Knabber', 'Wusel', 'Flummi', 'Wobbel', 'Knall', 'Peng', 'Plüsch',
+  'Tofu', 'Brezel', 'Brokkoli', 'Banane', 'Pizza', 'Spaghetti', 'Senf', 'Ketchup', 'Mayo', 'Schoko',
+  'Lolli', 'Socken', 'Pantoffel', 'Seifenblasen', 'Kuschel', 'Hoppel', 'Hampel', 'Zimt', 'Zuckerwatte', 'Kaugummi'
+];
+
+// 4. Lustige Endungen (50 Wörter)
+const NICKNAME_FUNNY_ENDINGS = [
+  'Gurke', 'Kartoffel', 'Tomate', 'Melone', 'Erdbeere', 'Bohne', 'Zwiebel', 'Karotte', 'Ananas',
+  'Keks', 'Muffin', 'Donut', 'Waffel', 'Brezel', 'Nudel', 'Pizza', 'Pudding', 'Marshmallow', 'Gummibär',
+  'Hamster', 'Pinguin', 'Ente', 'Lama', 'Alpaka', 'Faultier', 'Maulwurf', 'Schnabeltier', 'Quokka', 'Otter',
+  'Socke', 'Pantoffel', 'Mütze', 'Unterhose', 'Zahnbürste', 'Klobürste', 'Löffel', 'Toaster', 'Staubsauger', 'Badewanne',
+  'Wichtel', 'Kobold', 'Krake', 'Monster', 'Pupskanone', 'Quatschkopf', 'Schläfer', 'Tanzbär', 'Flitzpiepe', 'Schnarchnase', 'Banane'
+];
+
+// 🎭 50 passende, bunte Emojis
 const NICKNAME_EMOJIS = [
   '⚡', '🚀', '🔥', '❄️', '🥷', '👑', '⭐', '🎮', '💎', '🏆',
   '🦁', '🐺', '🐉', '⚽', '🌽', '🐱', '🐭', '👺', '🧌', '🦅',
-  '🛡️', '🌪️', '🦊', '🎯', '✨', '🐾', '💥', '🛸'
+  '🛡️', '🌪️', '🦊', '🎯', '✨', '🐾', '💥', '🛸', '🦖', '⚔️',
+  '🍕', '🍪', '🍿', '🍩', '🍌', '🥔', '🥒', '🧦', '🦆', '🐧',
+  '🦥', '🦙', '🦦', '🦄', '🤖', '👾', '🌈', '🧨', '🎉', '💨'
 ];
 
+// Name ist die Kombination aus Vorsilbe + Endung (mit Emoji)
 function generateRandomNickname() {
-  const adj = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)];
-  const noun = NICKNAME_NOUNS[Math.floor(Math.random() * NICKNAME_NOUNS.length)];
+  const roll = Math.random();
+  let prefix, ending;
+  if (roll < 0.35) {
+    prefix = NICKNAME_COOL_PREFIXES[Math.floor(Math.random() * NICKNAME_COOL_PREFIXES.length)];
+    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+  } else if (roll < 0.65) {
+    prefix = NICKNAME_FUNNY_PREFIXES[Math.floor(Math.random() * NICKNAME_FUNNY_PREFIXES.length)];
+    ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
+  } else if (roll < 0.85) {
+    prefix = NICKNAME_FUNNY_PREFIXES[Math.floor(Math.random() * NICKNAME_FUNNY_PREFIXES.length)];
+    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+  } else {
+    prefix = NICKNAME_COOL_PREFIXES[Math.floor(Math.random() * NICKNAME_COOL_PREFIXES.length)];
+    ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
+  }
+
+  if (prefix.toLowerCase() === ending.toLowerCase()) {
+    ending = NICKNAME_COOL_ENDINGS[(Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length) + 1) % NICKNAME_COOL_ENDINGS.length];
+  }
+
   const emoji = NICKNAME_EMOJIS[Math.floor(Math.random() * NICKNAME_EMOJIS.length)];
-  return `${emoji} ${adj}-${noun}`;
+  return `${emoji} ${prefix}-${ending}`;
 }
 
-function getNicknameSuggestions(count = 4, exclude = '') {
+function getNicknameSuggestions(count = 5, exclude = '') {
   const set = new Set();
   if (exclude) set.add(exclude);
   const result = [];
   let attempts = 0;
-  while (result.length < count && attempts < 50) {
+  while (result.length < count && attempts < 60) {
     attempts++;
     const nick = generateRandomNickname();
     if (!set.has(nick)) {
@@ -48,14 +108,32 @@ function getNicknameSuggestions(count = 4, exclude = '') {
       result.push(nick);
     }
   }
+  while (result.length < count) {
+    result.push(generateRandomNickname());
+  }
   return result;
 }
 
-function renderNicknameChips(container, inputEl, onSelect) {
+// Holt 5 freie Vorschläge aus der Cloud oder generiert sie lokal (Offline)
+async function fetchOrGenerate5Suggestions(exclude = '') {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/highscores?action=suggestions`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.ok && Array.isArray(data.suggestions) && data.suggestions.length >= 5) {
+        return data.suggestions.slice(0, 5);
+      }
+    }
+  } catch (e) {}
+  return getNicknameSuggestions(5, exclude);
+}
+
+// Rendert 5 Vorschläge als klickbare Knöpfe
+async function renderNicknameChips(container, inputEl, onSelect) {
   if (!container) return;
-  container.innerHTML = '';
   const current = (inputEl ? inputEl.value : currentPlayerName || '').trim();
-  const suggestions = getNicknameSuggestions(4, current);
+  const suggestions = await fetchOrGenerate5Suggestions(current);
+  container.innerHTML = '';
   for (const nick of suggestions) {
     const chip = document.createElement('button');
     chip.type = 'button';
@@ -94,6 +172,273 @@ function savePublicHighScoresList(list) {
   } catch (e) {}
 }
 
+// 🌐 API-Basis-URL: Wenn die Datei heruntergeladen/lokal geöffnet wird (file:// oder localhost),
+// verbindet sie sich automatisch mit der Cloud auf Vercel!
+function getApiBaseUrl() {
+  if (typeof location === 'undefined') return '';
+  if (location.protocol === 'file:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    return 'https://jugendklub.vercel.app';
+  }
+  return '';
+}
+
+// 🆔 Eindeutige interne Spieler-ID (nie der öffentliche Name!)
+function getOrCreatePlayerId() {
+  let id = localStorage.getItem('lieberose_player_id_v2');
+  if (!id) {
+    id = 'p_' + Math.random().toString(36).slice(2, 10) + '_' + Date.now().toString(36);
+    localStorage.setItem('lieberose_player_id_v2', id);
+  }
+  return id;
+}
+
+// 🔑 Geheimes Token des Spielers (schützt vor ID-Spoofing durch andere Geräte)
+function getOrCreatePlayerSecret() {
+  let secret = localStorage.getItem('lieberose_player_secret_v2');
+  if (!secret) {
+    try {
+      const arr = new Uint8Array(16);
+      crypto.getRandomValues(arr);
+      secret = 's_' + Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    } catch (e) {
+      secret = 's_' + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    }
+    localStorage.setItem('lieberose_player_secret_v2', secret);
+  }
+  return secret;
+}
+
+// 📦 Offline-Queue: Merkt sich Highscores, falls der Spieler offline war beim Rekord-Bruch
+const PENDING_SYNC_KEY = 'lieberose_pending_sync_v2';
+
+function savePendingSync(entry) {
+  try {
+    localStorage.setItem(PENDING_SYNC_KEY, JSON.stringify(entry));
+  } catch (e) {}
+}
+
+function getPendingSync() {
+  try {
+    const raw = localStorage.getItem(PENDING_SYNC_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+}
+
+function clearPendingSync() {
+  try {
+    localStorage.removeItem(PENDING_SYNC_KEY);
+  } catch (e) {}
+}
+
+// Sobald der Browser wieder online geht: Vormerkte Offline-Highscores sofort in die Cloud schicken!
+async function tryFlushPendingSync() {
+  const pending = getPendingSync();
+  if (!pending || !pending.name) return;
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+
+  try {
+    const pid = getOrCreatePlayerId();
+    const secret = getOrCreatePlayerSecret();
+    const res = await fetch(`${getApiBaseUrl()}/api/highscores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'submit',
+        name: pending.name,
+        score: pending.score,
+        trophies: pending.trophies,
+        actor: pending.actor,
+        playerId: pid,
+        playerSecret: secret
+      })
+    });
+
+    if (res.ok) {
+      clearPendingSync();
+      const data = await res.json();
+      if (data && data.ok && Array.isArray(data.scores)) {
+        savePublicHighScoresList(data.scores);
+        if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
+          renderLeaderboardRows(data.scores);
+        }
+      }
+    } else if (res.status === 409) {
+      clearPendingSync();
+      const errData = await res.json().catch(() => ({}));
+      alert(errData.message || 'Dieser Name ist bereits auf einem anderen Gerät belegt!');
+      const fresh = generateRandomNickname();
+      registerOrUpdatePlayerName(fresh, true);
+    }
+  } catch (e) {
+    // Weiterhin offline -> pendingSync bleibt gespeichert für das nächste Mal
+  }
+}
+
+// ☁️ Online-Synchronisation mit Upstash Redis über /api/highscores (Vercel Serverless Function)
+let isOnlineDbConnected = false;
+
+async function syncOnlineHighScores() {
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/highscores`);
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.ok && Array.isArray(data.scores)) {
+      isOnlineDbConnected = true;
+      const local = loadPublicHighScores();
+      const map = new Map();
+      for (const item of local) {
+        if (item.name) map.set(item.name.toLowerCase(), item);
+      }
+      for (const item of data.scores) {
+        if (!item.name) continue;
+        const k = item.name.toLowerCase();
+        const prev = map.get(k);
+        if (!prev) {
+          map.set(k, item);
+        } else {
+          map.set(k, {
+            name: item.name || prev.name,
+            score: Math.max(prev.score || 0, item.score || 0),
+            trophies: Math.max(prev.trophies || 0, item.trophies || 0),
+            actor: item.actor || prev.actor || 'katze',
+            date: Math.max(prev.date || 0, item.date || 0)
+          });
+        }
+      }
+      const merged = Array.from(map.values());
+      savePublicHighScoresList(merged);
+      if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
+        renderLeaderboardRows(merged);
+      }
+    }
+  } catch (e) {
+    // Offline / lokaler Test ohne Vercel Server -> still ignorieren, LocalStorage übernimmt
+  }
+  tryFlushPendingSync();
+}
+
+async function sendScoreToOnlineDb(name, score, trophies, actor) {
+  const pid = getOrCreatePlayerId();
+  const secret = getOrCreatePlayerSecret();
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/highscores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'submit',
+        name,
+        score,
+        trophies,
+        actor,
+        playerId: pid,
+        playerSecret: secret
+      })
+    });
+
+    if (res.ok) {
+      isOnlineDbConnected = true;
+      clearPendingSync();
+      const data = await res.json();
+      if (data && data.ok && Array.isArray(data.scores)) {
+        savePublicHighScoresList(data.scores);
+        if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
+          renderLeaderboardRows(data.scores);
+        }
+      }
+    } else if (res.status === 409) {
+      clearPendingSync();
+      const errData = await res.json().catch(() => ({}));
+      alert(errData.message || `Der Name „${name}“ wird bereits auf einem anderen Gerät genutzt!`);
+      const fresh = generateRandomNickname();
+      registerOrUpdatePlayerName(fresh, true);
+    }
+  } catch (e) {
+    // Offline -> Score bleibt in der Offline-Queue (pendingSync) gesichert!
+  }
+}
+
+// 🔒 Reserviert den Spitznamen atomar in der Online-Datenbank (Redis SET ... NX)
+async function reserveNicknameOnline(name) {
+  const clean = (name || '').trim();
+  if (!clean || clean.length < 2) return { ok: false, error: 'Zu kurz' };
+
+  const pid = getOrCreatePlayerId();
+  const secret = getOrCreatePlayerSecret();
+
+  try {
+    const res = await fetch(`${getApiBaseUrl()}/api/highscores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'reserve_name',
+        name: clean,
+        playerId: pid,
+        playerSecret: secret
+      })
+    });
+
+    if (res.ok) {
+      isOnlineDbConnected = true;
+      return { ok: true, name: clean };
+    }
+
+    if (res.status === 409) {
+      const data = await res.json().catch(() => ({}));
+      return {
+        ok: false,
+        conflict: true,
+        message: data.message || `Der Spitzname „${clean}“ ist bereits auf einem anderen Gerät vergeben! Wähle bitte einen anderen aus 🎲.`
+      };
+    }
+  } catch (e) {
+    // Offline: lokal trotzdem erlauben
+  }
+  return { ok: true, offline: true, name: clean };
+}
+
+// 🗑️ Spitznamen löschen & freigeben
+async function deleteNicknameOnline(name) {
+  const clean = (name || currentPlayerName || '').trim();
+  if (!clean) return;
+  const confirmed = confirm(`Möchtest du deinen Spitznamen „${clean}“ wirklich löschen und für andere freigeben?`);
+  if (!confirmed) return;
+
+  initAudio();
+  playSound('bounce');
+
+  try {
+    const pid = getOrCreatePlayerId();
+    const secret = getOrCreatePlayerSecret();
+    await fetch(`${getApiBaseUrl()}/api/highscores`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete_name', name: clean, playerId: pid, playerSecret: secret })
+    });
+  } catch (e) {}
+
+  clearPendingSync();
+  const list = loadPublicHighScores().filter(p => (p.name || '').toLowerCase() !== clean.toLowerCase());
+  savePublicHighScoresList(list);
+
+  const freshNick = generateRandomNickname();
+  currentPlayerName = freshNick;
+  trophiesData.playerName = freshNick;
+  saveTrophies();
+
+  if (playerNameInput) playerNameInput.value = freshNick;
+  if (settingsNameInput) settingsNameInput.value = freshNick;
+  if (currentUserBadge) currentUserBadge.textContent = freshNick;
+
+  updateTrophyHud();
+  if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
+    showLeaderboard();
+  }
+  if (settingsScreen && settingsScreen.classList.contains('active')) {
+    openSettingsScreen();
+  }
+}
+
 function recordPublicHighScore(name, matchScore, totalTrophies, actorName, isTeam) {
   const cleanName = (name || currentPlayerName || 'Held 1').trim();
   const list = loadPublicHighScores();
@@ -125,6 +470,11 @@ function recordPublicHighScore(name, matchScore, totalTrophies, actorName, isTea
   }
 
   savePublicHighScoresList(list);
+
+  const pid = getOrCreatePlayerId();
+  const secret = getOrCreatePlayerSecret();
+  savePendingSync({ name: cleanName, score: s, trophies: t, actor: resolvedActor, date: now, playerId: pid, playerSecret: secret });
+  sendScoreToOnlineDb(cleanName, s, t, resolvedActor);
   return list;
 }
 
@@ -158,6 +508,7 @@ const leaderboardBackBtn = document.getElementById('leaderboardBackBtn');
 const lbTabHighscore = document.getElementById('lbTabHighscore');
 const lbTabTrophies = document.getElementById('lbTabTrophies');
 const lbRollRandomBtn = document.getElementById('lbRollRandomBtn');
+const lbDeleteNameBtn = document.getElementById('lbDeleteNameBtn');
 
 const trophiesEl = document.getElementById('trophies');
 const trophyHudEl = document.getElementById('trophyHud');
@@ -180,6 +531,7 @@ const settingsCooldownMsg = document.getElementById('settingsCooldownMsg');
 const settingsNameSaveBtn = document.getElementById('settingsNameSaveBtn');
 const settingsRandomBtn = document.getElementById('settingsRandomBtn');
 const settingsNicknameChips = document.getElementById('settingsNicknameChips');
+const settingsDeleteNameBtn = document.getElementById('settingsDeleteNameBtn');
 
 const settingsFullscreenBtn = document.getElementById('settingsFullscreenBtn');
 const settingsBackBtn = document.getElementById('settingsBackBtn');
@@ -408,6 +760,13 @@ function initWelcomeRegistration() {
     if (playerNameInput) playerNameInput.value = currentPlayerName;
     getOrCreatePlayerEntry(currentPlayerName);
     updateTrophyHud();
+    // Spitznamen im Hintergrund online reservieren, falls noch nicht geschehen
+    reserveNicknameOnline(currentPlayerName).then(res => {
+      if (res && res.conflict) {
+        const fresh = generateRandomNickname();
+        registerOrUpdatePlayerName(fresh, true);
+      }
+    });
     return;
   }
   const hasSavedProgress = Boolean(
@@ -419,7 +778,9 @@ function initWelcomeRegistration() {
   if (!currentPlayerName && !hasSavedProgress) {
     const randomNick = generateRandomNickname();
     if (welcomeNameInput) welcomeNameInput.value = randomNick;
-    renderNicknameChips(welcomeNicknameChips, welcomeNameInput);
+    renderNicknameChips(welcomeNicknameChips, welcomeNameInput, (nick) => {
+      if (welcomeNameInput) welcomeNameInput.value = nick;
+    });
     if (welcomeNameScreen) welcomeNameScreen.classList.add('active');
     if (startScreen) startScreen.classList.remove('active');
   } else if (!currentPlayerName) {
@@ -450,14 +811,14 @@ if (welcomeRandomBtn) {
   welcomeRandomBtn.addEventListener('click', () => {
     initAudio();
     playSound('bounce');
-    const nick = generateRandomNickname();
-    if (welcomeNameInput) welcomeNameInput.value = nick;
-    renderNicknameChips(welcomeNicknameChips, welcomeNameInput);
+    renderNicknameChips(welcomeNicknameChips, welcomeNameInput, (nick) => {
+      if (welcomeNameInput) welcomeNameInput.value = nick;
+    });
   });
 }
 
 if (welcomeNameSaveBtn) {
-  welcomeNameSaveBtn.addEventListener('click', () => {
+  welcomeNameSaveBtn.addEventListener('click', async () => {
     initAudio();
     requestGameFullscreen();
     const val = (welcomeNameInput ? welcomeNameInput.value : '').trim() || generateRandomNickname();
@@ -466,6 +827,19 @@ if (welcomeNameSaveBtn) {
       if (welcomeNameInput) welcomeNameInput.focus();
       return;
     }
+    welcomeNameSaveBtn.disabled = true;
+    const res = await reserveNicknameOnline(val);
+    welcomeNameSaveBtn.disabled = false;
+
+    if (!res.ok && res.conflict) {
+      playSound('hit');
+      alert(res.message);
+      renderNicknameChips(welcomeNicknameChips, welcomeNameInput, (nick) => {
+        if (welcomeNameInput) welcomeNameInput.value = nick;
+      });
+      return;
+    }
+
     if (welcomeNameError) welcomeNameError.hidden = true;
     registerOrUpdatePlayerName(val, true);
     playSound('gem');
@@ -480,7 +854,9 @@ function openSettingsScreen() {
   updateTrophyHud();
   if (settingsCurrentName) settingsCurrentName.textContent = currentPlayerName || 'Held 1';
   if (settingsNameInput) settingsNameInput.value = currentPlayerName || '';
-  renderNicknameChips(settingsNicknameChips, settingsNameInput);
+  renderNicknameChips(settingsNicknameChips, settingsNameInput, (nick) => {
+    if (settingsNameInput) settingsNameInput.value = nick;
+  });
   const rem = currentPlayerName ? cooldownMsRemaining() : 0;
   if (rem > 0) {
     if (settingsNameInput) settingsNameInput.disabled = true;
@@ -515,14 +891,14 @@ if (settingsRandomBtn) {
   settingsRandomBtn.addEventListener('click', () => {
     initAudio();
     playSound('bounce');
-    const nick = generateRandomNickname();
-    if (settingsNameInput) settingsNameInput.value = nick;
-    renderNicknameChips(settingsNicknameChips, settingsNameInput);
+    renderNicknameChips(settingsNicknameChips, settingsNameInput, (nick) => {
+      if (settingsNameInput) settingsNameInput.value = nick;
+    });
   });
 }
 
 if (settingsNameSaveBtn) {
-  settingsNameSaveBtn.addEventListener('click', () => {
+  settingsNameSaveBtn.addEventListener('click', async () => {
     initAudio();
     const rem = currentPlayerName ? cooldownMsRemaining() : 0;
     if (rem > 0) {
@@ -537,6 +913,20 @@ if (settingsNameSaveBtn) {
       }
       return;
     }
+
+    settingsNameSaveBtn.disabled = true;
+    const res = await reserveNicknameOnline(val);
+    settingsNameSaveBtn.disabled = false;
+
+    if (!res.ok && res.conflict) {
+      playSound('hit');
+      alert(res.message);
+      renderNicknameChips(settingsNicknameChips, settingsNameInput, (nick) => {
+        if (settingsNameInput) settingsNameInput.value = nick;
+      });
+      return;
+    }
+
     registerOrUpdatePlayerName(val, false);
     playSound('gem');
     openSettingsScreen();
@@ -588,9 +978,9 @@ if (modeRandomBtn) {
   modeRandomBtn.addEventListener('click', () => {
     initAudio();
     playSound('bounce');
-    const nick = generateRandomNickname();
-    if (playerNameInput) playerNameInput.value = nick;
-    renderNicknameChips(modeNicknameChips, playerNameInput);
+    renderNicknameChips(modeNicknameChips, playerNameInput, (nick) => {
+      if (playerNameInput) playerNameInput.value = nick;
+    });
   });
 }
 
@@ -609,7 +999,9 @@ function openModeChoice(choice) {
     if (playerNameInput) playerNameInput.value = fresh;
     if (playerNameInput) playerNameInput.disabled = false;
   }
-  renderNicknameChips(modeNicknameChips, playerNameInput);
+  renderNicknameChips(modeNicknameChips, playerNameInput, (nick) => {
+    if (playerNameInput) playerNameInput.value = nick;
+  });
 
   if (choice.type === 'solo') {
     const name = choice.actor;
@@ -740,33 +1132,15 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// 🌍 Öffentliche Rangliste bauen und anzeigen:
-function showLeaderboard() {
-  initAudio();
+// Zeichnet die Ranglisten-Zeilen auf den Bildschirm
+function renderLeaderboardRows(allScores) {
   const activeName = currentPlayerName || 'Held 1';
-  const activeCount = activePlayerTrophies();
-  const totalPts = Number(trophiesData.totalScore) || 0;
-  const bestRecord = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
-
-  // Eigene Daten im Highscore-Pool registrieren / aktualisieren
-  if (bestRecord > 0 || activeCount > 0) {
-    recordPublicHighScore(activeName, bestRecord, activeCount, playerActor, teamMode);
-  }
-
-  if (myTrophyBanner) {
-    myTrophyBanner.innerHTML =
-      `<div class="my-trophy-total">🎭 Spitzname: <b>${escapeHtml(activeName)}</b></div>` +
-      `<div class="my-trophy-sub">🎯 Treffer-Rekord: <b>${bestRecord}</b> · 🏆 Pokale: <b>${activeCount}</b> · 🎯 Gesamtpunkte: <b>${totalPts}</b></div>` +
-      `<div class="my-trophy-privacy">🔒 100% Datenschutz: Nur Zufalls-Spitznamen in der Rangliste!</div>`;
-  }
-
-  const allScores = loadPublicHighScores();
   const isHighscoreTab = lbActiveTab === 'highscores';
 
   if (lbTabHighscore) lbTabHighscore.classList.toggle('active', isHighscoreTab);
   if (lbTabTrophies) lbTabTrophies.classList.toggle('active', !isHighscoreTab);
 
-  const sorted = [...allScores].sort((a, b) => {
+  const sorted = [...(allScores || [])].sort((a, b) => {
     if (isHighscoreTab) {
       return (b.score - a.score) || (b.trophies - a.trophies);
     }
@@ -807,6 +1181,31 @@ function showLeaderboard() {
       `</div>`;
     }).join('') : '<p class="my-trophy-sub">Noch keine Highscores eingetragen – spiel eine Runde und hol dir Platz 1! 🏆</p>';
   }
+}
+
+// 🌍 Öffentliche Rangliste bauen und anzeigen:
+function showLeaderboard() {
+  initAudio();
+  const activeName = currentPlayerName || 'Held 1';
+  const activeCount = activePlayerTrophies();
+  const totalPts = Number(trophiesData.totalScore) || 0;
+  const bestRecord = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
+
+  // Eigene Daten im Highscore-Pool registrieren / aktualisieren
+  if (bestRecord > 0 || activeCount > 0) {
+    recordPublicHighScore(activeName, bestRecord, activeCount, playerActor, teamMode);
+  }
+
+  const liveBadge = isOnlineDbConnected ? ' · ☁️ Live-Cloud verbunden' : '';
+  if (myTrophyBanner) {
+    myTrophyBanner.innerHTML =
+      `<div class="my-trophy-total">🎭 Spitzname: <b>${escapeHtml(activeName)}</b></div>` +
+      `<div class="my-trophy-sub">🎯 Treffer-Rekord: <b>${bestRecord}</b> · 🏆 Pokale: <b>${activeCount}</b> · 🎯 Gesamtpunkte: <b>${totalPts}</b></div>` +
+      `<div class="my-trophy-privacy">🔒 100% Datenschutz: Nur Zufalls-Spitznamen in der Rangliste!${liveBadge}</div>`;
+  }
+
+  renderLeaderboardRows(loadPublicHighScores());
+  syncOnlineHighScores(); // Holt im Hintergrund die neuesten Cloud-Scores ab
 
   if (charLeaderboardSection) {
     charLeaderboardSection.innerHTML = buildCharacterLeaderboardHtml();
@@ -834,18 +1233,44 @@ if (lbTabTrophies) {
   });
 }
 if (lbRollRandomBtn) {
-  lbRollRandomBtn.addEventListener('click', () => {
+  lbRollRandomBtn.addEventListener('click', async () => {
     initAudio();
     playSound('gem');
-    const newNick = generateRandomNickname();
-    registerOrUpdatePlayerName(newNick, true);
+    lbRollRandomBtn.disabled = true;
+    const suggestions = await fetchOrGenerate5Suggestions(currentPlayerName);
+    let chosen = suggestions[0] || generateRandomNickname();
+    const res = await reserveNicknameOnline(chosen);
+    lbRollRandomBtn.disabled = false;
+    if (res && res.conflict) {
+      chosen = generateRandomNickname();
+    }
+    registerOrUpdatePlayerName(chosen, true);
     showLeaderboard();
   });
+}
+if (lbDeleteNameBtn) {
+  lbDeleteNameBtn.addEventListener('click', () => deleteNicknameOnline(currentPlayerName));
+}
+if (settingsDeleteNameBtn) {
+  settingsDeleteNameBtn.addEventListener('click', () => deleteNicknameOnline(currentPlayerName));
 }
 
 if (leaderboardStartBtn) leaderboardStartBtn.addEventListener('click', showLeaderboard);
 if (leaderboardOverBtn) leaderboardOverBtn.addEventListener('click', showLeaderboard);
 if (leaderboardBackBtn) leaderboardBackBtn.addEventListener('click', hideLeaderboard);
 
+// 🌐 Wenn der Browser nach Offline-Phasen wieder online geht: Vormerkte Highscores sofort hochladen!
+if (typeof window !== 'undefined') {
+  window.addEventListener('online', () => {
+    syncOnlineHighScores();
+    tryFlushPendingSync();
+  });
+  window.addEventListener('focus', tryFlushPendingSync);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) tryFlushPendingSync();
+  });
+}
+
 updateTrophyHud();
 initWelcomeRegistration();
+syncOnlineHighScores();

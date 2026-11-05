@@ -30,18 +30,18 @@
         <p class="team-hint">Wähle einen coolen Namen für die <b>öffentliche Rangliste & Highscores</b>!<br><small>🛡️ Bitte <b>keinen echten Namen</b> eingeben – such dir einfach einen Zufalls-Namen aus!</small></p>
         <div class="mode-card trophy-card">
           <div class="name-input-wrap">
-            <label for="welcomeNameInput">🎭 Dein Spitzname:</label>
+            <label for="welcomeNameInput">🎭 Dein Spitzname (Adjektiv + Nomen):</label>
             <div class="name-input-row">
-              <input id="welcomeNameInput" class="player-name-input" type="text" maxlength="24" placeholder="Zufalls-Name..." autocomplete="off">
-              <button id="welcomeRandomBtn" class="btn btn-dice" type="button" title="Neuen Zufalls-Namen würfeln">🎲 Würfeln</button>
+              <input id="welcomeNameInput" class="player-name-input" type="text" maxlength="32" placeholder="Zufalls-Name..." autocomplete="off">
+              <button id="welcomeRandomBtn" class="btn btn-dice" type="button" title="5 andere Namen würfeln">🎲 5 andere Namen</button>
             </div>
           </div>
           <div class="nickname-chips-section">
-            <span class="nickname-chips-label">👇 Oder direkt antippen zum Auswählen:</span>
+            <span class="nickname-chips-label">👇 Wähle aus 5 Vorschlägen:</span>
             <div id="welcomeNicknameChips" class="nickname-chips"></div>
           </div>
           <p id="welcomeNameError" class="name-error" hidden>👆 Bitte wähle einen Spitznamen aus!</p>
-          <button id="welcomeNameSaveBtn" class="btn btn-trophy" type="button">🚀 MIT DIESEM NAMEN SPIELEN</button>
+          <button id="welcomeNameSaveBtn" class="btn btn-trophy" type="button">🚀 DIESEN NAMEN BEHALTEN & STARTEN</button>
         </div>
       </div>
 
@@ -78,18 +78,19 @@
           <p class="privacy-note">🔒 100% Datenschutz: Wähle einen Zufalls-Spitznamen!</p>
           <p>Aktueller Name: <b id="settingsCurrentName">-</b></p>
           <div class="name-input-wrap">
-            <label for="settingsNameInput">Neuer Spitzname:</label>
+            <label for="settingsNameInput">Neuer Spitzname (Adjektiv + Nomen):</label>
             <div class="name-input-row">
-              <input id="settingsNameInput" class="player-name-input" type="text" maxlength="24" placeholder="Neuer Spitzname..." autocomplete="off">
-              <button id="settingsRandomBtn" class="btn btn-dice" type="button" title="Neuen Zufalls-Namen würfeln">🎲 Würfeln</button>
+              <input id="settingsNameInput" class="player-name-input" type="text" maxlength="32" placeholder="Neuer Spitzname..." autocomplete="off">
+              <button id="settingsRandomBtn" class="btn btn-dice" type="button" title="5 andere Namen würfeln">🎲 5 andere Namen</button>
             </div>
           </div>
           <div class="nickname-chips-section">
-            <span class="nickname-chips-label">👇 Vorschläge zum Auswählen:</span>
+            <span class="nickname-chips-label">👇 Wähle aus 5 Vorschlägen:</span>
             <div id="settingsNicknameChips" class="nickname-chips"></div>
           </div>
           <p id="settingsCooldownMsg" class="cooldown-msg"></p>
-          <button id="settingsNameSaveBtn" class="btn btn-trophy" type="button">💾 SPITZNAMEN SPEICHERN</button>
+          <button id="settingsNameSaveBtn" class="btn btn-trophy" type="button">💾 DIESEN SPITZNAMEN BEHALTEN</button>
+          <button id="settingsDeleteNameBtn" class="btn btn-small btn-danger" type="button" style="margin-top: 8px;">🗑️ Spitznamen löschen & freigeben</button>
         </div>
         <div class="mode-card normal-card">
           <h3>💾 GESPEICHERTE POKALE & PUNKTE</h3>
@@ -161,7 +162,8 @@
         <!-- Charakter-Rangliste: nicht gelöscht, nur versteckt (kann später wiederkommen) -->
         <div id="charLeaderboardSection" class="leaderboard-list" hidden></div>
         <div class="lb-actions">
-          <button id="lbRollRandomBtn" class="btn btn-small" type="button">🎲 Neuer Spitzname</button>
+          <button id="lbRollRandomBtn" class="btn btn-small" type="button">🎲 Neuer Name</button>
+          <button id="lbDeleteNameBtn" class="btn btn-small btn-danger" type="button">🗑️ Name löschen</button>
           <button id="leaderboardBackBtn" class="btn btn-small" type="button">⬅️ Zurück</button>
         </div>
       </div>

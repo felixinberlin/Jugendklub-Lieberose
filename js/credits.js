@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.59';
+const GAME_VERSION = '2.60';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -80,7 +80,8 @@ const WISHES = [
   { v: '2.56', text: 'Neuer Hintergrund im Hauptmenü & auf der Map: Samurai-Arena unter dem roten Blutmond 🌕⛩️' },
   { v: '2.57', text: 'Alle schießen mit ihren eigenen Waffen ⚔️: Klinge 🗡️, Lanze, Stachelkeule 🏏, Hackmesser-Lanze 🪓, Lava-Dreizack 🔱 & Feuerball 🔥' },
   { v: '2.58', text: 'Größere, gut sichtbare Waffen ⚔️ & saubere Figuren-Kacheln ohne Kraft-Zeichen' },
-  { v: '2.59', text: 'Öffentliche Highscore-Rangliste 🏆 & 100% Datenschutz mit coolen Zufalls-Spitznamen 🎲🎭' }
+  { v: '2.59', text: 'Öffentliche Highscore-Rangliste 🏆 & 100% Datenschutz mit coolen Zufalls-Spitznamen 🎲🎭' },
+  { v: '2.60', text: 'Live-Cloud-Rangliste ☁️🏆 & 4-Listen-Zufallsgenerator 🎲 mit atomarer Namens-Reservierung (SET NX) und Offline-Sync!' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

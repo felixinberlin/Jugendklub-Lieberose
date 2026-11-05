@@ -4,6 +4,9 @@ node_modules/
 *.log
 .playwright-mcp/
 *:Zone.Identifier
+.env*
+*.env
+
 
 # Große Original-Fotos der Fußballer (echte Logos/Gesichter) nur lokal, nicht im öffentlichen Repo
 Goldener Fußballheld im Barça-Sturm.png
