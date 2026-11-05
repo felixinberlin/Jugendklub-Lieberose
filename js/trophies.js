@@ -300,26 +300,17 @@ async function syncOnlineHighScores() {
     const data = await res.json();
     if (data && data.ok && Array.isArray(data.scores)) {
       isOnlineDbConnected = true;
-      const local = loadPublicHighScores();
+      // ☁️ Online ist die Server-Liste die Wahrheit – alte Einträge im Browser fliegen raus.
+      // Nur der eigene Eintrag bleibt, falls er noch nicht hochgeladen ist (Offline-Rekord).
       const map = new Map();
-      for (const item of local) {
-        if (item.name) map.set(item.name.toLowerCase(), item);
-      }
       for (const item of data.scores) {
-        if (!item.name) continue;
-        const k = item.name.toLowerCase();
-        const prev = map.get(k);
-        if (!prev) {
-          map.set(k, item);
-        } else {
-          map.set(k, {
-            name: item.name || prev.name,
-            score: Math.max(prev.score || 0, item.score || 0),
-            trophies: Math.max(prev.trophies || 0, item.trophies || 0),
-            actor: item.actor || prev.actor || 'katze',
-            date: Math.max(prev.date || 0, item.date || 0)
-          });
-        }
+        if (item && item.name) map.set(item.name.toLowerCase(), item);
+      }
+      const me = (currentPlayerName || '').toLowerCase();
+      const mine = loadPublicHighScores().find(p => (p.name || '').toLowerCase() === me);
+      if (mine && me) {
+        const srv = map.get(me);
+        map.set(me, srv ? { ...srv, score: Math.max(srv.score || 0, mine.score || 0), trophies: Math.max(srv.trophies || 0, mine.trophies || 0) } : mine);
       }
       const merged = Array.from(map.values());
       savePublicHighScoresList(merged);
@@ -1162,12 +1153,12 @@ function renderLeaderboardRows(allScores) {
   if (lbTabHighscore) lbTabHighscore.classList.toggle('active', isHighscoreTab);
   if (lbTabTrophies) lbTabTrophies.classList.toggle('active', !isHighscoreTab);
 
-  const sorted = [...(allScores || [])].filter(p => isValidNickname(p.name)).sort((a, b) => {
-    if (isHighscoreTab) {
-      return (b.score - a.score) || (b.trophies - a.trophies);
-    }
-    return (b.trophies - a.trophies) || (b.score - a.score);
-  });
+  // 🧹 Nur echte Einträge: gültiger Zufalls-Name und mehr als 0 im gerade gewählten Tab
+  const sorted = [...(allScores || [])]
+    .filter(p => isValidNickname(p.name) && (Number(isHighscoreTab ? p.score : p.trophies) || 0) > 0)
+    .sort((a, b) => isHighscoreTab
+      ? (b.score - a.score) || (b.trophies - a.trophies)
+      : (b.trophies - a.trophies) || (b.score - a.score));
 
   const maxVal = isHighscoreTab
     ? Math.max(1, sorted[0]?.score || 1)

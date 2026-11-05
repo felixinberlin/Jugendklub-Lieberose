@@ -201,7 +201,7 @@ async function getTopScores(limit = 20) {
   const names = [];
   for (let i = 0; i < rawPairs.length && players.length < limit; i += 2) {
     const name = rawPairs[i];
-    if (!isValidNickname(name)) continue;
+    if (!isValidNickname(name) || !(Number(rawPairs[i + 1]) > 0)) continue; // 🧹 keine 0-Punkte-Einträge
     const score = Number(rawPairs[i + 1]) || 0;
     players.push({ name, score, trophies: 0, actor: 'katze', date: Date.now() });
     names.push(name);
