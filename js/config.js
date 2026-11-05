@@ -130,7 +130,7 @@ const GAME_CONFIG = {
   yamalStar: { damage: 12, speed: 8.5, size: 48 },          // 🌟💥 Yamal: Stern explodiert in der Mitte & fügt zufälligem Spieler 12 Schaden zu
   maxHits: 20, // 💀 Treffer im normalen Modus (wenn benutzerdefiniert angepasst)
   trophyLives: 50, // 🏆 Pokal-Modus nutzt die exakten Charakter-Leben!
-  nameChangeCooldownDays: 7, // 🔒 Name erst nach 7 Tagen wieder änderbar!
+  nameChangeCooldownDays: 0, // 🎲 Zufalls-Spitznamen jederzeit frei wählbar (keine Sperre)!
   hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
   phoneZoom: 0.6, // 🔭📱 Handy: ganze Kampf-Welt herausgezoomt (0.6 = alles 40 % kleiner, viel mehr Platz). 1 = kein Zoom

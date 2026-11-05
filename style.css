@@ -848,7 +848,7 @@ h2 {
   display: none !important;
 }
 
-/* 👤 Spielername-Eingabe für die Rangliste */
+/* 👤 Spielername-Eingabe für die Rangliste & Zufalls-Würfeln */
 .name-input-wrap {
   display: flex;
   flex-direction: column;
@@ -860,6 +860,143 @@ h2 {
   font-size: 0.92rem;
   font-weight: 800;
   color: #fde68a;
+}
+.name-input-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+.btn-dice {
+  padding: 8px 12px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border: 2px solid #a78bfa;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.btn-dice:hover, .btn-dice:active {
+  transform: scale(1.05);
+  box-shadow: 0 0 16px rgba(167, 139, 250, 0.7);
+}
+.nickname-chips-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0;
+  width: 100%;
+}
+.nickname-chips-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+.nickname-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  width: 100%;
+  max-width: 380px;
+}
+.chip-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  cursor: pointer;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.chip-btn:hover, .chip-btn:active {
+  background: rgba(255, 222, 89, 0.22);
+  border-color: #ffde59;
+  color: #ffffff;
+  transform: scale(1.05);
+}
+.chip-btn.selected {
+  background: #ffde59;
+  border-color: #f59e0b;
+  color: #0f172a;
+  box-shadow: 0 0 12px rgba(255, 222, 89, 0.6);
+}
+.privacy-note {
+  font-size: 0.82rem;
+  color: #38bdf8;
+  font-weight: 700;
+  margin: 2px 0 8px 0;
+}
+.my-trophy-privacy {
+  font-size: 0.78rem;
+  color: #4ade80;
+  font-weight: 700;
+  margin-top: 5px;
+}
+.leaderboard-tabs {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 400px;
+}
+.lb-tab {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 0.88rem;
+  font-weight: 900;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #cbd5e1;
+  cursor: pointer;
+  min-height: 44px;
+  transition: all 0.2s ease;
+}
+.lb-tab.active {
+  background: rgba(56, 189, 248, 0.25);
+  border-color: #38bdf8;
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+}
+.lb-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  margin-top: 6px;
+}
+.lb-badge-me {
+  font-size: 0.68rem;
+  background: #ffde59;
+  color: #0f172a;
+  padding: 1px 6px;
+  border-radius: 6px;
+  font-weight: 900;
+  margin-left: 6px;
+}
+.lb-sub {
+  font-size: 0.76rem;
+  color: #94a3b8;
+  font-weight: 600;
 }
 .player-name-input {
   width: 100%;

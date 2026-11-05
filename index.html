@@ -23,18 +23,25 @@
         <button id="pauseBtn" class="hud-item pause-hud-btn" type="button" hidden>⏸️ PAUSE</button>
       </div>
 
-      <!-- 👤 Willkommens-Fenster beim Reinkommen: Namen eingeben & als Benutzer registrieren -->
+      <!-- 👤 Willkommens-Fenster beim Reinkommen: Zufalls-Spitznamen wählen für 100% Datenschutz -->
       <div id="welcomeNameScreen" class="overlay-screen">
-        <div class="badge">🏆 ARENA</div>
-        <h2>WIE HEISST DU? 👤</h2>
-        <p class="team-hint">Gib deinen Spielernamen ein! Sobald du Pokale 🏆 sammelst, stehst du in der <b>Rangliste</b> (auf diesem Gerät).<br><small>🔒 Hinweis: Deinen Namen kannst du danach in den Einstellungen erst nach <b>7 Tagen</b> wieder ändern!</small></p>
+        <div class="badge">🔒 100% DATENSCHUTZ</div>
+        <h2>WÄHLE DEINEN SPITZNAMEN! 🎭</h2>
+        <p class="team-hint">Wähle einen coolen Namen für die <b>öffentliche Rangliste & Highscores</b>!<br><small>🛡️ Bitte <b>keinen echten Namen</b> eingeben – such dir einfach einen Zufalls-Namen aus!</small></p>
         <div class="mode-card trophy-card">
           <div class="name-input-wrap">
-            <label for="welcomeNameInput">👤 Dein Spielername:</label>
-            <input id="welcomeNameInput" class="player-name-input" type="text" maxlength="16" placeholder="Dein Name..." autocomplete="off">
+            <label for="welcomeNameInput">🎭 Dein Spitzname:</label>
+            <div class="name-input-row">
+              <input id="welcomeNameInput" class="player-name-input" type="text" maxlength="24" placeholder="Zufalls-Name..." autocomplete="off">
+              <button id="welcomeRandomBtn" class="btn btn-dice" type="button" title="Neuen Zufalls-Namen würfeln">🎲 Würfeln</button>
+            </div>
           </div>
-          <p id="welcomeNameError" class="name-error" hidden>👆 Bitte gib mindestens 2 Zeichen ein!</p>
-          <button id="welcomeNameSaveBtn" class="btn btn-trophy" type="button">🚀 REGISTRIEREN & REIN INS SPIEL</button>
+          <div class="nickname-chips-section">
+            <span class="nickname-chips-label">👇 Oder direkt antippen zum Auswählen:</span>
+            <div id="welcomeNicknameChips" class="nickname-chips"></div>
+          </div>
+          <p id="welcomeNameError" class="name-error" hidden>👆 Bitte wähle einen Spitznamen aus!</p>
+          <button id="welcomeNameSaveBtn" class="btn btn-trophy" type="button">🚀 MIT DIESEM NAMEN SPIELEN</button>
         </div>
       </div>
 
@@ -67,14 +74,22 @@
       <div id="settingsScreen" class="overlay-screen">
         <h2>⚙️ EINSTELLUNGEN</h2>
         <div class="mode-card trophy-card">
-          <h3>👤 BENUTZERNAME</h3>
+          <h3>👤 DEIN SPITZNAME</h3>
+          <p class="privacy-note">🔒 100% Datenschutz: Wähle einen Zufalls-Spitznamen!</p>
           <p>Aktueller Name: <b id="settingsCurrentName">-</b></p>
           <div class="name-input-wrap">
-            <label for="settingsNameInput">Neuer Spielername:</label>
-            <input id="settingsNameInput" class="player-name-input" type="text" maxlength="16" placeholder="Neuer Name..." autocomplete="off">
+            <label for="settingsNameInput">Neuer Spitzname:</label>
+            <div class="name-input-row">
+              <input id="settingsNameInput" class="player-name-input" type="text" maxlength="24" placeholder="Neuer Spitzname..." autocomplete="off">
+              <button id="settingsRandomBtn" class="btn btn-dice" type="button" title="Neuen Zufalls-Namen würfeln">🎲 Würfeln</button>
+            </div>
+          </div>
+          <div class="nickname-chips-section">
+            <span class="nickname-chips-label">👇 Vorschläge zum Auswählen:</span>
+            <div id="settingsNicknameChips" class="nickname-chips"></div>
           </div>
           <p id="settingsCooldownMsg" class="cooldown-msg"></p>
-          <button id="settingsNameSaveBtn" class="btn btn-trophy" type="button">💾 NAMEN ÄNDERN</button>
+          <button id="settingsNameSaveBtn" class="btn btn-trophy" type="button">💾 SPITZNAMEN SPEICHERN</button>
         </div>
         <div class="mode-card normal-card">
           <h3>💾 GESPEICHERTE POKALE & PUNKTE</h3>
@@ -111,7 +126,13 @@
           <p>Immer <b>💀 50 Leben</b> · <b>Keine Pause</b> · Pokal bei Sieg (Solo-Sieg / alle 8 Team-Level)!</p>
           <div class="name-input-wrap">
             <label for="playerNameInput">👤 Registrierter Spieler:</label>
-            <input id="playerNameInput" class="player-name-input" type="text" maxlength="16" placeholder="Dein Name..." autocomplete="off">
+            <div class="name-input-row">
+              <input id="playerNameInput" class="player-name-input" type="text" maxlength="24" placeholder="Dein Name..." autocomplete="off">
+              <button id="modeRandomBtn" class="btn btn-dice" type="button" title="Zufälligen Namen würfeln">🎲</button>
+            </div>
+          </div>
+          <div class="nickname-chips-section">
+            <div id="modeNicknameChips" class="nickname-chips"></div>
           </div>
           <p id="nameErrorMsg" class="name-error" hidden>👆 Bitte gib zuerst deinen Spielernamen ein!</p>
           <button id="playTrophyBtn" class="btn btn-trophy">🏆 MIT POKALEN (50 ❤️)</button>
@@ -128,14 +149,21 @@
         <button id="modeBackBtn" class="btn btn-small">⬅️ Zurück</button>
       </div>
 
-      <!-- 🏆 Globale Spieler-Rangliste (trophies.js) -->
+      <!-- 🏆 Öffentliche Highscore- & Spieler-Rangliste (trophies.js) -->
       <div id="leaderboardScreen" class="overlay-screen">
-        <h2>🏆 RANGLISTE 🏆</h2>
+        <h2>🏆 ÖFFENTLICHE HIGHSCORES 🏆</h2>
         <div id="myTrophyBanner" class="trophy-banner"></div>
+        <div class="leaderboard-tabs">
+          <button id="lbTabHighscore" class="lb-tab active" type="button">🎯 HIGHSCORES (Treffer)</button>
+          <button id="lbTabTrophies" class="lb-tab" type="button">🏆 POKALE</button>
+        </div>
         <div id="leaderboardList" class="leaderboard-list"></div>
         <!-- Charakter-Rangliste: nicht gelöscht, nur versteckt (kann später wiederkommen) -->
         <div id="charLeaderboardSection" class="leaderboard-list" hidden></div>
-        <button id="leaderboardBackBtn" class="btn btn-small">⬅️ Zurück</button>
+        <div class="lb-actions">
+          <button id="lbRollRandomBtn" class="btn btn-small" type="button">🎲 Neuer Spitzname</button>
+          <button id="leaderboardBackBtn" class="btn btn-small" type="button">⬅️ Zurück</button>
+        </div>
       </div>
 
       <!-- 🎬 Abspann (credits.js) – interaktiv mit Vor-/Zurückspulen & Tempo -->
@@ -168,7 +196,7 @@
         <p>Treffer: <span id="finalScore">0</span></p>
         <p id="newRecordMsg" class="record-msg" style="display: none;">🎉 NEUER REKORD! 🎉</p>
         <button id="restartBtn" class="btn">NOCHMAL SPIELEN 🔄</button>
-        <button id="leaderboardOverBtn" class="btn btn-trophy btn-small">🏆 RANGLISTE</button>
+        <button id="leaderboardOverBtn" class="btn btn-trophy btn-small">🏆 HIGHSCORES & RANGLISTE</button>
         <button id="changeBtn" class="btn btn-small">🎭 Andere Figur</button>
         <button id="creditsBtn" class="btn btn-small">🎬 ABSPANN</button>
       </div>

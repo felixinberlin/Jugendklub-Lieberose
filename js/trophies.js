@@ -1,15 +1,132 @@
 /**
- * 🏆 trophies.js – Rangliste, Benutzer-Registrierung, 7-Tage-Namenssperre & Pokal-Modus
+ * 🏆 trophies.js – Öffentliche Highscore-Rangliste, Datenschutz durch Zufalls-Spitznamen & Pokal-Modus
  *
- * - Beim Reinkommen ins Spiel gibst du deinen Spielernamen ein und wirst registriert.
- * - Im Hauptmenü unter ⚙️ EINSTELLUNGEN kannst du den Namen ändern – aber erst
- *   7 Tage nachdem du ihn ausgewählt oder zuletzt geändert hast!
- * - Die Rangliste zeigt nur echte Spieler mit Pokalen (keine ausgedachten Bot-Namen).
- * - Pokale & Punkte kann man NICHT auf 0 setzen (Wunsch aus dem Workshop).
- *
- * Datenschutz-Hinweis (AGENTS.md): In localStorage stehen Spielzahlen (Pokale, Punkte, Zeitstempel)
- * und – vom Betreuer erlaubt – der selbst gewählte Spielername. Nichts davon verlässt das Gerät.
+ * - 100% DATENSCHUTZ: Niemand muss echte Namen eingeben! Coole Zufalls-Spitznamen zum Auswählen.
+ * - ÖFFENTLICHE HIGHSCORES: Treffer-Rekorde (🎯) und Meister-Pokale (🏆) für alle sichtbar.
+ * - SPITZNAME WÄHLEN: Beim Start, vor jedem Match, in den Einstellungen oder direkt in der Rangliste mit 🎲 würfeln.
+ * - LOKAL GESPEICHERT: Alles bleibt sicher im Browser auf dem Gerät (localStorage), ohne Server.
  */
+
+// 🎭 Listen für abwechslungsreiche, lustige und heldenhafte Zufalls-Spitznamen
+const NICKNAME_ADJECTIVES = [
+  'Blitz', 'Turbo', 'Mega', 'Schatten', 'Feuer', 'Frost', 'Ninja',
+  'Cyber', 'Cosmic', 'Zauber', 'Ultra', 'Lava', 'Sturm', 'Donner',
+  'Gold', 'Super', 'Phantom', 'Raketen', 'Sternen', 'Galaxy',
+  'Drachen', 'Samurai', 'Hyper', 'Laser', 'Pixel', 'Sonic', 'Kometen'
+];
+
+const NICKNAME_NOUNS = [
+  'Katze', 'Mais', 'Kobold', 'Maus', 'Goblin', 'Musiala', 'Yamal',
+  'Drache', 'Tiger', 'Wolf', 'Falke', 'Fuchs', 'Ritter', 'Panda',
+  'Löwe', 'Champion', 'Legende', 'Kicker', 'Samurai', 'Titan',
+  'Phönix', 'Krieger', 'Gamer', 'Bär', 'Adler', 'Viper', 'Meteor'
+];
+
+const NICKNAME_EMOJIS = [
+  '⚡', '🚀', '🔥', '❄️', '🥷', '👑', '⭐', '🎮', '💎', '🏆',
+  '🦁', '🐺', '🐉', '⚽', '🌽', '🐱', '🐭', '👺', '🧌', '🦅',
+  '🛡️', '🌪️', '🦊', '🎯', '✨', '🐾', '💥', '🛸'
+];
+
+function generateRandomNickname() {
+  const adj = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)];
+  const noun = NICKNAME_NOUNS[Math.floor(Math.random() * NICKNAME_NOUNS.length)];
+  const emoji = NICKNAME_EMOJIS[Math.floor(Math.random() * NICKNAME_EMOJIS.length)];
+  return `${emoji} ${adj}-${noun}`;
+}
+
+function getNicknameSuggestions(count = 4, exclude = '') {
+  const set = new Set();
+  if (exclude) set.add(exclude);
+  const result = [];
+  let attempts = 0;
+  while (result.length < count && attempts < 50) {
+    attempts++;
+    const nick = generateRandomNickname();
+    if (!set.has(nick)) {
+      set.add(nick);
+      result.push(nick);
+    }
+  }
+  return result;
+}
+
+function renderNicknameChips(container, inputEl, onSelect) {
+  if (!container) return;
+  container.innerHTML = '';
+  const current = (inputEl ? inputEl.value : currentPlayerName || '').trim();
+  const suggestions = getNicknameSuggestions(4, current);
+  for (const nick of suggestions) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'chip-btn' + (nick === current ? ' selected' : '');
+    chip.textContent = nick;
+    chip.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      initAudio();
+      playSound('bounce');
+      if (inputEl) inputEl.value = nick;
+      for (const c of container.querySelectorAll('.chip-btn')) {
+        c.classList.toggle('selected', c.textContent === nick);
+      }
+      if (typeof onSelect === 'function') onSelect(nick);
+    });
+    container.appendChild(chip);
+  }
+}
+
+// 🎯 Öffentliche Highscores im Browser-Speicher (localStorage)
+const PUBLIC_HIGHSCORES_KEY = 'lieberose_public_highscores_v1';
+let lbActiveTab = 'highscores'; // 'highscores' oder 'trophies'
+
+function loadPublicHighScores() {
+  try {
+    const list = JSON.parse(localStorage.getItem(PUBLIC_HIGHSCORES_KEY) || '[]');
+    if (Array.isArray(list)) return list;
+  } catch (e) {}
+  return [];
+}
+
+function savePublicHighScoresList(list) {
+  try {
+    localStorage.setItem(PUBLIC_HIGHSCORES_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function recordPublicHighScore(name, matchScore, totalTrophies, actorName, isTeam) {
+  const cleanName = (name || currentPlayerName || 'Held 1').trim();
+  const list = loadPublicHighScores();
+  const s = Math.round((Number(matchScore) || 0) * 10) / 10;
+  const t = Number(totalTrophies) || 0;
+  if (s <= 0 && t <= 0) return list;
+
+  const idx = list.findIndex(e => (e.name || '').trim().toLowerCase() === cleanName.toLowerCase());
+  const now = Date.now();
+  const resolvedActor = (actorName && typeof actors !== 'undefined' && actors[actorName]) ? actorName : 'katze';
+
+  if (idx >= 0) {
+    const prev = list[idx];
+    list[idx] = {
+      name: cleanName,
+      score: Math.max(prev.score || 0, s),
+      trophies: Math.max(prev.trophies || 0, t),
+      actor: resolvedActor || prev.actor || 'katze',
+      date: now
+    };
+  } else {
+    list.push({
+      name: cleanName,
+      score: s,
+      trophies: t,
+      actor: resolvedActor,
+      date: now
+    });
+  }
+
+  savePublicHighScoresList(list);
+  return list;
+}
 
 let trophyMode = false; // true = Pokal-Modus (immer 50 Leben, keine Pause), false = Normal
 let normalLives = GAME_CONFIG.maxHits; // Eingestellte Leben für den normalen Modus
@@ -28,6 +145,9 @@ const modeBackBtn = document.getElementById('modeBackBtn');
 const modeHitsChoice = document.getElementById('modeHitsChoice');
 const playerNameInput = document.getElementById('playerNameInput');
 const nameErrorMsg = document.getElementById('nameErrorMsg');
+const modeRandomBtn = document.getElementById('modeRandomBtn');
+const modeNicknameChips = document.getElementById('modeNicknameChips');
+
 const leaderboardScreen = document.getElementById('leaderboardScreen');
 const leaderboardList = document.getElementById('leaderboardList');
 const charLeaderboardSection = document.getElementById('charLeaderboardSection');
@@ -35,6 +155,10 @@ const myTrophyBanner = document.getElementById('myTrophyBanner');
 const leaderboardStartBtn = document.getElementById('leaderboardStartBtn');
 const leaderboardOverBtn = document.getElementById('leaderboardOverBtn');
 const leaderboardBackBtn = document.getElementById('leaderboardBackBtn');
+const lbTabHighscore = document.getElementById('lbTabHighscore');
+const lbTabTrophies = document.getElementById('lbTabTrophies');
+const lbRollRandomBtn = document.getElementById('lbRollRandomBtn');
+
 const trophiesEl = document.getElementById('trophies');
 const trophyHudEl = document.getElementById('trophyHud');
 const trophyRewardMsgEl = document.getElementById('trophyRewardMsg');
@@ -44,6 +168,9 @@ const welcomeNameScreen = document.getElementById('welcomeNameScreen');
 const welcomeNameInput = document.getElementById('welcomeNameInput');
 const welcomeNameError = document.getElementById('welcomeNameError');
 const welcomeNameSaveBtn = document.getElementById('welcomeNameSaveBtn');
+const welcomeRandomBtn = document.getElementById('welcomeRandomBtn');
+const welcomeNicknameChips = document.getElementById('welcomeNicknameChips');
+
 const currentUserBadge = document.getElementById('currentUserBadge');
 const settingsStartBtn = document.getElementById('settingsStartBtn');
 const settingsScreen = document.getElementById('settingsScreen');
@@ -51,6 +178,9 @@ const settingsCurrentName = document.getElementById('settingsCurrentName');
 const settingsNameInput = document.getElementById('settingsNameInput');
 const settingsCooldownMsg = document.getElementById('settingsCooldownMsg');
 const settingsNameSaveBtn = document.getElementById('settingsNameSaveBtn');
+const settingsRandomBtn = document.getElementById('settingsRandomBtn');
+const settingsNicknameChips = document.getElementById('settingsNicknameChips');
+
 const settingsFullscreenBtn = document.getElementById('settingsFullscreenBtn');
 const settingsBackBtn = document.getElementById('settingsBackBtn');
 const settingsStatsText = document.getElementById('settingsStatsText');
@@ -74,7 +204,7 @@ function loadTrophies() {
       totalScore: Number(raw.totalScore) || 0,
       highScore: savedHigh,
       nameChangedAt: Number(raw.nameChangedAt) || 0,
-      playerName: typeof raw.playerName === 'string' ? raw.playerName.slice(0, 24) : '', // 👤 Gespeicherter Spielername
+      playerName: typeof raw.playerName === 'string' ? raw.playerName.slice(0, 32) : '', // 👤 Gespeicherter Spielername
       actors: (raw.actors && typeof raw.actors === 'object') ? raw.actors : {}
     };
   } catch (e) {
@@ -133,7 +263,7 @@ function addSavedScore(points) {
     if (highScoreEl) highScoreEl.textContent = highScore;
   }
   trophiesData.highScore = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
-  saveTrophies(false); // Sanft gebündelt statt 10-mal pro Sekunde auf die Festplatte
+  saveTrophies(false);
 }
 
 // ⛶ Vollbild-Modus: Versteckt die Browser-Adressleiste oben!
@@ -171,10 +301,10 @@ if (settingsFullscreenBtn) {
   settingsFullscreenBtn.addEventListener('click', () => toggleGameFullscreen());
 }
 
-// ⏳ 7-Tage-Sperre für Namensänderung prüfen
+// ⏳ Namenssperre prüfen (0 Tage = jederzeit frei wählbar!)
 function cooldownMsRemaining() {
-  if (!trophiesData.nameChangedAt) return 0;
-  const days = GAME_CONFIG.nameChangeCooldownDays || 7;
+  const days = GAME_CONFIG.nameChangeCooldownDays ?? 0;
+  if (days <= 0 || !trophiesData.nameChangedAt) return 0;
   const lockMs = days * 24 * 60 * 60 * 1000;
   const elapsed = Date.now() - trophiesData.nameChangedAt;
   return Math.max(0, lockMs - elapsed);
@@ -190,7 +320,7 @@ function formatCooldownRemaining(ms) {
 
 // Holt oder aktualisiert den registrierten Benutzer in der Sitzungs-Rangliste
 function getOrCreatePlayerEntry(name) {
-  const clean = (name || '').trim() || 'Du (Gespeichert)';
+  const clean = (name || '').trim() || 'Held (Gespeichert)';
   let entry = sessionPlayers.find(p => p.isMe);
   if (!entry) {
     entry = { name: clean, trophies: trophiesData.total || 0, region: '🌍 Dein Gerät', isMe: true };
@@ -210,9 +340,11 @@ function registerOrUpdatePlayerName(newName, isInitial) {
   trophiesData.playerName = clean; // 💾 bleibt im Browser, auch nach Tab-Schließen
   trophiesData.nameChangedAt = Date.now();
   getOrCreatePlayerEntry(clean);
-  playerNameInput.value = clean;
+  if (playerNameInput) playerNameInput.value = clean;
   if (currentUserBadge) currentUserBadge.textContent = clean;
   saveTrophies();
+  // Auch in den öffentlichen Highscores registrieren
+  recordPublicHighScore(clean, Math.max(trophiesData.highScore || 0, highScore || 0), trophiesData.total || 0, playerActor, teamMode);
   return true;
 }
 
@@ -256,24 +388,24 @@ function updateTrophyHud() {
   const count = activePlayerTrophies();
   const totalPts = Number(trophiesData.totalScore) || 0;
   const bestRecord = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
-  trophiesEl.textContent = count;
+  if (trophiesEl) trophiesEl.textContent = count;
   if (highScoreEl) highScoreEl.textContent = bestRecord;
-  trophyHudEl.classList.toggle('active-trophy', trophyMode);
-  playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
-  leaderboardStartBtn.textContent = `🏆 RANGLISTE (${count} 🏆)`;
-  if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Spieler 1';
+  if (trophyHudEl) trophyHudEl.classList.toggle('active-trophy', trophyMode);
+  if (playTrophyBtn) playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
+  if (leaderboardStartBtn) leaderboardStartBtn.textContent = `🏆 HIGHSCORES (${bestRecord} 🎯 · ${count} 🏆)`;
+  if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Held 1';
   const summaryText = `🏆 ${count} Pokale · 🎯 ${totalPts} Gesamtpunkte · 🏅 Rekord: ${bestRecord}`;
   if (savedStatsBadge) savedStatsBadge.textContent = summaryText;
   if (settingsStatsText) settingsStatsText.textContent = summaryText;
   if (!isPlaying) refreshUnlockTiles();
 }
 
-// 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen, falls noch kein Fortschritt im Browser gespeichert ist!
+// 👤 Beim Reinkommen ins Spiel: Namens-Eingabe öffnen mit Zufalls-Vorschlägen
 function initWelcomeRegistration() {
   // 💾 Gespeicherten Namen aus dem Browser zurückholen
   if (!currentPlayerName && trophiesData.playerName) {
     currentPlayerName = trophiesData.playerName;
-    playerNameInput.value = currentPlayerName;
+    if (playerNameInput) playerNameInput.value = currentPlayerName;
     getOrCreatePlayerEntry(currentPlayerName);
     updateTrophyHud();
     return;
@@ -285,10 +417,14 @@ function initWelcomeRegistration() {
     highScore > 0
   );
   if (!currentPlayerName && !hasSavedProgress) {
-    welcomeNameScreen.classList.add('active');
-    startScreen.classList.remove('active');
+    const randomNick = generateRandomNickname();
+    if (welcomeNameInput) welcomeNameInput.value = randomNick;
+    renderNicknameChips(welcomeNicknameChips, welcomeNameInput);
+    if (welcomeNameScreen) welcomeNameScreen.classList.add('active');
+    if (startScreen) startScreen.classList.remove('active');
   } else if (!currentPlayerName) {
-    currentPlayerName = 'Spieler 1';
+    currentPlayerName = generateRandomNickname();
+    trophiesData.playerName = currentPlayerName;
     getOrCreatePlayerEntry(currentPlayerName);
     updateTrophyHud();
   }
@@ -301,76 +437,113 @@ for (const inputEl of [welcomeNameInput, settingsNameInput, playerNameInput]) {
   });
 }
 
-welcomeNameInput.addEventListener('input', () => {
-  if (welcomeNameInput.value.trim().length >= 2) welcomeNameError.hidden = true;
-});
-welcomeNameInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') welcomeNameSaveBtn.click();
-});
+if (welcomeNameInput) {
+  welcomeNameInput.addEventListener('input', () => {
+    if (welcomeNameInput.value.trim().length >= 2 && welcomeNameError) welcomeNameError.hidden = true;
+  });
+  welcomeNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && welcomeNameSaveBtn) welcomeNameSaveBtn.click();
+  });
+}
 
-welcomeNameSaveBtn.addEventListener('click', () => {
-  initAudio();
-  requestGameFullscreen();
-  const val = (welcomeNameInput.value || '').trim();
-  if (val.length < 2) {
-    welcomeNameError.hidden = false;
-    welcomeNameInput.focus();
-    return;
-  }
-  welcomeNameError.hidden = true;
-  registerOrUpdatePlayerName(val, true);
-  playSound('gem');
-  welcomeNameScreen.classList.remove('active');
-  startScreen.classList.add('active');
-});
+if (welcomeRandomBtn) {
+  welcomeRandomBtn.addEventListener('click', () => {
+    initAudio();
+    playSound('bounce');
+    const nick = generateRandomNickname();
+    if (welcomeNameInput) welcomeNameInput.value = nick;
+    renderNicknameChips(welcomeNicknameChips, welcomeNameInput);
+  });
+}
 
-// ⚙️ Einstellungen im Hauptmenü öffnen (mit 7-Tage-Sperre für Namensänderung)
+if (welcomeNameSaveBtn) {
+  welcomeNameSaveBtn.addEventListener('click', () => {
+    initAudio();
+    requestGameFullscreen();
+    const val = (welcomeNameInput ? welcomeNameInput.value : '').trim() || generateRandomNickname();
+    if (val.length < 2) {
+      if (welcomeNameError) welcomeNameError.hidden = false;
+      if (welcomeNameInput) welcomeNameInput.focus();
+      return;
+    }
+    if (welcomeNameError) welcomeNameError.hidden = true;
+    registerOrUpdatePlayerName(val, true);
+    playSound('gem');
+    if (welcomeNameScreen) welcomeNameScreen.classList.remove('active');
+    if (startScreen) startScreen.classList.add('active');
+  });
+}
+
+// ⚙️ Einstellungen im Hauptmenü öffnen
 function openSettingsScreen() {
   initAudio();
   updateTrophyHud();
-  settingsCurrentName.textContent = currentPlayerName || 'Spieler 1';
-  settingsNameInput.value = currentPlayerName || '';
+  if (settingsCurrentName) settingsCurrentName.textContent = currentPlayerName || 'Held 1';
+  if (settingsNameInput) settingsNameInput.value = currentPlayerName || '';
+  renderNicknameChips(settingsNicknameChips, settingsNameInput);
   const rem = currentPlayerName ? cooldownMsRemaining() : 0;
   if (rem > 0) {
-    settingsNameInput.disabled = true;
-    settingsNameSaveBtn.disabled = true;
-    settingsCooldownMsg.textContent = `🔒 Du kannst deinen Namen erst in ${formatCooldownRemaining(rem)} wieder ändern (7-Tage-Sperre)!`;
-    settingsCooldownMsg.className = 'cooldown-msg locked';
+    if (settingsNameInput) settingsNameInput.disabled = true;
+    if (settingsNameSaveBtn) settingsNameSaveBtn.disabled = true;
+    if (settingsRandomBtn) settingsRandomBtn.disabled = true;
+    if (settingsCooldownMsg) {
+      settingsCooldownMsg.textContent = `🔒 Du kannst deinen Namen erst in ${formatCooldownRemaining(rem)} wieder ändern!`;
+      settingsCooldownMsg.className = 'cooldown-msg locked';
+    }
   } else {
-    settingsNameInput.disabled = false;
-    settingsNameSaveBtn.disabled = false;
-    settingsCooldownMsg.textContent = '✅ Du kannst deinen Namen jetzt ändern (danach gilt wieder die 7-Tage-Sperre).';
-    settingsCooldownMsg.className = 'cooldown-msg unlocked';
+    if (settingsNameInput) settingsNameInput.disabled = false;
+    if (settingsNameSaveBtn) settingsNameSaveBtn.disabled = false;
+    if (settingsRandomBtn) settingsRandomBtn.disabled = false;
+    if (settingsCooldownMsg) {
+      settingsCooldownMsg.textContent = '✅ Du kannst deinen Spitznamen jederzeit frei ändern.';
+      settingsCooldownMsg.className = 'cooldown-msg unlocked';
+    }
   }
-  startScreen.classList.remove('active');
-  settingsScreen.classList.add('active');
+  if (startScreen) startScreen.classList.remove('active');
+  if (settingsScreen) settingsScreen.classList.add('active');
 }
 
-settingsStartBtn.addEventListener('click', openSettingsScreen);
-settingsBackBtn.addEventListener('click', () => {
-  settingsScreen.classList.remove('active');
-  startScreen.classList.add('active');
-});
+if (settingsStartBtn) settingsStartBtn.addEventListener('click', openSettingsScreen);
+if (settingsBackBtn) {
+  settingsBackBtn.addEventListener('click', () => {
+    if (settingsScreen) settingsScreen.classList.remove('active');
+    if (startScreen) startScreen.classList.add('active');
+  });
+}
 
-settingsNameSaveBtn.addEventListener('click', () => {
-  initAudio();
-  const rem = currentPlayerName ? cooldownMsRemaining() : 0;
-  if (rem > 0) {
-    playSound('hit');
-    return;
-  }
-  const val = (settingsNameInput.value || '').trim();
-  if (val.length < 2) {
-    settingsCooldownMsg.textContent = '👆 Bitte gib mindestens 2 Zeichen ein!';
-    settingsCooldownMsg.className = 'cooldown-msg locked';
-    return;
-  }
-  registerOrUpdatePlayerName(val, false);
-  playSound('gem');
-  openSettingsScreen(); // Aktualisiert direkt die 7-Tage-Sperre-Anzeige!
-});
+if (settingsRandomBtn) {
+  settingsRandomBtn.addEventListener('click', () => {
+    initAudio();
+    playSound('bounce');
+    const nick = generateRandomNickname();
+    if (settingsNameInput) settingsNameInput.value = nick;
+    renderNicknameChips(settingsNicknameChips, settingsNameInput);
+  });
+}
 
-// 💀 Leben für den normalen Modus einstellen und auf beiden Bildschirmen synchron halten
+if (settingsNameSaveBtn) {
+  settingsNameSaveBtn.addEventListener('click', () => {
+    initAudio();
+    const rem = currentPlayerName ? cooldownMsRemaining() : 0;
+    if (rem > 0) {
+      playSound('hit');
+      return;
+    }
+    const val = (settingsNameInput ? settingsNameInput.value : '').trim();
+    if (val.length < 2) {
+      if (settingsCooldownMsg) {
+        settingsCooldownMsg.textContent = '👆 Bitte gib mindestens 2 Zeichen ein!';
+        settingsCooldownMsg.className = 'cooldown-msg locked';
+      }
+      return;
+    }
+    registerOrUpdatePlayerName(val, false);
+    playSound('gem');
+    openSettingsScreen();
+  });
+}
+
+// 💀 Leben für den normalen Modus einstellen
 function setNormalLives(hits) {
   normalLives = hits;
   if (!trophyMode) GAME_CONFIG.maxHits = hits;
@@ -379,33 +552,47 @@ function setNormalLives(hits) {
   for (const b of document.querySelectorAll('#hitsChoice .hits-btn, #modeHitsChoice .hits-btn')) {
     b.classList.toggle('selected', Number(b.dataset.hits || b.textContent) === hits);
   }
-  playNormalBtn.textContent = `🎮 NORMAL (${normalLives} ❤️ · MIT PAUSE)`;
+  if (playNormalBtn) playNormalBtn.textContent = `🎮 NORMAL (${normalLives} ❤️ · MIT PAUSE)`;
 }
 
 function applyModeLives() {
   GAME_CONFIG.maxHits = trophyMode ? GAME_CONFIG.trophyLives : normalLives;
 }
 
-for (const hits of GAME_CONFIG.hitChoices) {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'hits-btn';
-  btn.dataset.hits = hits;
-  btn.textContent = hits;
-  btn.addEventListener('click', () => setNormalLives(hits));
-  modeHitsChoice.appendChild(btn);
+if (modeHitsChoice) {
+  for (const hits of GAME_CONFIG.hitChoices) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'hits-btn';
+    btn.dataset.hits = hits;
+    btn.textContent = hits;
+    btn.addEventListener('click', () => setNormalLives(hits));
+    modeHitsChoice.appendChild(btn);
+  }
 }
 for (const btn of document.querySelectorAll('#hitsChoice .hits-btn')) {
   btn.addEventListener('click', () => setNormalLives(Number(btn.textContent)));
 }
 setNormalLives(normalLives);
 
-playerNameInput.addEventListener('input', () => {
-  if (playerNameInput.value.trim()) nameErrorMsg.hidden = true;
-});
-playerNameInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') launchPendingMode(true);
-});
+if (playerNameInput) {
+  playerNameInput.addEventListener('input', () => {
+    if (playerNameInput.value.trim() && nameErrorMsg) nameErrorMsg.hidden = true;
+  });
+  playerNameInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') launchPendingMode(true);
+  });
+}
+
+if (modeRandomBtn) {
+  modeRandomBtn.addEventListener('click', () => {
+    initAudio();
+    playSound('bounce');
+    const nick = generateRandomNickname();
+    if (playerNameInput) playerNameInput.value = nick;
+    renderNicknameChips(modeNicknameChips, playerNameInput);
+  });
+}
 
 // 🎮 Öffnet die Auswahl „Mit Pokalen (50 Leben)“ oder „Normal (Leben einstellbar)“
 function openModeChoice(choice) {
@@ -413,44 +600,48 @@ function openModeChoice(choice) {
   requestGameFullscreen();
   pendingMode = choice;
   setNormalLives(normalLives);
-  nameErrorMsg.hidden = true;
+  if (nameErrorMsg) nameErrorMsg.hidden = true;
   if (currentPlayerName) {
-    playerNameInput.value = currentPlayerName;
-    playerNameInput.disabled = cooldownMsRemaining() > 0;
+    if (playerNameInput) playerNameInput.value = currentPlayerName;
+    if (playerNameInput) playerNameInput.disabled = cooldownMsRemaining() > 0;
   } else {
-    playerNameInput.disabled = false;
+    const fresh = generateRandomNickname();
+    if (playerNameInput) playerNameInput.value = fresh;
+    if (playerNameInput) playerNameInput.disabled = false;
   }
+  renderNicknameChips(modeNicknameChips, playerNameInput);
+
   if (choice.type === 'solo') {
     const name = choice.actor;
-    modeScreenTitle.textContent = `${actorEmoji(name)} ${actors[name].name} · SOLO-MATCH`;
-    modeScreenSub.textContent = `🏆 Pokal bei Sieg (${GAME_CONFIG.trophyLives} ❤️, 1 Match) · oder 🎮 Normal mit Pause!`;
+    if (modeScreenTitle) modeScreenTitle.textContent = `${actorEmoji(name)} ${actors[name].name} · SOLO-MATCH`;
+    if (modeScreenSub) modeScreenSub.textContent = `🏆 Pokal bei Sieg (${GAME_CONFIG.trophyLives} ❤️, 1 Match) · oder 🎮 Normal mit Pause!`;
   } else {
-    modeScreenTitle.textContent = '⚔️ TEAM-MODUS';
-    modeScreenSub.textContent = `🏆 Pokal wenn alle 8 Level geschafft sind (${GAME_CONFIG.trophyLives} ❤️) · oder 🎮 Normal mit Pause!`;
+    if (modeScreenTitle) modeScreenTitle.textContent = '⚔️ TEAM-MODUS';
+    if (modeScreenSub) modeScreenSub.textContent = `🏆 Pokal wenn alle 8 Level geschafft sind (${GAME_CONFIG.trophyLives} ❤️) · oder 🎮 Normal mit Pause!`;
   }
-  startScreen.classList.remove('active');
-  modeScreen.classList.add('active');
+  if (startScreen) startScreen.classList.remove('active');
+  if (modeScreen) modeScreen.classList.add('active');
 }
 
 function launchPendingMode(withTrophies) {
   initAudio();
   requestGameFullscreen();
   if (withTrophies) {
-    const entered = (playerNameInput.value || currentPlayerName || '').trim();
+    const entered = (playerNameInput ? playerNameInput.value : currentPlayerName || '').trim();
     if (entered.length < 2) {
-      nameErrorMsg.hidden = false;
-      playerNameInput.focus();
+      if (nameErrorMsg) nameErrorMsg.hidden = false;
+      if (playerNameInput) playerNameInput.focus();
       return;
     }
-    if (!currentPlayerName) {
+    if (!currentPlayerName || entered !== currentPlayerName) {
       registerOrUpdatePlayerName(entered, true);
     }
-    nameErrorMsg.hidden = true;
+    if (nameErrorMsg) nameErrorMsg.hidden = true;
   }
   trophyMode = withTrophies;
   applyModeLives();
   updateTrophyHud();
-  modeScreen.classList.remove('active');
+  if (modeScreen) modeScreen.classList.remove('active');
   if (!pendingMode) return;
   if (pendingMode.type === 'solo') {
     startSoloGame(pendingMode.actor);
@@ -459,32 +650,34 @@ function launchPendingMode(withTrophies) {
   }
 }
 
-playTrophyBtn.addEventListener('click', () => launchPendingMode(true));
-playNormalBtn.addEventListener('click', () => launchPendingMode(false));
-modeBackBtn.addEventListener('click', () => {
-  modeScreen.classList.remove('active');
-  startScreen.classList.add('active');
-});
+if (playTrophyBtn) playTrophyBtn.addEventListener('click', () => launchPendingMode(true));
+if (playNormalBtn) playNormalBtn.addEventListener('click', () => launchPendingMode(false));
+if (modeBackBtn) {
+  modeBackBtn.addEventListener('click', () => {
+    if (modeScreen) modeScreen.classList.remove('active');
+    if (startScreen) startScreen.classList.add('active');
+  });
+}
 
 // 🏅 Am Ende eines Matches prüfen, ob es einen Pokal gibt!
 function awardLevelTrophies(won) {
   if (!trophyMode) {
-    trophyRewardMsgEl.hidden = true;
+    if (trophyRewardMsgEl) trophyRewardMsgEl.hidden = true;
     return;
   }
-  trophyRewardMsgEl.hidden = false;
+  if (trophyRewardMsgEl) trophyRewardMsgEl.hidden = false;
   const totalLevels = levelList().length;
   const nr = currentLevel + 1;
   const isFinalLevel = currentLevel === totalLevels - 1;
 
   if (!won) {
-    trophyRewardMsgEl.textContent = `🏆 Kein Pokal – du musst gewinnen, um den Pokal zu holen!`;
+    if (trophyRewardMsgEl) trophyRewardMsgEl.textContent = `🏆 Kein Pokal – du musst gewinnen, um den Pokal zu holen!`;
     return;
   }
 
   // Im Team-Modus gibt es den Pokal erst, wenn alle 8 Level geschafft sind!
   if (teamMode && !isFinalLevel) {
-    trophyRewardMsgEl.textContent = `🏅 Level ${nr}/${totalLevels} geschafft! Schaff alle ${totalLevels} Level für den Pokal 🏆!`;
+    if (trophyRewardMsgEl) trophyRewardMsgEl.textContent = `🏅 Level ${nr}/${totalLevels} geschafft! Schaff alle ${totalLevels} Level für den Pokal 🏆!`;
     return;
   }
 
@@ -502,16 +695,20 @@ function awardLevelTrophies(won) {
     trophiesData.actors[playerActor] = (trophiesData.actors[playerActor] || 0) + gained;
   }
 
-  const pEntry = getOrCreatePlayerEntry(currentPlayerName || 'Spieler 1');
+  const pEntry = getOrCreatePlayerEntry(currentPlayerName || 'Held 1');
   pEntry.trophies = trophiesData.total;
 
   saveTrophies();
+  recordPublicHighScore(currentPlayerName, score, trophiesData.total, playerActor, teamMode);
   playSound('gem');
-  trophyRewardMsgEl.textContent = `🏆 +${gained} POKAL! ${pEntry.name.toUpperCase()} HAT JETZT ${pEntry.trophies} 🏆 IN DER RANGLISTE!`;
+  if (trophyRewardMsgEl) {
+    trophyRewardMsgEl.textContent = `🏆 +${gained} POKAL! ${pEntry.name.toUpperCase()} HAT JETZT ${pEntry.trophies} 🏆 IN DER RANGLISTE!`;
+  }
 }
 
-// 🎭 Alte Charakter-Rangliste: Logik bleibt komplett erhalten, ist aber versteckt (kann später wiederkommen!)
+// 🎭 Alte Charakter-Rangliste
 function buildCharacterLeaderboardHtml() {
+  if (typeof actors === 'undefined') return '';
   const baseNames = Object.keys(actors).filter(n => !actors[n].kind);
   const rows = baseNames.map(name => ({
     name,
@@ -538,70 +735,117 @@ function buildCharacterLeaderboardHtml() {
   }).join('');
 }
 
-// Namen sicher anzeigen (z. B. „<b>“ im Namen wird als Text gezeigt, nicht als HTML)
+// Namen sicher anzeigen (XSS-Schutz)
 function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// 🌍 Globale Spieler-Rangliste bauen und anzeigen:
-// Sobald man mindestens 1 Pokal hat, wird man in der globalen Rangliste für alle angezeigt (auch nach Browser-Neuladen)!
+// 🌍 Öffentliche Rangliste bauen und anzeigen:
 function showLeaderboard() {
   initAudio();
-  const activeName = currentPlayerName || 'Spieler 1';
+  const activeName = currentPlayerName || 'Held 1';
   const activeCount = activePlayerTrophies();
   const totalPts = Number(trophiesData.totalScore) || 0;
   const bestRecord = Math.max(Number(trophiesData.highScore) || 0, highScore || 0);
-  if (activeCount > 0) {
-    getOrCreatePlayerEntry(activeName);
+
+  // Eigene Daten im Highscore-Pool registrieren / aktualisieren
+  if (bestRecord > 0 || activeCount > 0) {
+    recordPublicHighScore(activeName, bestRecord, activeCount, playerActor, teamMode);
   }
-  const isListedGlobally = Boolean(activeCount > 0);
 
-  myTrophyBanner.innerHTML =
-    `<div class="my-trophy-total">👤 ${escapeHtml(activeName)}: <b>${activeCount} 🏆</b> · 🎯 <b>${totalPts}</b> Punkte · 🏅 Rekord: <b>${bestRecord}</b></div>` +
-    `<div class="my-trophy-sub">${
-      isListedGlobally
-        ? '✅ Deine Pokale & Punkte sind auf diesem Gerät gespeichert und stehen in der Rangliste!'
-        : 'ℹ️ Deine Pokale & Punkte werden auf diesem Gerät gespeichert. Ab 1 Pokal 🏆 stehst du in der Rangliste!'
-    }</div>`;
+  if (myTrophyBanner) {
+    myTrophyBanner.innerHTML =
+      `<div class="my-trophy-total">🎭 Spitzname: <b>${escapeHtml(activeName)}</b></div>` +
+      `<div class="my-trophy-sub">🎯 Treffer-Rekord: <b>${bestRecord}</b> · 🏆 Pokale: <b>${activeCount}</b> · 🎯 Gesamtpunkte: <b>${totalPts}</b></div>` +
+      `<div class="my-trophy-privacy">🔒 100% Datenschutz: Nur Zufalls-Spitznamen in der Rangliste!</div>`;
+  }
 
-  // Nur echte Spieler mit Pokalen – keine ausgedachten Bot-Namen!
-  const pool = [];
-  for (const p of sessionPlayers) {
-    if (p.name && p.trophies > 0) {
-      pool.push(p);
+  const allScores = loadPublicHighScores();
+  const isHighscoreTab = lbActiveTab === 'highscores';
+
+  if (lbTabHighscore) lbTabHighscore.classList.toggle('active', isHighscoreTab);
+  if (lbTabTrophies) lbTabTrophies.classList.toggle('active', !isHighscoreTab);
+
+  const sorted = [...allScores].sort((a, b) => {
+    if (isHighscoreTab) {
+      return (b.score - a.score) || (b.trophies - a.trophies);
     }
-  }
-  const sortedPlayers = pool.sort((a, b) => b.trophies - a.trophies);
-  const maxT = Math.max(1, sortedPlayers[0]?.trophies || 1);
+    return (b.trophies - a.trophies) || (b.score - a.score);
+  });
+
+  const maxVal = isHighscoreTab
+    ? Math.max(1, sorted[0]?.score || 1)
+    : Math.max(1, sorted[0]?.trophies || 1);
+
   const medals = ['🥇', '🥈', '🥉'];
-  leaderboardList.innerHTML = sortedPlayers.length ? sortedPlayers.map((p, idx) => {
-    const rank = medals[idx] || `#${idx + 1}`;
-    const pct = Math.round((p.trophies / maxT) * 100);
-    const isMe = Boolean(p.isMe);
-    return `<div class="lb-row ${idx === 0 && p.trophies > 0 ? 'lb-first' : ''} ${isMe ? 'lb-me' : ''}">` +
-      `<span class="lb-rank">${rank}</span>` +
-      `<span class="lb-emoji">${isMe ? '⭐' : '🎮'}</span>` +
-      `<div class="lb-info">` +
-        `<div class="lb-name">${escapeHtml(p.name)}${isMe ? ' (DU · GESPEICHERT)' : ''}</div>` +
-        `<div class="lb-bar"><i style="width:${pct}%;background:${isMe ? '#ffde59' : '#38bdf8'}"></i></div>` +
-      `</div>` +
-      `<span class="lb-count">${p.trophies} 🏆</span>` +
-    `</div>`;
-  }).join('') : '<p class="my-trophy-sub">Noch hat niemand einen Pokal – hol dir den ersten! 🏆</p>';
+
+  if (leaderboardList) {
+    leaderboardList.innerHTML = sorted.length ? sorted.map((p, idx) => {
+      const rank = medals[idx] || `#${idx + 1}`;
+      const val = isHighscoreTab ? (p.score || 0) : (p.trophies || 0);
+      const pct = Math.round((val / maxVal) * 100);
+      const isMe = (p.name || '').trim().toLowerCase() === activeName.trim().toLowerCase();
+      const actorKey = p.actor || 'katze';
+      const emoji = (typeof actors !== 'undefined' && actors[actorKey]) ? actorEmoji(actorKey) : '🎮';
+      const barColor = isMe ? '#ffde59' : (isHighscoreTab ? '#38bdf8' : '#a855f7');
+      const primaryCount = isHighscoreTab
+        ? `🎯 ${p.score || 0}`
+        : `🏆 ${p.trophies || 0}`;
+      const secondaryCount = isHighscoreTab
+        ? `🏆 ${p.trophies || 0} Pokale`
+        : `🎯 ${p.score || 0} Treffer`;
+
+      return `<div class="lb-row ${idx === 0 && val > 0 ? 'lb-first' : ''} ${isMe ? 'lb-me' : ''}">` +
+        `<span class="lb-rank">${rank}</span>` +
+        `<span class="lb-emoji">${emoji}</span>` +
+        `<div class="lb-info">` +
+          `<div class="lb-name">${escapeHtml(p.name)}${isMe ? '<span class="lb-badge-me">DU ⭐</span>' : ''}</div>` +
+          `<div class="lb-sub">${secondaryCount}</div>` +
+          `<div class="lb-bar"><i style="width:${pct}%;background:${barColor}"></i></div>` +
+        `</div>` +
+        `<span class="lb-count">${primaryCount}</span>` +
+      `</div>`;
+    }).join('') : '<p class="my-trophy-sub">Noch keine Highscores eingetragen – spiel eine Runde und hol dir Platz 1! 🏆</p>';
+  }
 
   if (charLeaderboardSection) {
     charLeaderboardSection.innerHTML = buildCharacterLeaderboardHtml();
   }
 
-  leaderboardScreen.classList.add('active');
+  if (leaderboardScreen) leaderboardScreen.classList.add('active');
 }
 
 function hideLeaderboard() {
-  leaderboardScreen.classList.remove('active');
+  if (leaderboardScreen) leaderboardScreen.classList.remove('active');
 }
 
-leaderboardStartBtn.addEventListener('click', showLeaderboard);
-leaderboardOverBtn.addEventListener('click', showLeaderboard);
-leaderboardBackBtn.addEventListener('click', hideLeaderboard);
+if (lbTabHighscore) {
+  lbTabHighscore.addEventListener('click', () => {
+    initAudio();
+    lbActiveTab = 'highscores';
+    showLeaderboard();
+  });
+}
+if (lbTabTrophies) {
+  lbTabTrophies.addEventListener('click', () => {
+    initAudio();
+    lbActiveTab = 'trophies';
+    showLeaderboard();
+  });
+}
+if (lbRollRandomBtn) {
+  lbRollRandomBtn.addEventListener('click', () => {
+    initAudio();
+    playSound('gem');
+    const newNick = generateRandomNickname();
+    registerOrUpdatePlayerName(newNick, true);
+    showLeaderboard();
+  });
+}
+
+if (leaderboardStartBtn) leaderboardStartBtn.addEventListener('click', showLeaderboard);
+if (leaderboardOverBtn) leaderboardOverBtn.addEventListener('click', showLeaderboard);
+if (leaderboardBackBtn) leaderboardBackBtn.addEventListener('click', hideLeaderboard);
+
 updateTrophyHud();
 initWelcomeRegistration();

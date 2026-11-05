@@ -106,6 +106,10 @@ function endGame(winner) {
     highScoreEl.textContent = highScore;
     newRecordMsgEl.style.display = 'block';
   }
+  // 🏆 Treffer-Rekord & Pokale im öffentlichen Highscore speichern
+  if (typeof recordPublicHighScore === 'function') {
+    recordPublicHighScore(currentPlayerName, score, trophiesData ? trophiesData.total : 0, playerActor, teamMode);
+  }
   setTimeout(() => gameOverScreen.classList.add('active'), 1200); // Erst die Explosion sehen
 }
 
