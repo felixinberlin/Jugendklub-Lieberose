@@ -6,6 +6,13 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
+  shopChests: [
+    { id: 'normal', name: 'Normale Kiste', price: 1500, currency: 'coins', luck: '1' },
+    { id: 'rare', name: 'Seltene Kiste', price: 3000, currency: 'coins', luck: '1,3' },
+    { id: 'gold', name: 'Goldkiste', price: 7500, currency: 'coins', luck: '1,8' },
+    { id: 'god', name: 'God-Kiste', price: 199, currency: 'jewels' }
+  ],
+  shopExchange: { jewels: 20, coins: 5000 },
   starterActors: ['corn', 'katze', 'maus'],
   actorRarities: {
     corn: 'rare', katze: 'rare', maus: 'rare',

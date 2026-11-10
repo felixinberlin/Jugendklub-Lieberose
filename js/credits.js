@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '3.0';
+const GAME_VERSION = '3.1';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -88,7 +88,8 @@ const WISHES = [
   { v: '2.66', text: 'Namens-Baukasten 🎲🛠️ mit Adjektiven & Verben (Mutiger, Flinker, Kickt, Fliegt uvm.) zum Selbst-Kombinieren ✨' },
   { v: '2.67', text: 'Drucktabelle optimiert: Passt jetzt millimetergenau auf 1 einzige DIN A4-Seite 🖨️📄' },
   { workshop: '🎪 Workshop 3 · 10. November' },
-  { v: '3.0', text: 'Wähle deine erste Figur: Mais, Katze oder Maus 🎁 · Seltenheiten in euren Farben ✨ · GOAT heißt wieder Musialla ⚽' }
+  { v: '3.0', text: 'Wähle deine erste Figur: Mais, Katze oder Maus 🎁 · Seltenheiten in euren Farben ✨ · GOAT heißt wieder Musialla ⚽' },
+  { v: '3.1', text: 'Unser Kisten-Shop 🛍️📦: braun, blau, Gold & strahlende God-Kiste · 20 Juwelen gegen 5K Coins 💎🪙' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

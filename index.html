@@ -76,6 +76,7 @@
         <button id="settingsStartBtn" class="menu-btn" type="button" aria-label="Menü: Einstellungen, Punkte und Abspann">☰</button>
         <div class="badge">🏰 Jugendklub Lieberose <span id="version" class="version"></span> · 👤 <span id="currentUserBadge">Gast</span></div>
         <h1 class="game-title"><span class="title-emoji">🥊</span> THE FIGHTZONE <span class="title-emoji">⚡</span></h1>
+        <button id="shopStartBtn" class="btn btn-shop" type="button">🛍️ SHOP</button>
         <div class="instructions">
           <p>📱 <b>Startseite im Hochformat · Runde im Querformat (Vollbild)!</b><br>🕹️ Links bewegen (<b>WASD</b>) · 🔴 Rechts schießen (<b>Linksklick</b>) · 🟦⚡ Fähigkeit / Kombo (<b>F</b>)<br>🤝 <b>19 Team-Combos</b> · 💾 <b>Pokale & Punkte bleiben im Browser gespeichert!</b></p>
         </div>
@@ -102,6 +103,25 @@
         <button id="leaderboardStartBtn" class="btn btn-trophy">🏆 RANGLISTE</button>
         <p class="parents-link">👨‍👩‍👧 Für Eltern: So ist das Spiel gebaut –
           <a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">den ganzen Code ansehen ↗</a></p>
+      </div>
+
+      <!-- 🛍️ Kisten und Juwelen-Tausch: alles bleibt auf diesem Gerät. -->
+      <div id="shopScreen" class="overlay-screen" aria-labelledby="shopTitle">
+        <header class="shop-header">
+          <div><p class="shop-eyebrow">THE FIGHTZONE</p><h2 id="shopTitle">🛍️ SHOP</h2></div>
+          <button id="shopBackBtn" class="btn btn-small" type="button">⬅️ Zurück</button>
+        </header>
+        <div id="shopWallet" class="shop-wallet" aria-label="Dein Guthaben"></div>
+        <p class="shop-hint">Vier Kisten zur Auswahl · Auf dem Handy seitlich wischen ↔️</p>
+        <div class="shop-scroll" tabindex="0" role="region" aria-label="Vier Kisten nebeneinander">
+          <div id="shopChestRow" class="shop-chest-row"></div>
+        </div>
+        <section class="shop-exchange" aria-labelledby="exchangeTitle">
+          <div><h3 id="exchangeTitle">🪙 5K Coins</h3><p>20 💎 Juwelen gegen 5000 Coins tauschen</p></div>
+          <button id="shopExchangeBtn" class="btn" type="button">💎 20 Juwelen → 🪙 5K Coins</button>
+        </section>
+        <p id="shopMessage" class="shop-message" role="status" aria-live="polite"></p>
+        <p class="shop-hint">Gekaufte Kisten bleiben geschlossen in deinem Vorrat. Die Inhalte legen wir als Nächstes fest.</p>
       </div>
 
       <!-- ⚙️ Einstellungen (☰ oben rechts im Hauptmenü): Name, Punkte, Abspann, Vollbild -->
@@ -497,6 +517,7 @@
   <script src="js/zielhilfe.js"></script>
   <script src="js/zielen.js"></script>
   <script src="js/credits.js"></script>
+  <script src="js/shop.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

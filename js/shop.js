@@ -1,0 +1,86 @@
+/** 🛍️ Shop: Spielgeld und geschlossene Kisten, nur lokal und ohne Echtgeld. */
+const SHOP_STORAGE_KEY = 'lieberose_shop_v1';
+const shopScreen = document.getElementById('shopScreen');
+const shopMessage = document.getElementById('shopMessage');
+function shopNumber(value) {
+  return Number.isSafeInteger(value) && value >= 0 ? value : 0;
+}
+function loadShopWallet() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(SHOP_STORAGE_KEY) || '{}') || {}; } catch (e) {}
+  const chests = {};
+  for (const chest of GAME_CONFIG.shopChests) chests[chest.id] = shopNumber(saved.chests?.[chest.id]);
+  return { coins: shopNumber(saved.coins), jewels: shopNumber(saved.jewels), chests };
+}
+let shopWallet = loadShopWallet();
+function saveShopWallet() {
+  try { localStorage.setItem(SHOP_STORAGE_KEY, JSON.stringify(shopWallet)); }
+  catch (e) { shopMessage.textContent += ' Dein Browser kann gerade nicht speichern. Der Vorrat bleibt nur in diesem Tab.'; }
+}
+function shopPrice(chest) {
+  return chest.currency === 'jewels' ? `💎 ${chest.price} Juwelen` : `🪙 ${chest.price.toLocaleString('de-DE')} Coins`;
+}
+function renderShop() {
+  document.getElementById('shopWallet').textContent = `🪙 ${shopWallet.coins.toLocaleString('de-DE')} Coins     💎 ${shopWallet.jewels.toLocaleString('de-DE')} Juwelen`;
+  const row = document.getElementById('shopChestRow');
+  if (!row.children.length) {
+    for (const chest of GAME_CONFIG.shopChests) {
+      const card = document.createElement('article');
+      card.className = `shop-chest shop-chest-${chest.id}`;
+      card.innerHTML = `<div class="chest-art" aria-hidden="true"><span class="chest-spark">✦</span><div class="chest-lid"></div><div class="chest-box"><span>◆</span></div></div>` +
+        `<h3>${chest.name}</h3><p class="chest-luck">${chest.luck ? `${chest.luck}× Glück` : '✦ Göttlicher Glanz'}</p>` +
+        `<p class="chest-price">${shopPrice(chest)}</p><p class="chest-stock"></p>`;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'btn chest-buy';
+      btn.addEventListener('click', () => buyShopChest(chest.id));
+      card.appendChild(btn);
+      row.appendChild(card);
+    }
+  }
+  GAME_CONFIG.shopChests.forEach((chest, i) => {
+    const card = row.children[i];
+    card.querySelector('.chest-stock').textContent = `Im Vorrat: ${shopWallet.chests[chest.id]}`;
+    const btn = card.querySelector('button');
+    btn.disabled = shopWallet[chest.currency] < chest.price;
+    btn.textContent = shopWallet[chest.currency] < chest.price ? (chest.currency === 'jewels' ? 'Juwelen fehlen' : 'Coins fehlen') : 'KAUFEN';
+    btn.setAttribute('aria-label', `${chest.name}: ${shopPrice(chest)}`);
+  });
+  document.getElementById('shopExchangeBtn').disabled = shopWallet.jewels < GAME_CONFIG.shopExchange.jewels;
+}
+function buyShopChest(id) {
+  const chest = GAME_CONFIG.shopChests.find(c => c.id === id);
+  if (!chest) return false;
+  if (shopWallet[chest.currency] < chest.price) return false;
+  if (shopWallet.chests[id] >= Number.MAX_SAFE_INTEGER) return false;
+  shopWallet[chest.currency] -= chest.price;
+  shopWallet.chests[id]++;
+  shopMessage.textContent = `📦 ${chest.name} gekauft! Sie liegt geschlossen in deinem Vorrat.`;
+  saveShopWallet();
+  renderShop();
+  return true;
+}
+function exchangeShopJewels() {
+  const exchange = GAME_CONFIG.shopExchange;
+  if (shopWallet.jewels < exchange.jewels || shopWallet.coins > Number.MAX_SAFE_INTEGER - exchange.coins) return false;
+  shopWallet.jewels -= exchange.jewels;
+  shopWallet.coins += exchange.coins;
+  shopMessage.textContent = '🪙 Getauscht! Du hast 5K Coins für 20 Juwelen bekommen.';
+  saveShopWallet();
+  renderShop();
+  return true;
+}
+document.getElementById('shopStartBtn').addEventListener('click', () => {
+  renderShop();
+  shopMessage.textContent = '';
+  startScreen.classList.remove('active');
+  shopScreen.classList.add('active');
+  shopScreen.scrollTop = 0;
+  document.getElementById('shopBackBtn').focus();
+});
+document.getElementById('shopBackBtn').addEventListener('click', () => {
+  shopScreen.classList.remove('active');
+  startScreen.classList.add('active');
+  document.getElementById('shopStartBtn').focus();
+});
+document.getElementById('shopExchangeBtn').addEventListener('click', exchangeShopJewels);
