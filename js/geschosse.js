@@ -43,7 +43,7 @@ function normalerWurf(figur, ladung = 0) {
     size: Math.round((actorCfg(figur, 'BombSize') || GAME_CONFIG.bombSize) * mapScale()),
     trail: actorCfg(figur, 'Trail'),
     scratch: Boolean(actorCfg(figur, 'Scratch')), bolt: Boolean(actorCfg(figur, 'Bolt')),
-    damage: getCharStat(figur, 'attackDamage') ?? profil.schaden ?? 4,
+    damage: getCharStat(figur, 'attackDamage', typeof isCpu !== 'function' || !isCpu(figur)) ?? profil.schaden ?? 4,
     lead: Math.max(0, Math.min(1, ladung)), lifeMs: profil.lebensdauerMs,
     explosionsRadius: profil.explosionsRadius * mapScale(), trefferfolgen: profil.trefferfolgen
   };

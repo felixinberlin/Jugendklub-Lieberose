@@ -42,7 +42,7 @@ function upgradeCharacter(name) {
   data.level++;
   saveShopWallet();
   refreshUnlockTiles();
-  renderUpgradeCard(name);
+  renderCurrentCharCard();
   return true;
 }
 function renderUpgradeCard(name) {

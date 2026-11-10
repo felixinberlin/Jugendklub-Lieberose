@@ -18,10 +18,7 @@ const {pathToFileURL}=require('node:url');
   await page.screenshot({path:path.join(os.tmpdir(),`jugend-rewards-menu-${width}.png`)});
   await page.evaluate(()=>{starterActor='corn';refreshMainMenu();});
   await page.locator('#mainPlayBtn').click();
-  assert.equal(await page.locator('#playTrophyBtn').textContent(),'🏅 RANGLISTE SPIELEN');
-  assert.equal(await page.locator('#modeScreen').innerText().then(t=>t.includes('MIT PAUSE')),false);
-  await page.screenshot({path:path.join(os.tmpdir(),`jugend-rewards-modes-${width}.png`)});
-  await page.locator('#playNormalBtn').click();
+  assert.equal(await page.evaluate(()=>isPlaying&&!trophyMode),true);
   await page.keyboard.press('p');await page.keyboard.press('Escape');
   assert.equal(await page.evaluate(()=>isPaused),false);
   const crossing=await page.evaluate(()=>{

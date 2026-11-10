@@ -90,8 +90,8 @@
             <div class="main-hero-caption"><strong id="mainHeroName">DEINE STARTFIGUR</strong><div id="mainHeroRarity"></div></div>
           </div>
           <div class="main-right">
-            <button id="mainRankBtn" class="arcade-button main-rank" type="button"><span>🏆</span>Rangliste</button>
-            <button id="mainPlayBtn" class="arcade-button main-play" type="button"><span>▶</span>Spielen</button>
+            <button id="mainRankBtn" class="arcade-button main-rank" type="button"><span>🏅</span>Rangliste spielen</button>
+            <button id="mainPlayBtn" class="arcade-button main-play" type="button"><span>▶</span>Normal spielen</button>
           </div>
         </div>
         <footer class="main-footer">🏰 Jugendklub Lieberose <span id="version" class="version"></span></footer>
@@ -141,8 +141,12 @@
       <div id="lootScreen" class="overlay-screen" role="dialog" aria-modal="true" aria-labelledby="lootTitle">
         <h2 id="lootTitle">📦 DEINE BELOHNUNGEN</h2>
         <p id="lootSummary" role="status"></p>
-        <button id="lootCloseBtn" class="btn" type="button">✨ WEITER ZUM SHOP</button>
-        <div id="lootResults" class="loot-results"></div>
+        <div class="loot-stage">
+          <div id="openingChest" class="opening-chest" aria-hidden="true"><div class="chest-art"><div class="chest-lid"></div><div class="chest-box"><span>◆</span></div></div></div>
+          <div id="lootResults" class="loot-results" aria-live="polite" hidden></div>
+        </div>
+        <button id="lootNextBtn" class="btn" type="button" disabled>📦 Kiste öffnet sich …</button>
+        <button id="lootCloseBtn" class="btn" type="button" hidden>✨ WEITER ZUM SHOP</button>
       </div>
 
       <!-- 👤 Profil: ausschließlich den Zufalls-Spitznamen ändern. -->
@@ -545,6 +549,8 @@
   <script src="js/credits.js"></script>
   <script src="js/shop.js"></script>
   <script src="js/chest-loot.js"></script>
+  <script src="js/loot-reveal.js"></script>
+  <script src="js/daily-chest.js"></script>
   <script src="js/main-menu.js"></script>
   <script src="js/game.js"></script>
 </body>

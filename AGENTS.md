@@ -234,7 +234,9 @@ btn.addEventListener('click', async () => {
 
 34. **Charakterwerte seit v3.6:** Normaler Schaden, Wurfpausen und Lauftempo stehen in `CHAR_STATS` (`attackDamage`, `attackCooldown`, `speed`). `normalerWurf()` nutzt den Charakter-Schaden vor `waffenProfile.schaden`, auch bei gemeinsamem Ball-Profil oder wechselnden Fledermaus-Waffen. Spezialkräfte behalten eigene Werte. Helden-Karten berechnen die angezeigten Werte daraus (`getCharData`); Drucktabelle mitpflegen. `#profileScreen` enthält nur die Zufalls-Namensänderung, `#settingsScreen` die übrigen Infos. Die Namensfeld-IDs heißen intern weiter `settings…`, gehören aber zum Profil.
 
-35. **Kisten & XP seit v3.7:** `js/chest-loot.js` zieht pro Kiste exakt 4/8/16/50 Items. Die ursprünglichen Angaben summieren sich auf 294,4 und werden als relative Gewichte normalisiert; Glück multipliziert die Charakter-Gewichte. XP-Seltenheiten haben Gewichte 30/25/20/10/5, nur unter bereits freigeschalteten Figuren (innerhalb einer Seltenheit gleichverteilt). `js/upgrades.js`: Level beginnt bei 1, Upgrade kostet `10 * 2 ** (level - 1)` XP und verbraucht sie, maximal Level 16. Level verändern noch keine Kampfwerte. XP, Level, Freischaltungen, gewählte Figur und Währungen werden gemeinsam im bestehenden `lieberose_shop_v1` gespeichert. Alte geschlossene Kisten bleiben öffnbar; neue Käufe öffnen sofort.
+35. **Kisten & XP seit v3.7:** `js/chest-loot.js` zieht pro Kiste exakt 4/8/16/50 Items. Die ursprünglichen Angaben summieren sich auf 294,4 und werden als relative Gewichte normalisiert; Glück multipliziert die Charakter-Gewichte. XP-Seltenheiten haben Gewichte 30/25/20/10/5, nur unter bereits freigeschalteten Figuren (innerhalb einer Seltenheit gleichverteilt). `js/upgrades.js`: Level beginnt bei 1, Upgrade kostet `10 * 2 ** (level - 1)` XP und verbraucht sie, maximal Level 16. Seit v3.8 erhöht jeder Level-Aufstieg den normalen Schaden um 0,1; Gegner bekommen keinen Bonus aus deinem gespeicherten Fortschritt. XP, Level, Freischaltungen, gewählte Figur und Währungen werden gemeinsam im bestehenden `lieberose_shop_v1` gespeichert. Alte geschlossene Kisten bleiben öffnbar; neue Käufe öffnen sofort.
+
+36. **Kisten-Präsentation & Gratis-Kiste seit v3.8:** `js/loot-reveal.js` spielt zuerst die Deckel-Animation ab und zeigt dann genau eine Belohnung pro Tipp. Alle Gewinne werden vorher einmal gespeichert, damit Neuladen nichts verdoppelt. `js/daily-chest.js`: kostenlose normale Kiste sofort, dann `nextFreeChestAt = Date.now() + 24h` im bestehenden lokalen Spielstand; Speichern übernimmt stets den späteren Zeitstempel aus anderen Tabs. Hauptmenü-Knöpfe starten direkt Normal/Rangliste, die Bestenliste öffnet der Pokal oben. Lebenspunkte nach Seltenheit: 100/110/120/130/140.
 
 ---
 
@@ -244,6 +246,8 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 
 | Datei | Was |
 |---|---|
+| `js/loot-reveal.js` | Kisten-Animation und einzelne Belohnungen: `showLootResults`, `revealNextLootItem`, `closeLootResults`. Lädt nach `chest-loot.js`. |
+| `js/daily-chest.js` | Gratis-Kiste mit lokal gespeichertem 24h-Abholzeitpunkt: `freeChestRemaining`, `claimDailyChest`, `updateFreeChestButton`. |
 | `js/upgrades.js` | Freischaltungen, gewählte Figur und eigene XP/Level pro Charakter; `ownsCharacter`, `nextUpgradeXp`, `upgradeCharacter`, `renderUpgradeCard`. Lädt nach `collection.js`. |
 | `js/chest-loot.js` | Gewichtete Kisten-Ziehungen, XP-Verteilung nur an Freigeschaltete, Ergebnisse und gespeicherte Kisten öffnen. Lädt nach `shop.js`. |
 | `js/main-menu.js` | Querformat-Hauptmenü ohne Scrollen: `refreshMainMenu()`, `openCharactersMenu()`, Knöpfe für Profil, Shop, Figuren, Rangliste und Spielstart. Lädt vor `js/game.js`. |

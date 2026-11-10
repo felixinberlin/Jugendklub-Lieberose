@@ -23,7 +23,11 @@ document.getElementById('charactersBackBtn').addEventListener('click', () => {
   document.getElementById('charactersStartBtn').focus();
 });
 document.getElementById('mainProfileBtn').addEventListener('click', openProfileScreen);
-document.getElementById('mainRankBtn').addEventListener('click', () => document.getElementById('leaderboardStartBtn').click());
+document.getElementById('mainRankBtn').addEventListener('click', () => {
+  const name = equippedActor();
+  if (!name) { openCharactersMenu(); return; }
+  chooseAndStart(name, true);
+});
 for (const id of ['mainCoinsBtn', 'mainJewelsBtn']) {
   document.getElementById(id).addEventListener('click', () => document.getElementById('shopStartBtn').click());
 }

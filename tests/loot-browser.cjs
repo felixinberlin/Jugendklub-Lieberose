@@ -9,7 +9,8 @@ const os=require('node:os');
  for(const [width,height]of [[390,760],[844,390],[1440,900]]){
   const context=await browser.newContext({viewport:{width,height},hasTouch:true});
   await context.route('https://**/*',route=>route.abort());
-  const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  const page=await context.newPage();
+  const finishLoot = async () => { await page.waitForFunction(()=>currentLoot&&!currentLoot.opening); await page.evaluate(()=>{while(revealNextLootItem()){};}); await page.locator('#lootCloseBtn').click(); };const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(pathToFileURL(path.resolve(__dirname,'../index.html')).href);
   await page.evaluate(()=>{welcomeNameScreen.classList.remove('active');startScreen.classList.add('active');requestGameFullscreen=()=>{};});
   if(width<height)await page.setViewportSize({width:760,height:390});
@@ -39,7 +40,7 @@ const os=require('node:os');
    }
    // Isolierte Kauf-/Upgrade-Prüfung beginnt wieder nur mit der Startfigur.
    for(const n of CHARACTER_IDS)characterProgress[n]={owned:0,xp:0,level:1};
-   shopWallet.coins=100000;shopWallet.jewels=10000;Math.random=()=>0;renderShop();
+   shopWallet.coins=100000;shopWallet.jewels=10000;Math.random=()=>0;GAME_CONFIG.lootOpenMs=0;renderShop();
    return{counts,mixed,same,allRarities,all,total};
   });
   assert.deepEqual(distribution.counts,{corn:10000});
@@ -51,30 +52,30 @@ const os=require('node:os');
   assert.equal(distribution.all.length,21);distribution.all.forEach(item=>assert.equal(item.kind,item.expected));
   assert.ok(Math.abs(distribution.total-294.4)<1e-8);
   await page.locator('.shop-chest-normal .chest-buy').click();
-  assert.equal(await page.locator('#lootResults .loot-item').count(),4);
+  assert.equal(await page.evaluate(()=>currentLoot.results.length),4);
   assert.equal(await page.evaluate(()=>characterProgress.corn.xp),20);
   const blocked=await page.evaluate(()=>{const coins=shopWallet.coins;return{result:buyShopChest('normal'),before:coins,after:shopWallet.coins};});
   assert.equal(blocked.result,false);assert.equal(blocked.before,blocked.after);
   await page.screenshot({path:path.join(os.tmpdir(),`jugend-loot-${width}.png`)});
-  await page.locator('#lootCloseBtn').click();
+  await finishLoot();
   for(const [id,count]of [['rare',8],['gold',16],['god',50]]){
    assert.equal(await page.evaluate(id=>openLootChest(id,false,()=>0),id),true);
-   assert.equal(await page.locator('#lootResults .loot-item').count(),count);
-   await page.locator('#lootCloseBtn').click();
+   assert.equal(await page.evaluate(()=>currentLoot.results.length),count);
+   await finishLoot();
   }
   assert.deepEqual(await page.evaluate(()=>[shopWallet.coins,shopWallet.jewels,characterProgress.corn.xp]),[88000,9801,390]);
   // Alte Kisten werden ohne erneute Bezahlung geöffnet.
   await page.evaluate(()=>{shopWallet.chests.normal=1;renderShop();});
   await page.locator('.shop-chest-normal .chest-open').click();
   assert.deepEqual(await page.evaluate(()=>[shopWallet.coins,shopWallet.chests.normal,characterProgress.corn.xp]),[88000,0,410]);
-  await page.locator('#lootCloseBtn').click();
+  await finishLoot();
   // Divine-Freischaltung und doppelte Charaktere bleiben eindeutige Item-Ziehungen.
   await page.evaluate(()=>openLootChest('normal',false,()=>.99999));
   assert.equal(await page.evaluate(()=>isActorUnlocked('zeus')),true);
-  assert.equal(await page.locator('#lootResults .loot-item').count(),4);
-  assert.equal(await page.locator('#lootResults').innerText().then(t=>t.includes('NEU FREIGESCHALTET')),true);
-  assert.equal(await page.locator('#lootResults').innerText().then(t=>t.includes('Schon freigeschaltet')),true);
-  await page.locator('#lootCloseBtn').click();
+  assert.equal(await page.evaluate(()=>currentLoot.results.length),4);
+  assert.equal(await page.evaluate(()=>currentLoot.results.some(r=>!r.duplicate)),true);
+  assert.equal(await page.evaluate(()=>currentLoot.results.some(r=>r.duplicate)),true);
+  await finishLoot();
   // XP-Raritäten berücksichtigen nur vorhandene Figuren; die letzte Gruppe ist Zeus.
   assert.equal(await page.evaluate(()=>xpRecipient(()=>.99999)),'zeus');
   await page.locator('#shopBackBtn').click();await page.locator('#charactersStartBtn').click();
@@ -94,7 +95,9 @@ const os=require('node:os');
   assert.equal(await page.locator('.char-card-dialog').evaluate(el=>el.scrollWidth<=el.clientWidth),true);
   await page.screenshot({path:path.join(os.tmpdir(),`jugend-upgrade-${width}.png`)});
   await page.locator('#charCardCloseBtn').click();await page.locator('#pickGrid [data-name="zeus"]').click();
-  await page.locator('#charCardPlayBtn').click();await page.locator('#modeBackBtn').click();
+  await page.locator('#charCardPlayBtn').click();
+  assert.equal(await page.evaluate(()=>isPlaying&&playerActor==='zeus'),true);
+  await page.evaluate(()=>{isPlaying=false;spectating=false;startScreen.classList.add('active');});
   assert.equal(await page.locator('#mainHeroName').textContent(),'ZEUS');
   await page.reload();
   assert.deepEqual(await page.evaluate(()=>[isActorUnlocked('zeus'),characterProgress.corn.level,characterProgress.corn.xp,equippedActor()]),[true,16,672330,'zeus']);

@@ -58,7 +58,7 @@ function startSoloGame(name) {
 }
 
 // Figur auswählen → freigeschaltet? Dann Normal oder Rangliste wählen.
-function chooseAndStart(name) {
+function chooseAndStart(name, ranked = false) {
   if (name === null) {
     trophyMode = false;
     applyModeLives();
@@ -81,7 +81,12 @@ function chooseAndStart(name) {
     return;
   }
   selectCharacter(name);
-  openModeChoice({ type: 'solo', actor: name });
+  if (ranked && !isValidNickname(currentPlayerName)) registerOrUpdatePlayerName(generateRandomNickname(), true);
+  trophyMode = ranked;
+  applyModeLives();
+  updateTrophyHud();
+  document.getElementById('charactersScreen').classList.remove('active');
+  startSoloGame(name);
 }
 
 // Wird bei jedem Start aufgerufen: Knöpfe der Gegner-Figuren sperren (eigene Team-Figuren bleiben anklickbar zum Wechseln!),

@@ -10,12 +10,16 @@ function loadShopWallet() {
   try { saved = JSON.parse(localStorage.getItem(SHOP_STORAGE_KEY) || '{}') || {}; } catch (e) {}
   const chests = {};
   for (const chest of GAME_CONFIG.shopChests) chests[chest.id] = shopNumber(saved.chests?.[chest.id]);
-  return { coins: shopNumber(saved.coins), jewels: shopNumber(saved.jewels), chests, characters: characterProgress, equipped: CHARACTER_IDS.indexOf(equippedCharacter) };
+  return { coins: shopNumber(saved.coins), jewels: shopNumber(saved.jewels), nextFreeChestAt: shopNumber(saved.nextFreeChestAt), chests, characters: characterProgress, equipped: CHARACTER_IDS.indexOf(equippedCharacter) };
 }
 let shopWallet = loadShopWallet();
 function saveShopWallet() {
   shopWallet.characters = characterProgress;
   shopWallet.equipped = CHARACTER_IDS.indexOf(equippedCharacter);
+  try {
+    const saved = JSON.parse(localStorage.getItem(SHOP_STORAGE_KEY) || '{}') || {};
+    shopWallet.nextFreeChestAt = Math.max(shopWallet.nextFreeChestAt, shopNumber(saved.nextFreeChestAt));
+  } catch (e) {}
   try { localStorage.setItem(SHOP_STORAGE_KEY, JSON.stringify(shopWallet)); }
   catch (e) { shopMessage.textContent += ' Dein Browser kann gerade nicht speichern. Dein Spielstand bleibt nur in diesem Tab.'; }
 }
@@ -42,6 +46,11 @@ function renderShop() {
       oldChest.textContent = '📦 Gekaufte Kiste öffnen';
       oldChest.addEventListener('click', () => openStoredChest(chest.id));
       card.appendChild(oldChest);
+      if (chest.id === 'normal') {
+        const free = document.createElement('button');
+        free.id = 'dailyChestBtn'; free.className = 'daily-chest-btn'; free.type = 'button';
+        free.addEventListener('click', () => claimDailyChest()); card.appendChild(free);
+      }
       row.appendChild(card);
     }
   }
@@ -53,6 +62,7 @@ function renderShop() {
     btn.textContent = shopWallet[chest.currency] < chest.price ? (chest.currency === 'jewels' ? 'Juwelen fehlen' : 'Coins fehlen') : 'KAUFEN';
     btn.setAttribute('aria-label', `${chest.name}: ${shopPrice(chest)}`);
   });
+  updateFreeChestButton();
   document.getElementById('shopExchangeBtn').disabled = shopWallet.jewels < GAME_CONFIG.shopExchange.jewels;
 }
 function buyShopChest(id) {

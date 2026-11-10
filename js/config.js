@@ -6,6 +6,10 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
+  rarityHp: { rare: 100, epic: 110, mythic: 120, secret: 130, divine: 140 },
+  upgradeDamage: 0.1,
+  dailyChestMs: 24 * 60 * 60 * 1000,
+  lootOpenMs: 1100,
   winCoins: 200, // Jeder Sieg, auch im Ranglisten-Modus.
   defaultLives: 100, // Reservewert; feste Leben stehen pro Figur in CHAR_STATS.
   shopChests: [
@@ -239,7 +243,7 @@ const GAME_CONFIG = {
 const CHAR_STATS = {
   musiala: { // Fußballer / GOAT
     name: 'Fußballer',
-    hp: 100,
+    hp: 110,
     attackDamage: 3.4,
     attackCooldown: 1.2,
     abilityDamage: 10,   // Großerball: 10 Schaden
@@ -247,7 +251,7 @@ const CHAR_STATS = {
   },
   kobold: {
     name: 'Kobold',
-    hp: 120,
+    hp: 110,
     attackDamage: 3.4,
     attackCooldown: 1.3,
     abilityDamage: 8,    // 3 Mini-Kobolde
@@ -263,7 +267,7 @@ const CHAR_STATS = {
   },
   maus: {
     name: 'Maus',
-    hp: 105,
+    hp: 100,
     attackDamage: 2.9,
     attackCooldown: 1.2,
     abilityDamage: 0,    // 6s im Loch
@@ -271,7 +275,7 @@ const CHAR_STATS = {
   },
   katze: {
     name: 'Katze',
-    hp: 110,
+    hp: 100,
     attackDamage: 3,
     attackCooldown: 1.3,
     abilityDamage: 5,    // Wirbelsturm: 5 Schaden + 4s Stun
@@ -279,7 +283,7 @@ const CHAR_STATS = {
   },
   goblin: {
     name: 'Goblin',
-    hp: 100,
+    hp: 120,
     attackDamage: 4.1,
     attackCooldown: 1.2,
     abilityDamage: 10,   // Dreizack: 10 Schaden
@@ -287,7 +291,7 @@ const CHAR_STATS = {
   },
   zeus: {
     name: 'Zeus',
-    hp: 130,
+    hp: 140,
     attackDamage: 6.4,
     attackCooldown: 1.1,
     abilityDamage: 25,   // Blitzregen: pro Blitz 5 Schaden
@@ -295,7 +299,7 @@ const CHAR_STATS = {
   },
   yamal: {
     name: 'Lamine Yamal',
-    hp: 105,
+    hp: 120,
     attackDamage: 4.2,
     attackCooldown: 1.3,
     abilityDamage: 12,   // Sternen-Explosion in der Mitte: 12 Schaden
@@ -303,7 +307,7 @@ const CHAR_STATS = {
   },
   fledermaus: {
     name: 'Fledermaus',
-    hp: 100,             // Pokal-Modus; im normalen Modus gilt die eingestellte Lebenszahl
+    hp: 110, // Episch: feste Leben in beiden Modi.
     attackDamage: 3.5,
     attackCooldown: 1.2,
     abilityDamage: 15,   // Blutsaugen: 5 × 3 Schaden, heilt sich um 15
@@ -319,8 +323,13 @@ const CHAR_STATS = {
   }
 };
 
-function getCharStat(name, stat) {
+function getCharStat(name, stat, includeUpgrade = true) {
   const k = (typeof kindOf === 'function' ? kindOf(name) : name) || name;
   const cfg = CHAR_STATS[k] || CHAR_STATS.musiala;
+  if (stat === 'hp') return GAME_CONFIG.rarityHp[GAME_CONFIG.actorRarities[k]] ?? cfg.hp;
+  if (stat === 'attackDamage' && includeUpgrade) {
+    const level = typeof getCharacterProgress === 'function' ? getCharacterProgress(k)?.level || 1 : 1;
+    return Math.round((cfg.attackDamage + (level - 1) * GAME_CONFIG.upgradeDamage) * 10) / 10;
+  }
   return cfg ? cfg[stat] : undefined;
 }

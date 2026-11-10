@@ -18,8 +18,10 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | 💀 [`knockout.js`](knockout.js) | **Lebensleiste** ❤️ – wer 20-mal getroffen wird, ist **raus**. Die letzte Figur **gewinnt** 🏆 | ⭐⭐ |
 | 🎮 [`main-menu.js`](main-menu.js) | **Hauptmenü im Querformat**, ohne Scrollen. Profil ändert nur den Zufalls-Spitznamen; Einstellungen zeigen die übrigen Infos. Shop, Charaktere, Rangliste und Spielen bleiben direkt erreichbar. | ⭐⭐ |
 | 🛍️ [`shop.js`](shop.js) | **Kisten-Shop**: Vier Kisten, lokales Spielgeld und Juwelen gegen Coins tauschen. Kaufen öffnet sofort; alte geschlossene Kisten lassen sich kostenlos öffnen. | ⭐⭐ |
+| 🎁 [`daily-chest.js`](daily-chest.js) | **Gratis-Kiste**: sofort abholen, danach genau 24 Stunden warten. Der Zeitpunkt bleibt auf deinem Gerät gespeichert. | ⭐⭐ |
+| ✨ [`loot-reveal.js`](loot-reveal.js) | **Kiste öffnen**: Deckel-Animation, danach jede Belohnung einzeln enthüllen. | ⭐⭐ |
 | 📦 [`chest-loot.js`](chest-loot.js) | **Kisten-Belohnungen**: exakt 4/8/16/50 Ziehungen, Gewichte, Glück, XP-Zuweisung und Ergebnis-Bildschirm. | ⭐⭐ |
-| ⬆️ [`upgrades.js`](upgrades.js) | **Eigene XP & Level** pro Figur. Upgrade für 10, dann 20, 40 … XP. Höchstens Level 16. | ⭐⭐ |
+| ⬆️ [`upgrades.js`](upgrades.js) | **Eigene XP & Level** pro Figur. Upgrade für 10, dann 20, 40 … XP. Höchstens Level 16; pro Aufstieg +0,1 normaler Schaden. | ⭐⭐ |
 | 🎁 [`collection.js`](collection.js) | **Startfigur & Seltenheiten**: Eine von drei Figuren wählen. Die Auswahl bleibt als Zahl auf dem Gerät. `characterOrder()` sortiert Sammlung, Teams und Karten von Selten bis Divine; Kisten können weitere Charaktere freischalten. | ⭐⭐ |
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |

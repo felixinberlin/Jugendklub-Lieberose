@@ -51,27 +51,7 @@ function rewardLabel(entry) {
   if (entry.kind === 'jewels') return `${entry.amount} Juwelen`;
   return `${RARITIES[entry.rarity]} · Charakter`;
 }
-function showLootResults(chest, results) {
-  document.getElementById('lootTitle').textContent = `📦 ${chest.name.toUpperCase()}`;
-  document.getElementById('lootSummary').textContent = `${results.length} Items erhalten!`;
-  const grid = document.getElementById('lootResults');
-  grid.replaceChildren();
-  for (const reward of results) {
-    const tile = document.createElement('article');
-    tile.className = `loot-item${reward.rarity ? ` loot-${reward.rarity}` : ''}`;
-    const icon = reward.kind === 'xp' ? '⭐' : reward.kind === 'coins' ? '🪙' : reward.kind === 'jewels' ? '💎' : null;
-    tile.innerHTML = `<div class="loot-icon">${icon || actorIconHtml(reward.name)}</div>` +
-      `<strong>${reward.kind === 'character' ? actors[reward.name].name : rewardLabel(reward)}</strong>` +
-      (reward.name ? `<p>${reward.kind === 'xp' ? `für ${actors[reward.name].name}` : reward.duplicate ? 'Schon freigeschaltet' : '🎉 NEU FREIGESCHALTET!'}</p>` : '') +
-      (reward.rarity ? rarityHtml(reward.name) : '');
-    grid.appendChild(tile);
-  }
-  shopScreen.classList.remove('active');
-  lootScreen.classList.add('active');
-  lootScreen.scrollTop = 0;
-  document.getElementById('lootCloseBtn').focus({ preventScroll: true });
-}
-function openLootChest(id, stored = false, rng = Math.random) {
+function openLootChest(id, stored = false, rng = Math.random, free = false) {
   if (lootScreen.classList.contains('active')) return false;
   const chest = GAME_CONFIG.shopChests.find(chest => chest.id === id);
   if (!chest) return false;
@@ -79,9 +59,11 @@ function openLootChest(id, stored = false, rng = Math.random) {
     shopMessage.textContent = '🎁 Wähle zuerst unter „Charaktere“ deine Startfigur!';
     return false;
   }
-  if (stored) { if (!shopWallet.chests[id]) return false; }
+  if (free) { if (id !== 'normal' || freeChestRemaining() > 0) return false; }
+  else if (stored) { if (!shopWallet.chests[id]) return false; }
   else if (shopWallet[chest.currency] < chest.price) return false;
-  if (stored) shopWallet.chests[id]--;
+  if (free) shopWallet.nextFreeChestAt = Date.now() + GAME_CONFIG.dailyChestMs;
+  else if (stored) shopWallet.chests[id]--;
   else shopWallet[chest.currency] -= chest.price;
   const results = rollChestRewards(chest, rng);
   saveShopWallet(); // Preis, alle Belohnungen und Fortschritt zusammen speichern.
@@ -100,7 +82,3 @@ const lootOddsSelect = document.getElementById('lootOddsChest');
 for (const chest of GAME_CONFIG.shopChests) { const option = document.createElement('option'); option.value = chest.id; option.textContent = chest.name; lootOddsSelect.appendChild(option); }
 lootOddsSelect.addEventListener('change', renderLootOdds);
 renderLootOdds();
-document.getElementById('lootCloseBtn').addEventListener('click', () => {
-  lootScreen.classList.remove('active'); shopScreen.classList.add('active');
-  renderShop(); document.getElementById('shopBackBtn').focus();
-});

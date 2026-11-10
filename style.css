@@ -1868,3 +1868,66 @@ h1.game-title .title-emoji { -webkit-text-fill-color: initial; }
 .char-stat-box, .char-card-title-group { min-width: 0; }
 .stat-top { flex-direction: column; align-items: flex-start; gap: 6px; }
 .stat-val { white-space: normal; overflow-wrap: anywhere; text-align: left; font-size: 16px; }
+/* 🎮 Kompaktere Hauptmenü-Knöpfe, weiterhin mindestens 44×44 Pixel. */
+.main-topbar { height: clamp(46px, 8vh, 64px); gap: 10px; }
+.main-profile { min-width: 140px; font-size: 24px; padding: 6px 12px; }
+.main-trophies { min-width: 70px; font-size: 24px; }
+.main-money { min-width: 90px; font-size: 24px; padding: 6px 12px; }
+.main-settings { width: 54px; font-size: 28px; }
+.main-stage { grid-template-columns: minmax(110px, 18%) minmax(0, 1fr) minmax(170px, 29%); }
+.main-left { max-width: 180px; gap: 16px; }
+.main-tile { height: 34%; min-height: 72px; max-height: 135px; font-size: clamp(16px, 2vw, 26px); }
+.main-tile > span { font-size: clamp(24px, 5vh, 46px); }
+.main-right { max-width: 350px; justify-self: end; width: 100%; gap: 18px; }
+.main-rank, .main-play { min-height: 64px; max-height: 115px; height: 23%; padding: 10px; gap: 10px; font-size: clamp(18px, 2.7vw, 36px); }
+.main-rank span { font-size: 1.1em; }
+@media (max-height: 520px) {
+  .main-topbar { height: 46px; gap: 8px; }
+  .main-profile { min-width: 125px; font-size: 20px; }
+  .main-money { min-width: 80px; font-size: 20px; }
+  .main-tile { min-height: 68px; height: 35%; }
+  .main-rank, .main-play { height: 25%; font-size: clamp(18px, 2.5vw, 25px); }
+}
+.daily-chest-btn { width: 100%; min-height: 48px; margin-top: 12px; padding: 10px 4px; font-size: 16px; font-weight: 900; color: #fff; background: #166534; border: 2px solid #86efac; border-radius: 12px; cursor: pointer; }
+#lootScreen { gap: 12px; }
+.loot-stage { flex: 1; min-height: 150px; width: 100%; display: flex; align-items: center; justify-content: center; }
+#lootResults { max-width: 600px; grid-template-columns: minmax(0, 1fr); }
+#lootResults[hidden], #openingChest[hidden], #lootCloseBtn[hidden], #lootNextBtn[hidden] { display: none; }
+#lootNextBtn { flex-shrink: 0; min-height: 48px; margin: 0; }
+#lootResults .loot-item { animation: lootReveal 260ms ease-out; }
+.opening-chest { --chest-light: #b77b47; --chest-dark: #62391f; --chest-edge: #dba466; position: relative; padding: 40px; }
+.opening-chest .chest-art { transform: scale(1.3); }
+.opening-chest::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(#ffed9c99, transparent 70%); opacity: 0; }
+.opening-chest.is-opening::before { animation: chestGlow 1100ms ease-out forwards; }
+.opening-chest.is-opening .chest-lid { transform-origin: 10% 100%; animation: chestLidOpen 1100ms ease-in-out forwards; }
+@keyframes chestLidOpen { 0%, 25% { transform: rotate(0); } 45% { transform: rotate(-7deg); } 100% { transform: translateY(-35px) rotate(-35deg); } }
+@keyframes chestGlow { to { opacity: 1; transform: scale(1.8); } }
+@keyframes lootReveal { from { opacity: 0; transform: translateY(10px) scale(.94); } to { opacity: 1; transform: none; } }
+@media (max-height: 520px) {
+  #lootScreen { padding: 12px 24px; gap: 8px; }
+  #lootScreen h2 { font-size: 24px; margin: 0; }
+  #lootResults .loot-item { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 12px; }
+  #lootResults .loot-icon { font-size: 44px; margin: 0; }
+  .opening-chest { padding: 10px; }.opening-chest .chest-art { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .opening-chest *, .opening-chest::before, #lootResults .loot-item { animation: none !important; } }
+/* Auch lange Spitznamen und große Guthaben dürfen das Menü nicht verbreitern. */
+.main-profile { width: clamp(125px, 18vw, 160px); min-width: 0; flex-shrink: 0; }
+.main-profile > span:last-child { min-width: 0; }
+.main-profile small { max-width: 100%; }
+.main-money { width: clamp(80px, 14vw, 140px); min-width: 0; gap: 8px; font-size: clamp(16px, 2vw, 24px); }
+.main-money b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.opening-chest.shop-chest-rare { --chest-light: #348cf7; --chest-dark: #174696; --chest-edge: #78bcff; }
+.opening-chest.shop-chest-gold { --chest-light: #ffdc59; --chest-dark: #a36b03; --chest-edge: #ffec9c; }
+.opening-chest.shop-chest-god { --chest-light: #fffbcc; --chest-dark: #b487ee; --chest-edge: #fff6ab; }
+#lootNextBtn, #lootCloseBtn { width: 100%; max-width: 360px; padding: 12px 20px; font-size: 18px; }
+@media (max-height: 520px) {
+  .loot-stage { min-height: 120px; }
+  .opening-chest { padding: 8px; }
+  .opening-chest .chest-art { margin: 0 auto; }
+}
+/* Eine Einzelbelohnung bleibt vollständig im Bild; der Kisten-Glanz erzeugt keinen Scrollbereich. */
+#lootScreen { overflow: hidden; }
+#lootScreen > h2, #lootScreen > p { flex-shrink: 0; }
+.loot-stage { overflow: hidden; }
+#lootScreen { position: fixed; inset: 0; overflow-anchor: none; }

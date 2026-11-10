@@ -17,6 +17,8 @@ Der Test öffnet `index.html` direkt; Bildschirmbilder landen im temporären Ord
 
 `node tests/loot-browser.cjs` prüft feste Itemzahlen, alle 21 Belohnungen, XP-Verteilung unter freigeschalteten Seltenheiten, alte Kisten, Doppelklickschutz, Freischalten, Upgrades bis Level 16 und Speicherung. Nutzt ebenfalls die beiden Browser-Umgebungsvariablen und blockiert Online-Anfragen.
 
+`node tests/daily-reveal-browser.cjs` prüft Lebenspunkte nach Seltenheit, +0,1 Schaden pro Upgrade nur für eigene Figuren, direkten Spielstart, kompakte Knöpfe, Öffnungsanimation und einzelne Enthüllungen. Außerdem: erste Gratis-Kiste, Sperre bis exakt 24 Stunden, Neuladen und zweiter Tab. Gleiche Browser-Umgebungsvariablen wie oben.
+
 Im Browser zusätzlich `index.html` direkt öffnen: Handy hoch/quer und Laptop.
 Zielmodus per Knopf oder Q wechseln. Maus bewegen oder auf dem Handy den Schießknopf
 ziehen; gedrückt halten lädt auf, Loslassen wirft. Tab wechselt gebundene Ziele.

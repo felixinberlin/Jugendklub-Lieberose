@@ -273,7 +273,7 @@ function renderCurrentCharCard() {
   const hpEl = document.getElementById('charCardHp');
   if (hpEl) hpEl.textContent = `${data.hp} HP`;
   const hpBar = document.getElementById('charCardHpBar');
-  if (hpBar) hpBar.style.width = `${Math.min(100, (data.hp / 130) * 100)}%`;
+  if (hpBar) hpBar.style.width = `${Math.min(100, (data.hp / 140) * 100)}%`;
 
   const speedEl = document.getElementById('charCardSpeed');
   if (speedEl) speedEl.textContent = data.speed;
