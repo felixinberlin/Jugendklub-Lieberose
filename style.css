@@ -1772,7 +1772,7 @@ h1.game-title .title-emoji { -webkit-text-fill-color: initial; }
 .shop-chest-gold .chest-spark, .shop-chest-god .chest-spark { display: block; position: absolute; top: 0; right: -8px; color: #fff9cf; font-size: 30px; text-shadow: 0 0 14px #fff; }
 .shop-chest-god .chest-spark { font-size: 44px; right: -20px; top: -12px; }
 .shop-chest h3 { font-size: 20px; color: var(--chest-edge); }
-.chest-luck, .chest-stock { margin: 10px 0; font-size: 16px; color: #cbd5e1; }
+.chest-luck, .chest-items { margin: 10px 0; font-size: 16px; color: #cbd5e1; }
 .chest-price { font-size: 19px; font-weight: 900; color: #fff; }
 .chest-buy { width: 100%; min-height: 48px; margin-top: 8px; padding: 12px 8px; font-size: 16px; background: var(--chest-dark); color: #fff; }
 #shopScreen button:disabled { opacity: 0.65; cursor: default; }

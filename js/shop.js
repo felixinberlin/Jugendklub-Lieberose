@@ -15,10 +15,10 @@ function loadShopWallet() {
 let shopWallet = loadShopWallet();
 function saveShopWallet() {
   try { localStorage.setItem(SHOP_STORAGE_KEY, JSON.stringify(shopWallet)); }
-  catch (e) { shopMessage.textContent += ' Dein Browser kann gerade nicht speichern. Der Vorrat bleibt nur in diesem Tab.'; }
+  catch (e) { shopMessage.textContent += ' Dein Browser kann gerade nicht speichern. Dein Spielstand bleibt nur in diesem Tab.'; }
 }
 function shopPrice(chest) {
-  return chest.currency === 'jewels' ? `💎 ${chest.price} Juwelen` : `🪙 ${chest.price.toLocaleString('de-DE')} Coins`;
+  return chest.currency === 'jewels' ? `💎 ${chest.price} Juwelen` : `🪙 ${chest.price / 1000}K Coins`;
 }
 function renderShop() {
   document.getElementById('shopWallet').textContent = `🪙 ${shopWallet.coins.toLocaleString('de-DE')} Coins     💎 ${shopWallet.jewels.toLocaleString('de-DE')} Juwelen`;
@@ -29,7 +29,7 @@ function renderShop() {
       card.className = `shop-chest shop-chest-${chest.id}`;
       card.innerHTML = `<div class="chest-art" aria-hidden="true"><span class="chest-spark">✦</span><div class="chest-lid"></div><div class="chest-box"><span>◆</span></div></div>` +
         `<h3>${chest.name}</h3><p class="chest-luck">${chest.luck ? `${chest.luck}× Glück` : '✦ Göttlicher Glanz'}</p>` +
-        `<p class="chest-price">${shopPrice(chest)}</p><p class="chest-stock"></p>`;
+        `<p class="chest-price">${shopPrice(chest)}</p><p class="chest-items">📦 ${chest.items} Items</p>`;
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'btn chest-buy';
@@ -40,7 +40,6 @@ function renderShop() {
   }
   GAME_CONFIG.shopChests.forEach((chest, i) => {
     const card = row.children[i];
-    card.querySelector('.chest-stock').textContent = `Im Vorrat: ${shopWallet.chests[chest.id]}`;
     const btn = card.querySelector('button');
     btn.disabled = shopWallet[chest.currency] < chest.price;
     btn.textContent = shopWallet[chest.currency] < chest.price ? (chest.currency === 'jewels' ? 'Juwelen fehlen' : 'Coins fehlen') : 'KAUFEN';
@@ -55,7 +54,7 @@ function buyShopChest(id) {
   if (shopWallet.chests[id] >= Number.MAX_SAFE_INTEGER) return false;
   shopWallet[chest.currency] -= chest.price;
   shopWallet.chests[id]++;
-  shopMessage.textContent = `📦 ${chest.name} gekauft! Sie liegt geschlossen in deinem Vorrat.`;
+  shopMessage.textContent = `📦 ${chest.name} gekauft! Die Belohnungen legen wir als Nächstes fest.`;
   saveShopWallet();
   renderShop();
   return true;

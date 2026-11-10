@@ -7,10 +7,10 @@
  */
 const GAME_CONFIG = {
   shopChests: [
-    { id: 'normal', name: 'Normale Kiste', price: 1500, currency: 'coins', luck: '1' },
-    { id: 'rare', name: 'Seltene Kiste', price: 3000, currency: 'coins', luck: '1,3' },
-    { id: 'gold', name: 'Goldkiste', price: 7500, currency: 'coins', luck: '1,8' },
-    { id: 'god', name: 'God-Kiste', price: 199, currency: 'jewels' }
+    { id: 'normal', name: 'Normale Kiste', price: 1500, currency: 'coins', luck: '1', items: 4 },
+    { id: 'rare', name: 'Seltene Kiste', price: 3000, currency: 'coins', luck: '1,3', items: 8 },
+    { id: 'gold', name: 'Goldkiste', price: 7500, currency: 'coins', luck: '1,8', items: 16 },
+    { id: 'god', name: 'God-Kiste', price: 199, currency: 'jewels', luck: '3', items: 50 }
   ],
   shopExchange: { jewels: 20, coins: 5000 },
   starterActors: ['corn', 'katze', 'maus'],
