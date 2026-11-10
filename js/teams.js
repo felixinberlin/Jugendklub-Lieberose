@@ -161,7 +161,7 @@ const teamScreenHeading = document.getElementById('teamScreenHeading');
 const teamPickTitle = document.getElementById('teamPickTitle');
 const teamHintText = document.getElementById('teamHintText');
 
-for (const name in actors) {
+for (const name of characterOrder()) {
   const btn = document.createElement('button');
   btn.className = 'pick-btn';
   btn.type = 'button';

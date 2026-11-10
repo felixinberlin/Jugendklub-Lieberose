@@ -293,7 +293,7 @@ function drawPlayerMarker(name, now) {
 // 👇 Auswahl-Knöpfe auf dem Startbildschirm bauen – eine Kachel pro Figur.
 // Neue Figuren in actors.js tauchen hier automatisch auf.
 const pickGrid = document.getElementById('pickGrid');
-for (const name in actors) {
+for (const name of characterOrder()) {
   const btn = document.createElement('button');
   btn.className = 'pick-btn';
   btn.type = 'button';

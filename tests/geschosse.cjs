@@ -115,7 +115,9 @@ Matter.Body.setPosition(world.actors.katze.body, { x: 520, y: 520 });
 Matter.Body.setPosition(world.actors.maus.body, { x: 520, y: 500 }); // Freund im Kreis.
 Matter.Body.setPosition(world.actors.goblin.body, { x: 520, y: 500 }); // Versteckter Feind.
 world.versteckteFiguren.add('goblin');
-world.launchArc('kobold', 'corn', world.normalerWurf('kobold'));
+// Explosionen unabhängig von der aktuell ausgerüsteten Kobold-Waffe prüfen.
+const testBombe = { ...world.normalerWurf('kobold'), weapon: 'bomb', damage: 4, explosionsRadius: run('GAME_CONFIG.waffenProfile.bomb.explosionsRadius') * 0.72 };
+world.launchArc('kobold', 'corn', testBombe);
 const bombe = run('fallingBodies[0]');
 Matter.Body.setPosition(bombe, { x: 500, y: 500 });
 world.explodeBomb(bombe);
@@ -152,7 +154,7 @@ assert.equal(run('aktiveTrefferfolgen.size'), 0);
 assert.equal(run('explosionsWellen.length'), 0);
 // Ein explosiver Wurf zündet auch ohne direkten Gegnerkontakt.
 Matter.Events.on(world.engine,'afterUpdate',world.zuendeGeschosse);
-world.launchArc('kobold','corn',world.normalerWurf('kobold'));
+world.launchArc('kobold','corn',testBombe);
 const wurfOhneTreffer = run('fallingBodies[0]');
 for(let bild=0; bild<200 && !wurfOhneTreffer.exploded; bild++) Matter.Engine.update(world.engine,1000/60);
 assert.equal(wurfOhneTreffer.exploded,true);

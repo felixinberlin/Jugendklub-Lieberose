@@ -31,11 +31,11 @@ const GAME_CONFIG = {
   cornEmoji: '🌽',
   cornImage: 'mais.png', // 🌽😡 Neues Design: wütender Mais mit gezackter Lanze (Emoji nur, falls das Bild nicht lädt)
   cornSize: 74,
-  cornBomb: '🍿',
-  cornWeapons: ['popcorn'], // Kleine Explosionen; die Spezialkraft wirft weiter eine ganze Salve.
+  cornBomb: '🗡️',
+  cornWeapons: ['lance'], // Normale Würfe = Lanze; die Spezialkraft bleibt Popcorn.
   cornBombSize: 32,
-  koboldBomb: '💣',
-  koboldWeapons: ['bomb'], // Langsam, dafür mit kleinem Explosionsbereich.
+  koboldBomb: '🗡️',
+  koboldWeapons: ['blade'], // Die Klinge aus seinem Figurenbild.
   koboldBombSize: 32,
   katzeEmoji: '🐱',
   katzeImage: 'katze.png', // 🐱🔥 Neues Design: wilde Katze mit Stachelkeule (Emoji nur, falls das Bild nicht lädt)
@@ -59,7 +59,7 @@ const GAME_CONFIG = {
   // 👕 Musiala / GOAT trägt das Trikot mit der Nummer 10!
   musialaImage: 'goat.png', // ⚽⚡ Neues Design: GOAT im Sturmlicht (ohne Bild: gemalte Trikot-Figur)
   musialaShirt: { color: '#111827', number: '10', numberColor: '#facc15', shorts: '#1e293b', head: '⚽', stripe: true, sixSeven: false },
-  musialaRuns: true,     // 🏃 Dribbelt über das Feld
+  musialaRuns: false,    // Gleiche Bot-Bewegung wie alle anderen Figuren.
   musialaRunSpeed: 2.2,
   musialaSize: 66,
   musialaBomb: '⚽',
@@ -68,8 +68,8 @@ const GAME_CONFIG = {
   yamalEmoji: '🌟',
   yamalImage: 'yamal.png', // ⚽🌟 Neues Design: goldener Fußballheld im Sturm (ohne Bild: gemalte Trikot-Figur)
   yamalShirt: { color: '#dc2626', number: '19', numberColor: '#facc15', shorts: '#1d4ed8', head: '🌟', stripe: false, sixSeven: false },
-  yamalRuns: true,
-  yamalRunSpeed: 2.35,
+  yamalRuns: false, // Gleiche Bot-Bewegung wie alle anderen Figuren.
+  yamalRunSpeed: 2.2,
   yamalSize: 65,
   yamalBomb: '⚽',
   yamalProjectile: 'ball',
@@ -215,7 +215,7 @@ const CHAR_STATS = {
     attackDamage: 4,
     attackCooldown: 1.2,
     abilityDamage: 10,   // Großerball: 10 Schaden
-    speed: 1.0           // 1.0 speed (normal schnell)
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   kobold: {
     name: 'Kobold',
@@ -223,7 +223,7 @@ const CHAR_STATS = {
     attackDamage: 3,
     attackCooldown: 1.0,
     abilityDamage: 8,    // 3 Mini-Kobolde
-    speed: 1.0           // 1.0 speed (normal schnell)
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   corn: {
     name: 'Mais',
@@ -231,7 +231,7 @@ const CHAR_STATS = {
     attackDamage: 2,
     attackCooldown: 0.5,
     abilityDamage: 20,   // 5 Popcorn je 4 Schaden
-    speed: 1.2           // 1.2 speed
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   maus: {
     name: 'Maus',
@@ -239,7 +239,7 @@ const CHAR_STATS = {
     attackDamage: 3,
     attackCooldown: 0.9,
     abilityDamage: 0,    // 6s im Loch
-    speed: 1.5           // 1.5 speed
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   katze: {
     name: 'Katze',
@@ -247,7 +247,7 @@ const CHAR_STATS = {
     attackDamage: 5,
     attackCooldown: 1.5,
     abilityDamage: 5,    // Wirbelsturm: 5 Schaden + 4s Stun
-    speed: 1.2           // 1.2 speed
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   goblin: {
     name: 'Goblin',
@@ -255,7 +255,7 @@ const CHAR_STATS = {
     attackDamage: 4,
     attackCooldown: 1.4,
     abilityDamage: 10,   // Dreizack: 10 Schaden
-    speed: 1.4           // 1.4 speed
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   zeus: {
     name: 'Zeus',
@@ -263,7 +263,7 @@ const CHAR_STATS = {
     attackDamage: 7,
     attackCooldown: 2.3,
     abilityDamage: 25,   // Blitzregen: pro Blitz 5 Schaden
-    speed: 1.5           // 1.5 speed
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   yamal: {
     name: 'Lamine Yamal',
@@ -271,7 +271,7 @@ const CHAR_STATS = {
     attackDamage: 4,
     attackCooldown: 1.4,
     abilityDamage: 12,   // Sternen-Explosion in der Mitte: 12 Schaden
-    speed: 1.3           // 1.3 speed
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   fledermaus: {
     name: 'Fledermaus',
@@ -279,7 +279,7 @@ const CHAR_STATS = {
     attackDamage: 1.7,   // Reserve; die zwei Waffen haben eigene Werte
     attackCooldown: 1.2, // Waffenwechsel bei jedem erfolgreichen Wurf
     abilityDamage: 15,   // Blutsaugen: 5 × 3 Schaden, heilt sich um 15
-    speed: 1.4
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   },
   drache: {
     name: 'Drache',
@@ -287,7 +287,7 @@ const CHAR_STATS = {
     attackDamage: 6,
     attackCooldown: 1.6,
     abilityDamage: 14,
-    speed: 0.85
+    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
   }
 };
 

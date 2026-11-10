@@ -1,7 +1,7 @@
 /** 🎁 Startfigur und Seltenheiten – ohne Konto, nur auf deinem Gerät. */
 const RARITIES = {
   rare: 'Selten', epic: 'Episch', mythic: 'Mythisch',
-  secret: 'Secret', divine: 'Divine · Göttlich'
+  secret: 'Secret', divine: 'Divine'
 };
 let starterActor = null;
 try {
@@ -9,9 +9,16 @@ try {
   if (saved !== null && /^[0-2]$/.test(saved)) starterActor = GAME_CONFIG.starterActors[Number(saved)];
 } catch (e) { /* Ohne Speicher bleibt die Wahl für diesen Tab erhalten. */ }
 
+// Eine gemeinsame Reihenfolge für Sammlung, Team-Auswahl und Helden-Karten.
+function characterOrder() {
+  const ranks = Object.keys(RARITIES);
+  return Object.keys(GAME_CONFIG.actorRarities).filter(name => actors[name])
+    .sort((a, b) => ranks.indexOf(GAME_CONFIG.actorRarities[a]) - ranks.indexOf(GAME_CONFIG.actorRarities[b]));
+}
+
 function rarityHtml(name) {
   const rarity = GAME_CONFIG.actorRarities[kindOf(name)];
-  return `<span class="rarity rarity-${rarity}">${RARITIES[rarity] || ''}</span>`;
+  return `<span class="rarity rarity-${rarity}">${rarity === 'divine' ? '<span class="divine-word">Divine</span>' : RARITIES[rarity] || ''}</span>`;
 }
 
 function renderTileRarity(btn, name) {

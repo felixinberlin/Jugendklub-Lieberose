@@ -18,7 +18,7 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | 💀 [`knockout.js`](knockout.js) | **Lebensleiste** ❤️ – wer 20-mal getroffen wird, ist **raus**. Die letzte Figur **gewinnt** 🏆 | ⭐⭐ |
 | 🎮 [`main-menu.js`](main-menu.js) | **Hauptmenü im Querformat**, ohne Scrollen. Profil, Shop, Figuren, Rangliste und Spielen – wie auf eurer Vorlage! | ⭐⭐ |
 | 🛍️ [`shop.js`](shop.js) | **Kisten-Shop**: Vier Kisten, lokales Spielgeld und Juwelen gegen Coins tauschen. Gekaufte Kisten bleiben geschlossen; Inhalte folgen. | ⭐⭐ |
-| 🎁 [`collection.js`](collection.js) | **Startfigur & Seltenheiten**: Eine von drei Figuren wählen. Die Auswahl bleibt als Zahl auf dem Gerät; weitere Freischaltungen folgen später. | ⭐⭐ |
+| 🎁 [`collection.js`](collection.js) | **Startfigur & Seltenheiten**: Eine von drei Figuren wählen. Die Auswahl bleibt als Zahl auf dem Gerät. `characterOrder()` sortiert Sammlung, Teams und Karten von Selten bis Divine; weitere Freischaltungen folgen später. | ⭐⭐ |
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |

@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '3.3';
+const GAME_VERSION = '3.4';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -91,7 +91,8 @@ const WISHES = [
   { v: '3.0', text: 'Wähle deine erste Figur: Mais, Katze oder Maus 🎁 · Seltenheiten in euren Farben ✨ · GOAT heißt wieder Musialla ⚽' },
   { v: '3.1', text: 'Unser Kisten-Shop 🛍️📦: braun, blau, Gold & strahlende God-Kiste · 20 Juwelen gegen 5K Coins 💎🪙' },
   { v: '3.2', text: 'Kisten mit 4, 8, 16 & 50 Items 📦 · God-Kiste mit 3× Glück ✨ · Preise kurz als 1.5K, 3K & 7.5K Coins 🪙' },
-  { v: '3.3', text: 'Neues Hauptmenü nach eurer Bildvorlage 🎮 · Querformat ohne Scrollen, Arena-Hintergrund & Figuren per Knopfdruck 👆' }
+  { v: '3.3', text: 'Neues Hauptmenü nach eurer Bildvorlage 🎮 · Querformat ohne Scrollen, Arena-Hintergrund & Figuren per Knopfdruck 👆' },
+  { v: '3.4', text: 'Charaktere nach Seltenheit sortiert 👆 · Divine glänzt ✨ · alle laufen gleich schnell · Mais wirft seine Lanze & Kobold seine Klinge 🗡️' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
