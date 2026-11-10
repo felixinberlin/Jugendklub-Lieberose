@@ -711,9 +711,9 @@ function activePlayerTrophies() {
   return Number(trophiesData.total) || 0;
 }
 
-// 🔒 Prüft, ob eine Figur schon freigeschaltet ist (ZEUS braucht 40 Pokale!)
+// 🔒 Prüft, ob eine Figur schon freigeschaltet ist (Zahl in GAME_CONFIG.zeusUnlockTrophies)
 function requiredTrophiesFor(name) {
-  return kindOf(name) === 'zeus' ? (GAME_CONFIG.zeusUnlockTrophies || 40) : 0;
+  return kindOf(name) === 'zeus' ? (GAME_CONFIG.zeusUnlockTrophies ?? 40) : 0;
 }
 
 function isActorUnlocked(name) {

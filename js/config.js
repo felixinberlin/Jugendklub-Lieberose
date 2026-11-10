@@ -75,7 +75,7 @@ const GAME_CONFIG = {
   zeusBombSize: 38,
   zeusBolt: true,        // Malt echte leuchtende Zickzack-Blitze
   zeusProjectile: 'bolt',
-  zeusUnlockTrophies: 40, // 🔒 Für Zeus braucht man 40 Pokale!
+  zeusUnlockTrophies: 0,  // ⚡ Zeus ist für alle frei wählbar (früher 40 Pokale; Zahl > 0 = wieder sperren)
   fledermausEmoji: '🦇',  // 🦇 Tobias' Fledermaus!
   fledermausSize: 68,
   fledermausImage: 'fledermaus.png', // 🦇 Neues Design: Kampf-Fledermaus mit Speer und Morgenstern
