@@ -80,6 +80,7 @@ function chooseAndStart(name) {
     }
     return;
   }
+  selectCharacter(name);
   openModeChoice({ type: 'solo', actor: name });
 }
 

@@ -744,7 +744,7 @@ function activePlayerTrophies() {
 
 // 🎁 Zunächst gehört dir genau die gewählte Startfigur.
 function isActorUnlocked(name) {
-  return kindOf(name) === starterActor;
+  return ownsCharacter(name);
 }
 
 function refreshUnlockTiles() {

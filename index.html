@@ -123,12 +123,26 @@
         <div class="shop-scroll" tabindex="0" role="region" aria-label="Vier Kisten nebeneinander">
           <div id="shopChestRow" class="shop-chest-row"></div>
         </div>
+        <details class="shop-odds">
+          <summary>🎲 Belohnungen & Chancen ansehen</summary>
+          <p>Jeder Platz zieht genau eine Belohnung. Eure Gewichte werden dafür auf 100 % verteilt. Glück verstärkt die Charakter-Belohnungen.</p>
+          <label for="lootOddsChest">Kiste:</label> <select id="lootOddsChest"></select>
+          <div id="lootOddsTable"></div>
+          <p>XP werden unter freigeschalteten Seltenheiten mit 30 : 25 : 20 : 10 : 5 verteilt (Selten bis Divine). Innerhalb einer Seltenheit entscheidet der Zufall.</p>
+        </details>
         <section class="shop-exchange" aria-labelledby="exchangeTitle">
           <div><h3 id="exchangeTitle">🪙 5K Coins</h3><p>20 💎 Juwelen gegen 5000 Coins tauschen</p></div>
           <button id="shopExchangeBtn" class="btn" type="button">💎 20 Juwelen → 🪙 5K Coins</button>
         </section>
         <p id="shopMessage" class="shop-message" role="status" aria-live="polite"></p>
-        <p class="shop-hint">Welche Belohnungen in den Kisten stecken, legen wir als Nächstes fest.</p>
+        <p class="shop-hint">XP gehören immer zu einer freigeschalteten Figur. Verbessere sie unter „Charaktere“ bis Level 16!</p>
+      </div>
+
+      <div id="lootScreen" class="overlay-screen" role="dialog" aria-modal="true" aria-labelledby="lootTitle">
+        <h2 id="lootTitle">📦 DEINE BELOHNUNGEN</h2>
+        <p id="lootSummary" role="status"></p>
+        <button id="lootCloseBtn" class="btn" type="button">✨ WEITER ZUM SHOP</button>
+        <div id="lootResults" class="loot-results"></div>
       </div>
 
       <!-- 👤 Profil: ausschließlich den Zufalls-Spitznamen ändern. -->
@@ -408,6 +422,13 @@
             </div>
           </div>
 
+          <section id="charUpgradeSection" class="char-upgrade" hidden>
+            <strong id="charUpgradeLevel"></strong>
+            <p id="charUpgradeXp"></p>
+            <progress id="charUpgradeProgress" max="10" value="0" aria-label="XP bis zum nächsten Level"></progress>
+            <button id="charUpgradeBtn" class="btn" type="button">⬆️ UPGRADE</button>
+          </section>
+
           <!-- Quick Stat Bar Grid -->
           <div class="char-stats-grid">
             <div class="char-stat-box stat-hp">
@@ -500,6 +521,7 @@
   <script src="js/knockout.js"></script>
   <script src="js/actors.js"></script>
   <script src="js/collection.js"></script>
+  <script src="js/upgrades.js"></script>
   <script src="js/geschosse.js"></script>
   <script src="js/bombs.js"></script>
   <script src="js/trefferfolgen.js"></script>
@@ -522,6 +544,7 @@
   <script src="js/zielen.js"></script>
   <script src="js/credits.js"></script>
   <script src="js/shop.js"></script>
+  <script src="js/chest-loot.js"></script>
   <script src="js/main-menu.js"></script>
   <script src="js/game.js"></script>
 </body>

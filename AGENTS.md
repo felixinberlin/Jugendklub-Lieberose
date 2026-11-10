@@ -234,6 +234,8 @@ btn.addEventListener('click', async () => {
 
 34. **Charakterwerte seit v3.6:** Normaler Schaden, Wurfpausen und Lauftempo stehen in `CHAR_STATS` (`attackDamage`, `attackCooldown`, `speed`). `normalerWurf()` nutzt den Charakter-Schaden vor `waffenProfile.schaden`, auch bei gemeinsamem Ball-Profil oder wechselnden Fledermaus-Waffen. Spezialkräfte behalten eigene Werte. Helden-Karten berechnen die angezeigten Werte daraus (`getCharData`); Drucktabelle mitpflegen. `#profileScreen` enthält nur die Zufalls-Namensänderung, `#settingsScreen` die übrigen Infos. Die Namensfeld-IDs heißen intern weiter `settings…`, gehören aber zum Profil.
 
+35. **Kisten & XP seit v3.7:** `js/chest-loot.js` zieht pro Kiste exakt 4/8/16/50 Items. Die ursprünglichen Angaben summieren sich auf 294,4 und werden als relative Gewichte normalisiert; Glück multipliziert die Charakter-Gewichte. XP-Seltenheiten haben Gewichte 30/25/20/10/5, nur unter bereits freigeschalteten Figuren (innerhalb einer Seltenheit gleichverteilt). `js/upgrades.js`: Level beginnt bei 1, Upgrade kostet `10 * 2 ** (level - 1)` XP und verbraucht sie, maximal Level 16. Level verändern noch keine Kampfwerte. XP, Level, Freischaltungen, gewählte Figur und Währungen werden gemeinsam im bestehenden `lieberose_shop_v1` gespeichert. Alte geschlossene Kisten bleiben öffnbar; neue Käufe öffnen sofort.
+
 ---
 
 ## 8b. 🗺️ Code-Map `js/` (per `grep -n "function name" js/*.js` prüfen)
@@ -242,6 +244,8 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 
 | Datei | Was |
 |---|---|
+| `js/upgrades.js` | Freischaltungen, gewählte Figur und eigene XP/Level pro Charakter; `ownsCharacter`, `nextUpgradeXp`, `upgradeCharacter`, `renderUpgradeCard`. Lädt nach `collection.js`. |
+| `js/chest-loot.js` | Gewichtete Kisten-Ziehungen, XP-Verteilung nur an Freigeschaltete, Ergebnisse und gespeicherte Kisten öffnen. Lädt nach `shop.js`. |
 | `js/main-menu.js` | Querformat-Hauptmenü ohne Scrollen: `refreshMainMenu()`, `openCharactersMenu()`, Knöpfe für Profil, Shop, Figuren, Rangliste und Spielstart. Lädt vor `js/game.js`. |
 | `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |

@@ -252,6 +252,7 @@ function renderCurrentCharCard() {
   }
 
   renderCardRarity(key);
+  renderUpgradeCard(key);
 
   // Titles
   const roleEl = document.getElementById('charCardRole');

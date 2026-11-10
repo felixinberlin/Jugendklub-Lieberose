@@ -14,6 +14,33 @@ const GAME_CONFIG = {
     { id: 'gold', name: 'Goldkiste', price: 7500, currency: 'coins', luck: '1,8', items: 16 },
     { id: 'god', name: 'God-Kiste', price: 199, currency: 'jewels', luck: '3', items: 50 }
   ],
+  // 📦 Pro Item eine Ziehung: relative Gewichte (zusammen 294,4). Glück verstärkt Charakter-Belohnungen.
+  chestRewards: [
+    { kind: 'xp', amount: 5, chance: 40 },
+    { kind: 'xp', amount: 10, chance: 40 },
+    { kind: 'xp', amount: 20, chance: 30 },
+    { kind: 'xp', amount: 50, chance: 20 },
+    { kind: 'xp', amount: 100, chance: 15 },
+    { kind: 'xp', amount: 250, chance: 8 },
+    { kind: 'xp', amount: 500, chance: 2 },
+    { kind: 'coins', amount: 200, chance: 30 },
+    { kind: 'coins', amount: 500, chance: 20 },
+    { kind: 'coins', amount: 1000, chance: 10 },
+    { kind: 'jewels', amount: 5, chance: 10 },
+    { kind: 'jewels', amount: 10, chance: 8 },
+    { kind: 'jewels', amount: 20, chance: 5 },
+    { kind: 'jewels', amount: 50, chance: 3 },
+    { kind: 'jewels', amount: 100, chance: 0.8 },
+    { kind: 'jewels', amount: 500, chance: 0.1 },
+    { kind: 'character', rarity: 'rare', chance: 30 },
+    { kind: 'character', rarity: 'epic', chance: 15 },
+    { kind: 'skin', rarity: 'mythic', chance: 5 },
+    { kind: 'skin', rarity: 'secret', chance: 2 },
+    { kind: 'skin', rarity: 'divine', chance: 0.5 }
+  ],
+  maxCharacterLevel: 16,
+  firstUpgradeXp: 10,
+  xpRarityWeights: { rare: 30, epic: 25, mythic: 20, secret: 10, divine: 5 },
   shopExchange: { jewels: 20, coins: 5000 },
   starterActors: ['corn', 'katze', 'maus'],
   actorRarities: {

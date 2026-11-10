@@ -1,4 +1,4 @@
-/** 🛍️ Shop: Spielgeld und geschlossene Kisten, nur lokal und ohne Echtgeld. */
+/** 🛍️ Shop: Spielgeld, Kisten und Fortschritt bleiben lokal auf deinem Gerät. */
 const SHOP_STORAGE_KEY = 'lieberose_shop_v1';
 const shopScreen = document.getElementById('shopScreen');
 const shopMessage = document.getElementById('shopMessage');
@@ -10,10 +10,12 @@ function loadShopWallet() {
   try { saved = JSON.parse(localStorage.getItem(SHOP_STORAGE_KEY) || '{}') || {}; } catch (e) {}
   const chests = {};
   for (const chest of GAME_CONFIG.shopChests) chests[chest.id] = shopNumber(saved.chests?.[chest.id]);
-  return { coins: shopNumber(saved.coins), jewels: shopNumber(saved.jewels), chests };
+  return { coins: shopNumber(saved.coins), jewels: shopNumber(saved.jewels), chests, characters: characterProgress, equipped: CHARACTER_IDS.indexOf(equippedCharacter) };
 }
 let shopWallet = loadShopWallet();
 function saveShopWallet() {
+  shopWallet.characters = characterProgress;
+  shopWallet.equipped = CHARACTER_IDS.indexOf(equippedCharacter);
   try { localStorage.setItem(SHOP_STORAGE_KEY, JSON.stringify(shopWallet)); }
   catch (e) { shopMessage.textContent += ' Dein Browser kann gerade nicht speichern. Dein Spielstand bleibt nur in diesem Tab.'; }
 }
@@ -35,12 +37,18 @@ function renderShop() {
       btn.className = 'btn chest-buy';
       btn.addEventListener('click', () => buyShopChest(chest.id));
       card.appendChild(btn);
+      const oldChest = document.createElement('button');
+      oldChest.type = 'button'; oldChest.className = 'chest-open';
+      oldChest.textContent = '📦 Gekaufte Kiste öffnen';
+      oldChest.addEventListener('click', () => openStoredChest(chest.id));
+      card.appendChild(oldChest);
       row.appendChild(card);
     }
   }
   GAME_CONFIG.shopChests.forEach((chest, i) => {
     const card = row.children[i];
-    const btn = card.querySelector('button');
+    const btn = card.querySelector('.chest-buy');
+    card.querySelector('.chest-open').hidden = shopWallet.chests[chest.id] === 0;
     btn.disabled = shopWallet[chest.currency] < chest.price;
     btn.textContent = shopWallet[chest.currency] < chest.price ? (chest.currency === 'jewels' ? 'Juwelen fehlen' : 'Coins fehlen') : 'KAUFEN';
     btn.setAttribute('aria-label', `${chest.name}: ${shopPrice(chest)}`);
@@ -48,16 +56,7 @@ function renderShop() {
   document.getElementById('shopExchangeBtn').disabled = shopWallet.jewels < GAME_CONFIG.shopExchange.jewels;
 }
 function buyShopChest(id) {
-  const chest = GAME_CONFIG.shopChests.find(c => c.id === id);
-  if (!chest) return false;
-  if (shopWallet[chest.currency] < chest.price) return false;
-  if (shopWallet.chests[id] >= Number.MAX_SAFE_INTEGER) return false;
-  shopWallet[chest.currency] -= chest.price;
-  shopWallet.chests[id]++;
-  shopMessage.textContent = `📦 ${chest.name} gekauft! Die Belohnungen legen wir als Nächstes fest.`;
-  saveShopWallet();
-  renderShop();
-  return true;
+  return openLootChest(id, false);
 }
 function exchangeShopJewels() {
   const exchange = GAME_CONFIG.shopExchange;

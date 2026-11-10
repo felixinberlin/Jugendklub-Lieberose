@@ -23,6 +23,9 @@ function rarityHtml(name) {
 
 function renderTileRarity(btn, name) {
   if (!btn.querySelector('.rarity')) btn.insertAdjacentHTML('beforeend', rarityHtml(name));
+  let level = btn.querySelector('.collection-level');
+  if (!level) { level = document.createElement('span'); level.className = 'collection-level'; btn.appendChild(level); }
+  level.textContent = ownsCharacter(name) ? `Level ${getCharacterProgress(name).level}` : '';
 }
 
 function renderCardRarity(name) {
@@ -35,7 +38,7 @@ function renderCardRarity(name) {
 function refreshStarterChoice() {
   document.getElementById('starterChoice').hidden = !!starterActor;
   document.getElementById('collectionHint').textContent = starterActor
-    ? `🎁 Deine Startfigur: ${actors[starterActor].name}. Weitere Figuren sind noch gesperrt.`
+    ? `🎁 ${characterOrder().filter(ownsCharacter).length} Charaktere freigeschaltet · Antippen für XP & Upgrades`
     : '🎁 Wähle zuerst oben deine Startfigur. Alle anderen kannst du schon anschauen!';
   refreshUnlockTiles();
 }
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (starterActor) return;
       starterActor = name;
       try { localStorage.setItem('lieberose_starter', String(GAME_CONFIG.starterActors.indexOf(name))); } catch (e) {}
+      selectCharacter(name);
       refreshStarterChoice();
       openCharCard(name);
     });

@@ -15,6 +15,8 @@ Der Test öffnet `index.html` direkt; Bildschirmbilder landen im temporären Ord
 
 `node tests/profile-stats-browser.cjs` prüft die getrennten Profil-/Einstellungsmenüs, sichere Namensänderung und Speicherung, echte Treffer, Wurfpausen, Lauftempo sowie Karten und Drucktabelle aller zehn Figuren. Nutzt ebenfalls `PLAYWRIGHT_MODULE` und `CHROMIUM_PATH`; blockiert alle Online-Anfragen.
 
+`node tests/loot-browser.cjs` prüft feste Itemzahlen, alle 21 Belohnungen, XP-Verteilung unter freigeschalteten Seltenheiten, alte Kisten, Doppelklickschutz, Freischalten, Upgrades bis Level 16 und Speicherung. Nutzt ebenfalls die beiden Browser-Umgebungsvariablen und blockiert Online-Anfragen.
+
 Im Browser zusätzlich `index.html` direkt öffnen: Handy hoch/quer und Laptop.
 Zielmodus per Knopf oder Q wechseln. Maus bewegen oder auf dem Handy den Schießknopf
 ziehen; gedrückt halten lädt auf, Loslassen wirft. Tab wechselt gebundene Ziele.
