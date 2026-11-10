@@ -63,15 +63,8 @@ restartBtn.addEventListener('click', () => {
       return;
     }
     if (nextOne) {
-      // Level 1–6 (Index 0–5): Jedes Level 1 Figur dazu wählen
-      if (nextLevel <= 5) {
-        currentLevel = nextLevel;
-        gameOverScreen.classList.remove('active');
-        openTeamPickForLevel(true);
-        return;
-      }
-      // Level 7 (Index 6): Nur Zeus auswählbar, WENN man ihn freigeschaltet hat! Sonst direkt starten ohne Auswahl!
-      if (nextLevel === 6 && isActorUnlocked('zeus') && !chosenTeam.includes('zeus')) {
+      // Level 1–7 (Index 0–6): Jedes Level 1 Figur dazu wählen – Zeus inklusive
+      if (nextLevel <= 6) {
         currentLevel = nextLevel;
         gameOverScreen.classList.remove('active');
         openTeamPickForLevel(true);

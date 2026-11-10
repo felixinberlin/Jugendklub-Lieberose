@@ -169,20 +169,7 @@ for (const name in actors) {
   btn.innerHTML = `<span class="pick-emoji">${actorIconHtml(name)}</span>${actors[name].name}`;
   btn.addEventListener('click', () => {
     if (chosenTeam.includes(name)) return; // Schon fest im Team!
-    // ⚡ Level 7 (currentLevel === 6): Hier kann man NUR Zeus auswählen!
-    if (currentLevel === 6 && name !== 'zeus') {
-      initAudio();
-      playSound('hit');
-      teamHintText.textContent = '⚡ In Level 7 kannst du nur ZEUS auswählen (oder direkt ohne Auswahl starten)!';
-      return;
-    }
-    // In Level 1–6 wird Zeus für Level 7 aufgehoben
-    if (currentLevel < 6 && name === 'zeus') {
-      initAudio();
-      playSound('hit');
-      teamHintText.textContent = '⚡ ZEUS wartet als Bonus-Wahl in Level 7 auf dich!';
-      return;
-    }
+    // ⚡ Zeus ist in jedem Team-Level wählbar (sofern freigeschaltet, siehe zeusUnlockTrophies)
     if (!isActorUnlocked(name)) {
       initAudio();
       playSound('hit');
@@ -201,8 +188,6 @@ refreshUnlockTiles();
 function refreshTeamGrid() {
   refreshUnlockTiles();
   const lvNr = currentLevel + 1;
-  const isLevel7 = currentLevel === 6;
-  const zeusUnlocked = isActorUnlocked('zeus');
 
   for (const btn of teamGrid.children) {
     const n = btn.dataset.name;
@@ -210,23 +195,12 @@ function refreshTeamGrid() {
     const isPicked = pendingTeamPick === n;
     btn.classList.toggle('in-team', inTeam);
     btn.classList.toggle('selected', inTeam || isPicked);
-    // In Level 7 sind alle außer Zeus ausgegraut; in Level 1–6 ist Zeus für Level 7 reserviert
-    const disabledForLevel = (isLevel7 && n !== 'zeus') || (!isLevel7 && n === 'zeus');
-    btn.style.opacity = disabledForLevel && !inTeam ? '0.35' : '';
-  }
-
-  // Bei Level 7 ohne freigeschalteten Zeus muss man niemanden auswählen!
-  if (isLevel7 && !zeusUnlocked) {
-    teamGoBtn.disabled = false;
-    teamGoBtn.textContent = `OHNE AUSWAHL IN LEVEL 7 STARTEN! 🔥`;
-    return;
+    btn.style.opacity = '';
   }
 
   teamGoBtn.disabled = !pendingTeamPick;
   if (!pendingTeamPick) {
-    teamGoBtn.textContent = isLevel7
-      ? 'Wähle ZEUS für Level 7 👆'
-      : `Wähle deine ${chosenTeam.length + 1}. Figur 👆`;
+    teamGoBtn.textContent = `Wähle deine ${chosenTeam.length + 1}. Figur 👆`;
   } else {
     teamGoBtn.textContent = `MIT ${actors[pendingTeamPick].name} IN LEVEL ${lvNr}! ⚔️`;
   }
@@ -245,22 +219,10 @@ function openTeamPickForLevel(keepCharge = false) {
   teamScreenHeading.textContent = `⚔️ TEAM · LEVEL ${lvNr} · ${modeBadge}`;
   if (currentLevel === 0) {
     teamPickTitle.textContent = 'Level 1: Wähle deine 1. Figur! 👇';
-    teamHintText.textContent = `Level 1–6: Jedes Level 1 Figur dazu · Level 7: ZEUS (wenn freigeschaltet) · ${comboNote}`;
-  } else if (currentLevel < 5) {
+    teamHintText.textContent = `Level 1–7: Jedes Level 1 Figur dazu – auch ZEUS ⚡ · ${comboNote}`;
+  } else {
     teamPickTitle.textContent = `Level ${lvNr}: Wähle deine ${chosenTeam.length + 1}. Figur dazu! 👇`;
     teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · ${comboNote}`;
-  } else if (currentLevel === 5) {
-    teamPickTitle.textContent = `Level 6: Wähle deine 6. Figur! 👇`;
-    teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · Nächstes Level wartet ZEUS!`;
-  } else if (currentLevel === 6) {
-    if (isActorUnlocked('zeus')) {
-      pendingTeamPick = 'zeus';
-      teamPickTitle.textContent = 'Level 7: ZEUS ist freigeschaltet – wähle ZEUS! 🧔🏼‍♂️⚡';
-      teamHintText.textContent = 'In Level 7 kannst du exklusiv Donnergott ZEUS in dein Team holen!';
-    } else {
-      teamPickTitle.textContent = 'Level 7: Bereit für das nächste Match! 🔥';
-      teamHintText.textContent = `🔒 ZEUS ist noch nicht freigeschaltet (${GAME_CONFIG.zeusUnlockTrophies} 🏆) – du musst niemanden auswählen!`;
-    }
   }
   refreshTeamGrid();
   teamScreen.classList.add('active');
