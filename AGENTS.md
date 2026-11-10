@@ -230,6 +230,8 @@ btn.addEventListener('click', async () => {
 31. **`lastThrow` am Anfang:** `now - (lastThrow || 0)` blockierte den ersten Wurf, solange `performance.now()` < Cooldown war (kurz nach dem Laden). Richtig: `lastThrow ?? -Infinity`.
 32. **Hauptmenü im Querformat (seit v3.3):** `#startScreen` nutzt die ganze Bildschirmfläche ohne Scrollen, nach der Bildvorlage mit dem bisherigen Arena-Hintergrund. Profil, Pokale, Spielgeld und Einstellungen oben; Shop und Figuren links; Rangliste, Team und Spielen rechts. Figuren stehen jetzt in `#charactersScreen`, geöffnet über „Figuren“. `js/main-menu.js` verbindet die Knöpfe und aktualisiert Figur/Guthaben. Hochkant zeigt das Hauptmenü einen Hinweis zum Drehen. Keine erzwungene Hochkant-Drehung mehr (`menu-rot-left/right` werden entfernt). Nebenmenüs dürfen scrollen. Bot-Figuren (Solo & Team) per `shuffled()` (`js/actors.js`) ausgelost; Solo-Bots wählen Ziele gewichtet nach Leben (`hp`) – du bist nicht öfter dran.
 
+33. **Siegbelohnung seit v3.5:** Jeder Solo-Sieg gibt 200 lokale Coins (`shopWallet`); nur Normal zusätzlich 1 Pokal. Ranglisten-Modus (`trophyMode=true`) gibt keine Pokale; eigene Rangregeln folgen später. `matchRewardsAwarded` wird in `startGame` zurückgesetzt und verhindert doppelte Auszahlung; `endGame` ignoriert bereits beendete Runden. Beide Modi nutzen feste `CHAR_STATS.hp`. Team-Modus, Lebensauswahl und Spielpause sind aus der Bedienung entfernt. Alle Wurfwaffen haben `collisionFilter.group: -1`, damit normale und Spezialwaffen einander durchfliegen.
+
 ---
 
 ## 8b. 🗺️ Code-Map `js/` (per `grep -n "function name" js/*.js` prüfen)

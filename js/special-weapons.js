@@ -17,7 +17,7 @@ function bigBall(name) {
   const start = { x: from.x + (to.x - from.x) / d * (40 + radius), y: from.y + (to.y - from.y) / d * (40 + radius) };
   const ball = Bodies.circle(start.x, start.y, radius, {
     restitution: 0.6, frictionAir: 0, label: 'characterBomb',
-    collisionFilter: { category: 2, mask: 1 | everyoneExcept(name) | MINI_BIT },
+    collisionFilter: { group: -1, category: 2, mask: 1 | everyoneExcept(name) | MINI_BIT },
     customData: {
       emoji: '⚽', size: cfg.size, isPlayerBomb: true, shooter: name, target: targetName,
       born: performance.now(), damage: cfg.damage, special: true, steer: true, lifeMs: cfg.seconds * 1000
@@ -91,7 +91,7 @@ function fireSpear(name) {
   const spear = Bodies.circle(from.x + vx / cfg.speed * 45, from.y + vy / cfg.speed * 45, 14, {
     isSensor: true, frictionAir: 0, label: 'characterBomb',
     // Keine Wände (fliegt einfach raus), trifft alle Figuren außer dem Werfer
-    collisionFilter: { category: 2, mask: everyoneExcept(name) | MINI_BIT },
+    collisionFilter: { group: -1, category: 2, mask: everyoneExcept(name) | MINI_BIT },
     customData: {
       spear: true, pierce: true, burn: true, special: true, isPlayerBomb: true,
       emoji: '🔱', size: 32, damage: cfg.damage, shooter: name, target: targetName,

@@ -243,9 +243,6 @@ function startNewTeamRun() {
   openTeamPickForLevel(false);
 }
 
-teamModeBtn.addEventListener('click', () => {
-  openModeChoice({ type: 'team' });
-});
 teamBackBtn.addEventListener('click', () => {
   teamScreen.classList.remove('active');
   if (currentLevel > 0 && chosenTeam.length > 0) {

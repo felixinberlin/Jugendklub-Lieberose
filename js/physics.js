@@ -37,6 +37,7 @@ function initPhysics() {
         : bodyB.customData?.isPlayerBomb ? bodyB : null;
       if (!bomb || bomb.exploded) continue;
       const other = bomb === bodyA ? bodyB : bodyA;
+      if (other.customData?.isPlayerBomb) continue; // Waffen zerstören einander nicht.
       // Profil-Waffen enden an der Wand; der Flugplan darf sie nicht hindurchziehen.
       if ((bomb.customData.flugplan || bomb.customData.explosionsRadius > 0)
           && (other === leftWall || other === rightWall)) {

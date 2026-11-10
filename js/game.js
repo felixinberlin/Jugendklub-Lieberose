@@ -20,7 +20,8 @@
 // keepCharge = true: Deine Spezialkraft-Ladung bleibt (beim Weiter ins nächste Level)
 function startGame(keepCharge = false) {
   initAudio();
-  applyModeLives(); // 🏆 50 Leben im Pokal-Modus, sonst die gewählten Leben (trophies.js)
+  applyModeLives(); // Feste Charakter-Leben in beiden Modi.
+  matchRewardsAwarded = false;
   isPlaying = true;
   spectating = false;
   isPaused = false;
@@ -44,7 +45,6 @@ function startGame(keepCharge = false) {
   startScreen.classList.remove('active');
   modeScreen.classList.remove('active');
   teamScreen.classList.remove('active');
-  if (typeof pauseScreen !== 'undefined' && pauseScreen) pauseScreen.classList.remove('active');
   if (typeof settingsScreen !== 'undefined' && settingsScreen) settingsScreen.classList.remove('active');
   hideLeaderboard();
   hideCredits();

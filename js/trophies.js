@@ -514,8 +514,9 @@ function recordPublicHighScore(name, matchScore, totalTrophies, actorName, isTea
   return list;
 }
 
-let trophyMode = false; // true = Pokal-Modus (immer 50 Leben, keine Pause), false = Normal
-let normalLives = GAME_CONFIG.maxHits; // Eingestellte Leben für den normalen Modus
+let trophyMode = false; // true = Ranglisten-Modus, false = Normal
+let normalLives = GAME_CONFIG.defaultLives; // Nur noch interner Standard; keine Lebensauswahl.
+let matchRewardsAwarded = true;
 let pendingMode = null; // Merkt sich, ob gerade Solo oder Team-Modus angeklickt wurde
 let currentPlayerName = ''; // Aktueller registrierter Benutzername
 
@@ -772,7 +773,7 @@ function updateTrophyHud() {
   if (trophiesEl) trophiesEl.textContent = count;
   if (highScoreEl) highScoreEl.textContent = bestRecord;
   if (trophyHudEl) trophyHudEl.classList.toggle('active-trophy', trophyMode);
-  if (playTrophyBtn) playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
+  if (playTrophyBtn) playTrophyBtn.textContent = '🏅 RANGLISTE SPIELEN';
   if (leaderboardStartBtn) leaderboardStartBtn.textContent = `🏆 ${count}`;
   if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Held 1';
   if (typeof refreshMainMenu === 'function') refreshMainMenu();
@@ -969,37 +970,10 @@ if (settingsNameSaveBtn) {
   });
 }
 
-// 💀 Leben für den normalen Modus einstellen
-function setNormalLives(hits) {
-  normalLives = hits;
-  if (!trophyMode) GAME_CONFIG.maxHits = hits;
-  const ht = document.getElementById('hitsText');
-  if (ht) ht.textContent = hits;
-  for (const b of document.querySelectorAll('#hitsChoice .hits-btn, #modeHitsChoice .hits-btn')) {
-    b.classList.toggle('selected', Number(b.dataset.hits || b.textContent) === hits);
-  }
-  if (playNormalBtn) playNormalBtn.textContent = `🎮 NORMAL (${normalLives} ❤️ · MIT PAUSE)`;
-}
-
+// Die Charakterwerte bestimmen die Leben in beiden Modi.
 function applyModeLives() {
-  GAME_CONFIG.maxHits = trophyMode ? GAME_CONFIG.trophyLives : normalLives;
+  GAME_CONFIG.maxHits = GAME_CONFIG.defaultLives;
 }
-
-if (modeHitsChoice) {
-  for (const hits of GAME_CONFIG.hitChoices) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'hits-btn';
-    btn.dataset.hits = hits;
-    btn.textContent = hits;
-    btn.addEventListener('click', () => setNormalLives(hits));
-    modeHitsChoice.appendChild(btn);
-  }
-}
-for (const btn of document.querySelectorAll('#hitsChoice .hits-btn')) {
-  btn.addEventListener('click', () => setNormalLives(Number(btn.textContent)));
-}
-setNormalLives(normalLives);
 
 if (playerNameInput) {
   playerNameInput.addEventListener('input', () => {
@@ -1020,13 +994,13 @@ if (modeRandomBtn) {
   });
 }
 
-// 🎮 Öffnet die Auswahl „Mit Pokalen (50 Leben)“ oder „Normal (Leben einstellbar)“
+// 🎮 Ein Solo-Match: Normal (Münzen + Pokal) oder Rangliste (Münzen).
 function openModeChoice(choice) {
+  if (choice.type !== 'solo') return;
   initAudio();
   requestGameFullscreen();
   document.getElementById('charactersScreen').classList.remove('active');
   pendingMode = choice;
-  setNormalLives(normalLives);
   if (nameErrorMsg) nameErrorMsg.hidden = true;
   if (currentPlayerName) {
     if (playerNameInput) playerNameInput.value = currentPlayerName;
@@ -1040,14 +1014,9 @@ function openModeChoice(choice) {
     if (playerNameInput) playerNameInput.value = nick;
   });
 
-  if (choice.type === 'solo') {
-    const name = choice.actor;
-    if (modeScreenTitle) modeScreenTitle.textContent = `${actorEmoji(name)} ${actors[name].name} · SOLO-MATCH`;
-    if (modeScreenSub) modeScreenSub.textContent = `🏆 Pokal bei Sieg (${GAME_CONFIG.trophyLives} ❤️, 1 Match) · oder 🎮 Normal mit Pause!`;
-  } else {
-    if (modeScreenTitle) modeScreenTitle.textContent = '⚔️ TEAM-MODUS';
-    if (modeScreenSub) modeScreenSub.textContent = `🏆 Pokal wenn alle 8 Level geschafft sind (${GAME_CONFIG.trophyLives} ❤️) · oder 🎮 Normal mit Pause!`;
-  }
+  const name = choice.actor;
+  if (modeScreenTitle) modeScreenTitle.textContent = `${actorEmoji(name)} ${actors[name].name} · SOLO-MATCH`;
+  if (modeScreenSub) modeScreenSub.textContent = 'Feste Charakter-Leben · 200 Münzen pro Sieg · Normal zusätzlich 1 Pokal';
   if (startScreen) startScreen.classList.remove('active');
   if (modeScreen) modeScreen.classList.add('active');
 }
@@ -1074,8 +1043,6 @@ function launchPendingMode(withTrophies) {
   if (!pendingMode) return;
   if (pendingMode.type === 'solo') {
     startSoloGame(pendingMode.actor);
-  } else {
-    startNewTeamRun();
   }
 }
 
@@ -1088,51 +1055,30 @@ if (modeBackBtn) {
   });
 }
 
-// 🏅 Am Ende eines Matches prüfen, ob es einen Pokal gibt!
+// 🪙 Einmal pro Runde: Jeder Sieg gibt Münzen, nur Normal zusätzlich einen Pokal.
 function awardLevelTrophies(won) {
-  if (!trophyMode) {
-    if (trophyRewardMsgEl) trophyRewardMsgEl.hidden = true;
-    return;
-  }
+  if (matchRewardsAwarded) return;
+  matchRewardsAwarded = true;
   if (trophyRewardMsgEl) trophyRewardMsgEl.hidden = false;
-  const totalLevels = levelList().length;
-  const nr = currentLevel + 1;
-  const isFinalLevel = currentLevel === totalLevels - 1;
-
   if (!won) {
-    if (trophyRewardMsgEl) trophyRewardMsgEl.textContent = `🏆 Kein Pokal – du musst gewinnen, um den Pokal zu holen!`;
+    if (trophyRewardMsgEl) trophyRewardMsgEl.textContent = 'Diesmal keine Belohnung – versuch es noch einmal! 💪';
     return;
   }
-
-  // Im Team-Modus gibt es den Pokal erst, wenn alle 8 Level geschafft sind!
-  if (teamMode && !isFinalLevel) {
-    if (trophyRewardMsgEl) trophyRewardMsgEl.textContent = `🏅 Level ${nr}/${totalLevels} geschafft! Schaff alle ${totalLevels} Level für den Pokal 🏆!`;
-    return;
+  shopWallet.coins = Math.min(Number.MAX_SAFE_INTEGER, shopWallet.coins + GAME_CONFIG.winCoins);
+  saveShopWallet();
+  let message = `🪙 +${GAME_CONFIG.winCoins} MÜNZEN!`;
+  if (!trophyMode) {
+    trophiesData.total += 1;
+    trophiesData.solo += 1;
+    if (playerActor) trophiesData.actors[playerActor] = (trophiesData.actors[playerActor] || 0) + 1;
+    const entry = getOrCreatePlayerEntry(currentPlayerName || 'Held 1');
+    entry.trophies = trophiesData.total;
+    saveTrophies();
+    message += ' 🏆 +1 POKAL!';
   }
-
-  // Gewonnen! (Solo-Match gewonnen oder im Team-Modus alle 8 Level geschafft)
-  const gained = 1;
-  trophiesData.total += gained;
-  if (teamMode) {
-    trophiesData.team += gained;
-    for (const name of chosenTeam) {
-      const k = kindOf(name);
-      trophiesData.actors[k] = (trophiesData.actors[k] || 0) + 1;
-    }
-  } else if (playerActor) {
-    trophiesData.solo += gained;
-    trophiesData.actors[playerActor] = (trophiesData.actors[playerActor] || 0) + gained;
-  }
-
-  const pEntry = getOrCreatePlayerEntry(currentPlayerName || 'Held 1');
-  pEntry.trophies = trophiesData.total;
-
-  saveTrophies();
-  recordPublicHighScore(currentPlayerName, score, trophiesData.total, playerActor, teamMode);
+  refreshMainMenu();
   playSound('gem');
-  if (trophyRewardMsgEl) {
-    trophyRewardMsgEl.textContent = `🏆 +${gained} POKAL! ${pEntry.name.toUpperCase()} HAT JETZT ${pEntry.trophies} 🏆 IN DER RANGLISTE!`;
-  }
+  if (trophyRewardMsgEl) trophyRewardMsgEl.textContent = message;
 }
 
 // 🎭 Alte Charakter-Rangliste

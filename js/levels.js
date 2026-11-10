@@ -31,7 +31,7 @@ function startLevel() {
 
 // Runde vorbei: Text und Knopf auf dem Game-Over-Bildschirm einstellen.
 function finishLevel(won) {
-  awardLevelTrophies(won); // 🏆 Pokale vergeben, falls im Pokal-Modus gespielt wurde (trophies.js)
+  awardLevelTrophies(won); // Münzen für jeden Sieg, Pokal nur im normalen Modus (trophies.js)
 
   // 🎮 SOLO-MODUS: Nur 1 Match, gar keine Level!
   if (!teamMode) {

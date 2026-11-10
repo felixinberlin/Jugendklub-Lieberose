@@ -31,91 +31,11 @@ const abilityFillEl = document.getElementById('abilityFill');
 const abilityCountEl = document.getElementById('abilityCount');
 const rotateOverlay = document.getElementById('rotateOverlay');
 const dismissRotateBtn = document.getElementById('dismissRotateBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const pauseScreen = document.getElementById('pauseScreen');
-const resumeGameBtn = document.getElementById('resumeGameBtn');
-const pauseRestartBtn = document.getElementById('pauseRestartBtn');
-const pauseHomeBtn = document.getElementById('pauseHomeBtn');
-let pausedAtTime = 0;
-
 // ⌨️ Gedrückte Tasten (WASD + Pfeiltasten)
 const keysDown = { up: false, down: false, left: false, right: false };
 // 🕹️ Joystick-Auslenkung (-1 bis +1)
 let joyVec = { x: 0, y: 0, pointerId: null };
 let shootHoldTimer = null;
-
-// ⏸️ Pause-Funktion – NUR im normalen Modus (!trophyMode), NICHT im Ranglisten-Modus!
-function canPauseGame() {
-  return isPlaying && !trophyMode;
-}
-
-function pauseGame() {
-  if (!canPauseGame() || isPaused) return;
-  cancelAim();
-  isPaused = true;
-  pausedAtTime = performance.now();
-  keysDown.up = keysDown.down = keysDown.left = keysDown.right = false;
-  resetJoystick();
-  clearInterval(shootHoldTimer);
-  if (pauseScreen) pauseScreen.classList.add('active');
-  updateControlHud();
-}
-
-function resumeGame() {
-  if (!isPaused) return;
-  const pausedDuration = Math.max(0, performance.now() - pausedAtTime);
-  isPaused = false;
-  // Zeitstempel um die Pausen-Dauer verschieben, damit nach dem Fortsetzen alles nahtlos weiterläuft
-  for (const n in cpuNextThrow) {
-    if (typeof cpuNextThrow[n] === 'number') cpuNextThrow[n] += pausedDuration;
-  }
-  for (const n in actors) {
-    const a = actors[n];
-    if (a.stunnedUntil > 0) a.stunnedUntil += pausedDuration;
-    if (a.hiddenUntil > 0) a.hiddenUntil += pausedDuration;
-  }
-  // Flugpläne und Zeit-Schaden stehen ohnehin still. Auch die Aufräum-Uhr pausiert,
-  // damit Geschosse nach einer langen Pause nicht sofort verschwinden.
-  for (const geschoss of fallingBodies) geschoss.customData.born += pausedDuration;
-  for (const welle of explosionsWellen) welle.startZeit += pausedDuration;
-  if (typeof zeusStorms !== 'undefined') {
-    for (const s of zeusStorms) { s.until += pausedDuration; s.nextStrike += pausedDuration; }
-  }
-  if (pauseScreen) pauseScreen.classList.remove('active');
-  updateControlHud();
-}
-
-function togglePauseGame() {
-  if (!canPauseGame()) return;
-  if (isPaused) resumeGame();
-  else pauseGame();
-}
-
-if (pauseBtn) {
-  pauseBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    togglePauseGame();
-  });
-}
-if (resumeGameBtn) {
-  resumeGameBtn.addEventListener('click', () => resumeGame());
-}
-if (pauseRestartBtn) {
-  pauseRestartBtn.addEventListener('click', () => {
-    isPaused = false;
-    if (pauseScreen) pauseScreen.classList.remove('active');
-    startGame(false);
-  });
-}
-if (pauseHomeBtn) {
-  pauseHomeBtn.addEventListener('click', () => {
-    isPaused = false;
-    isPlaying = false;
-    if (pauseScreen) pauseScreen.classList.remove('active');
-    updateControlHud();
-    startScreen.classList.add('active');
-  });
-}
 
 // Welche Figur steuerst DU gerade?
 // Im Solo- und im Team-Modus steuerst du immer `playerActor` –
@@ -216,10 +136,6 @@ function updateControlHud() {
   }
   const shouldHideAction = !isPlaying || isPaused;
   if (actionHud.hidden !== shouldHideAction) actionHud.hidden = shouldHideAction;
-  if (pauseBtn) {
-    const shouldHidePause = !isPlaying || trophyMode;
-    if (pauseBtn.hidden !== shouldHidePause) pauseBtn.hidden = shouldHidePause;
-  }
   if (!isPlaying) return;
   const mine = myControlledActors();
   if (!mine.length) return;
@@ -412,7 +328,7 @@ abilityBtn.addEventListener('pointerdown', (event) => {
   triggerPlayerSpecial();
 });
 
-// ---------- ⌨️ Tastatur (WASD + F + P/Esc für Pause im Normal-Modus) & 🖱️ Linke Maustaste ----------
+// ---------- ⌨️ Tastatur (WASD + F) & 🖱️ Linke Maustaste ----------
 function setKey(event, down) {
   const code = event.code;
   const key = (event.key || '').toLowerCase();
@@ -424,10 +340,7 @@ function setKey(event, down) {
     event.preventDefault();
     triggerPlayerSpecial();
   }
-  if (down && (code === 'KeyP' || key === 'p' || code === 'Escape') && canPauseGame()) {
-    event.preventDefault();
-    togglePauseGame();
-  }
+
 }
 
 window.addEventListener('keydown', (event) => setKey(event, true));

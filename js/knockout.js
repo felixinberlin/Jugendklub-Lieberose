@@ -88,6 +88,7 @@ function checkKnockout(name) {
 
 // Spiel vorbei: Gewinner anzeigen.
 function endGame(winner) {
+  if (!isPlaying) return; // Eine Runde kann nur einmal enden und belohnt werden.
   isPlaying = false;
   if (typeof updateControlHud === 'function') updateControlHud();
   finalScoreEl.textContent = score;
@@ -144,21 +145,4 @@ function drawLifeBar(actor) {
   ctx.fillRect(-w / 2, 64, w * life, 5);
   // 💖 Zahl anzeigen: z. B. 84 ❤️
   drawLabel(`${Math.ceil(hp)} ❤️`, 0, 77, { size: 9, weight: '900', fill: '#f8fafc', stroke: '#0f172a', lineWidth: 2 });
-}
-
-// 💀 Auf dem Startbildschirm auswählen, wie viele Treffer eine Figur aushält
-const hitsChoice = document.getElementById('hitsChoice');
-for (const hits of GAME_CONFIG.hitChoices) {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'hits-btn';
-  btn.textContent = hits;
-  btn.classList.toggle('selected', hits === GAME_CONFIG.maxHits);
-  btn.addEventListener('click', () => {
-    GAME_CONFIG.maxHits = hits;
-    for (const b of hitsChoice.children) b.classList.toggle('selected', b === btn);
-    const ht = document.getElementById('hitsText');
-    if (ht) ht.textContent = hits;
-  });
-  hitsChoice.appendChild(btn);
 }

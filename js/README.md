@@ -22,8 +22,8 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | 🎮 [`cpu.js`](cpu.js) | **Wen spielst du?** Die Figuren-Auswahl am Anfang – und die **Computer-Gegner**, die von allein werfen | ⭐⭐ |
 | 🏅 [`levels.js`](levels.js) | **5 Level** – jedes schwerer. Das große „LEVEL 2“-Schild und „WEITER ➡️“ | ⭐⭐ |
 | 🎬 [`credits.js`](credits.js) | Der **Abspann**: alle eure Wünsche mit Versionsnummer – wie im Kino! | ⭐ |
-| 🏆 [`trophies.js`](trophies.js) | **Pokal-Modus** (immer 100 Leben) vs. **Normal** (Leben frei wählbar) + **Rangliste** 🥇 | ⭐⭐ |
-| ⚔️ [`teams.js`](teams.js) | **Team-Modus**: In Level 1 wählst du die 1. Figur, jedes Level kommt 1 dazu – ab Level 6 kämpfen alle zusammen! | ⭐⭐⭐ |
+| 🏆 [`trophies.js`](trophies.js) | **Normal**: 200 Münzen + 1 Pokal pro Sieg. **Rangliste**: 200 Münzen, keine Pokale. Feste Charakter-Leben in beiden Modi. 🥇 | ⭐⭐ |
+| ⚔️ [`teams.js`](teams.js) | Interne Team-Helfer für die Spielphysik. Der Team-/Mehrspieler-Modus ist seit v3.5 aus dem Menü entfernt. | ⭐⭐⭐ |
 | ⚡ [`specials.js`](specials.js) | **Spezialkräfte** (Knopf unten links – lädt auf, wenn du 20-mal triffst): ⚽ Musialas lenkbarer Riesenball, 🧌 Mini-Kobolde als Schutzschild, 🐱 Katzen-Wirbelsprung 🌪️, 🌽 Popcorn-Regen 🍿, 👺 brennender Feuerspeer 🔥, 🐭 Verstecken im Mauseloch 🕳️, 🐉 Drachenbiss 🦷 | ⭐⭐⭐ |
 | ⚽ [`special-weapons.js`](special-weapons.js) | **Spezialwaffen**: Riesenball, Popcorn, Feuerspeer und Brennen | ⭐⭐⭐ |
 | 🧌 [`special-moves.js`](special-moves.js) | **Schutz & Bewegung**: Mini-Kobolde, Katzensprung, Drachenbiss und Mauseloch | ⭐⭐⭐ |
@@ -151,7 +151,7 @@ Und wenn du eine Figur **ziehst** statt tippst? Dann bewegt `moveActor()` in [`a
 | `levels` → bei Level 5 `throwMs: 1700` → `500` | Level 5 wird zur Hölle 🔥 |
 | `levels` → `huntPlayer: 0.5` → `1` | In dem Level zielen ALLE nur auf dich 🎯 |
 | `teamLevels` → bei Level 8 `enemies: 10` → `20` | 20 Gegner auf einmal! 😱 |
-| `hitChoices: [5, 10, 20, 50]` → `[1, 100]` | Andere Auswahl auf dem Startbildschirm 💀 |
+| `CHAR_STATS.corn.hp: 100` → `120` | Feste Lebenspunkte der Mais-Figur ändern ❤️ |
 | `bigBall` → `damage: 6` → `10` | Musialas Riesenball haut alles um ⚽💥 |
 | `miniKobolds` → `count: 3` → `8` | Eine ganze Mini-Kobold-Armee 🧌🧌🧌 |
 | `catStunSeconds: 4` → `10` | Die Wirbelwolke hält 10 Sekunden 🌪️ |

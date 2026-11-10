@@ -6,6 +6,8 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
+  winCoins: 200, // Jeder Sieg, auch im Ranglisten-Modus.
+  defaultLives: 100, // Reservewert; feste Leben stehen pro Figur in CHAR_STATS.
   shopChests: [
     { id: 'normal', name: 'Normale Kiste', price: 1500, currency: 'coins', luck: '1', items: 4 },
     { id: 'rare', name: 'Seltene Kiste', price: 3000, currency: 'coins', luck: '1,3', items: 8 },
@@ -172,10 +174,9 @@ const GAME_CONFIG = {
   zeusStorm: { radius: 82, seconds: 4, strikeEveryMs: 360, damage: 5 }, // ⚡🌩️ Zeus: Blitzregen pro Treffer 5 Schaden!
   batSuck: { sips: 5, sipMs: 220, damage: 3, heal: 3 },    // 🦇🩸 Fledermaus: saugt 5-mal je 3 Leben ab und heilt sich selbst!
   yamalStar: { damage: 12, speed: 8.5, size: 48 },          // 🌟💥 Yamal: Stern explodiert in der Mitte & fügt zufälligem Spieler 12 Schaden zu
-  maxHits: 20, // 💀 Treffer im normalen Modus (wenn benutzerdefiniert angepasst)
+  maxHits: 100, // Reservewert; die Leben kommen aus CHAR_STATS.
   trophyLives: 50, // 🏆 Pokal-Modus nutzt die exakten Charakter-Leben!
   nameChangeCooldownDays: 0, // 🎲 Zufalls-Spitznamen jederzeit frei wählbar (keine Sperre)!
-  hitChoices: [5, 10, 20, 50], // Zum Auswählen im normalen Modus
   mapScale: 0.72, // 🗺️ Größere Map & bessere Übersicht in der Runde
   phoneZoom: 0.6, // 🔭📱 Handy: ganze Kampf-Welt herausgezoomt (0.6 = alles 40 % kleiner, viel mehr Platz). 1 = kein Zoom
   maxPixelRatio: 2, // 🚀 Tempo: höchstens 2-fache Pixeldichte

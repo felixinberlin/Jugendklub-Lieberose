@@ -30,7 +30,6 @@ const creditsScreen = document.getElementById('creditsScreen');
 const creditsRoll = document.getElementById('creditsRoll');
 const creditsBtn = document.getElementById('creditsBtn');
 const versionEl = document.getElementById('version');
-const teamModeBtn = document.getElementById('teamModeBtn');
 const teamGoBtn = document.getElementById('teamGoBtn');
 const teamBackBtn = document.getElementById('teamBackBtn');
 const soundToggle = document.getElementById('soundToggle');

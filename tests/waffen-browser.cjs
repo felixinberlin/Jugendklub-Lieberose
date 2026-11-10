@@ -71,11 +71,11 @@ const os = require('node:os');
    const lock=await page.evaluate(()=>({next:naechsteWaffe('fledermaus'),target:fallingBodies.at(-1)?.customData.target,free:fallingBodies.at(-1)?.customData.flugplan.frei}));
    assert.equal(lock.next,'flail');assert.ok(lock.target);assert.equal(lock.free,false);
    await page.screenshot({path:path.join(os.tmpdir(),`jugend-aim-${width}.png`)});
-   // Die Anleitung lässt sich aus einer pausierten Runde öffnen und am Handy lesen.
-   await page.evaluate(()=>pauseGame());
+   // Die Anleitung öffnet sich vor einer Runde über die Einstellungen.
+   await page.evaluate(()=>{isPlaying=false;openSettingsScreen();});
    const [anleitung] = await Promise.all([
     page.context().waitForEvent('page'),
-    page.locator('#pauseScreen a[href^="spielanleitung.html"]').click()
+    page.locator('#settingsScreen a[href^="spielanleitung.html"]').click()
    ]);
    await anleitung.waitForLoadState();
    assert.equal(await anleitung.locator('html').getAttribute('lang'),'de');
@@ -102,16 +102,7 @@ const os = require('node:os');
     const wall=wallBomb.exploded && !fallingBodies.includes(wallBomb);
     popcorn('corn'); const special=fallingBodies.length===GAME_CONFIG.popcorn.count && fallingBodies.every(b=>!b.customData.flugplan&&b.customData.special);
     clearAllBodies();
-    teamMode=true;chosenTeam=['kobold','fledermaus'];playerActor='fledermaus';startGame();
-    const clone=Object.keys(actors).find(n=>actors[n].kind);
-    const copy=normalerWurf(clone);
-    const clones=Boolean(copy.waffenProfil.tempo&&copy.damage);
-    const noFriendlyFire=(everyoneExcept('kobold') & TEAM_BITS.mine)===0;
-    startAim(99);switchActiveTeamActor('kobold');
-    const switching=aim===null&&naechsteWaffe('kobold')==='bomb';
-    startAim(100);pauseGame();const paused=aim===null;resumeGame();
-    clearAllBodies();
-    return {hit,wall,special,clones,noFriendlyFire,switching,paused};
+    return {hit,wall,special};
    });
    for(const [name,passed] of Object.entries(interactions)) assert.equal(passed,true,`${name} failed`);
    const physical = await page.evaluate(() => {
@@ -142,7 +133,7 @@ const os = require('node:os');
    await page.evaluate(()=>{teamMode=false;playerActor='kobold';playerTeam=['kobold'];startGame();});
    await page.screenshot({path:path.join(os.tmpdir(),`jugend-aim-${width}.png`)});
    assert.deepEqual(errors,[]);
-   console.log(`${width}×${height}: PASS touch aim/release, charge, mode switch, restart, hits, walls, specials, team copies, team switch, pause; no page errors`);
+   console.log(`${width}×${height}: PASS touch aim/release, charge, mode switch, restart, hits, walls, specials, fixed lives, no pause; no page errors`);
    await page.close();
   }
  } finally { await browser.close(); }

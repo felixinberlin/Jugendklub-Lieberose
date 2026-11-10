@@ -20,7 +20,6 @@
         <div class="hud-item">REKORD: <span id="highScore">0</span></div>
         <div id="levelHud" class="hud-item" hidden>LEVEL <span id="level">1</span></div>
         <div id="trophyHud" class="hud-item trophy-hud">🏆 <span id="trophies">0</span></div>
-        <button id="pauseBtn" class="hud-item pause-hud-btn" type="button" hidden>⏸️ PAUSE</button>
       </div>
 
       <!-- 👤 Willkommens-Fenster beim Reinkommen: Zufalls-Spitznamen wählen für 100% Datenschutz -->
@@ -92,7 +91,6 @@
           </div>
           <div class="main-right">
             <button id="mainRankBtn" class="arcade-button main-rank" type="button"><span>🏆</span>Rangliste</button>
-            <button id="teamModeBtn" class="arcade-button main-team" type="button">⚔️ Team-Modus</button>
             <button id="mainPlayBtn" class="arcade-button main-play" type="button"><span>▶</span>Spielen</button>
           </div>
         </div>
@@ -205,32 +203,21 @@
           <button id="settingsFullscreenBtn" class="btn" type="button">⛶ VOLLBILD AN / AUS</button>
         </div>
         <div class="mode-card normal-card">
-          <h3>🎮 STEUERUNG & LEBEN</h3>
+          <h3>🎮 STEUERUNG</h3>
           <p>🕹️ Links bewegen (WASD) · Rechts schießen (Linksklick) · Fähigkeit auf F</p>
-          <div class="hits-row"><span class="hits-label">💀 Leben:</span><div id="hitsChoice" class="hits-choice"></div></div>
           <details class="specials-info"><summary>⚡ Spezialkräfte & Kombos</summary><div id="specialsList"></div></details>
           <p class="parents-link"><a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">👨‍👩‍👧 Für Eltern: den Code ansehen ↗</a></p>
         </div>
         <button id="settingsBackBtn" class="btn btn-small" type="button">⬅️ Zurück zum Hauptmenü</button>
       </div>
 
-      <!-- ⏸️ Pause-Menü (NUR im normalen Modus, NICHT im Ranglisten-Modus!) -->
-      <div id="pauseScreen" class="overlay-screen">
-        <h2>⏸️ PAUSE</h2>
-        <p class="team-hint">Nur im normalen Modus verfügbar (im Ranglisten-Modus läuft das Match ohne Pause durch!)</p>
-        <button id="resumeGameBtn" class="btn" type="button">▶️ WEITERSPIELEN</button>
-        <a class="btn btn-small" href="spielanleitung.html#zielen" target="_blank" rel="noopener">📖 WIE ZIELE ICH?</a>
-        <button id="pauseRestartBtn" class="btn btn-small" type="button">🔄 RUNDE NEU STARTEN</button>
-        <button id="pauseHomeBtn" class="btn btn-small" type="button">🏠 ZUM HAUPTMENÜ</button>
-      </div>
-
-      <!-- 🏆 Modus-Auswahl: Mit Pokalen (50 Leben) oder Normal (Leben einstellbar) -->
+      <!-- 🎮 Ein Solo-Match: normal oder Rangliste, ohne Spielpause. -->
       <div id="modeScreen" class="overlay-screen">
         <h2 id="modeScreenTitle">WIE WILLST DU SPIELEN?</h2>
         <p id="modeScreenSub" class="team-hint"></p>
         <div class="mode-card trophy-card">
-          <h3>🏆 RANGLISTEN-MODUS (MIT POKALEN)</h3>
-          <p>Immer <b>💀 50 Leben</b> · <b>Keine Pause</b> · Pokal bei Sieg (Solo-Sieg / alle 8 Team-Level)!</p>
+          <h3>🏅 RANGLISTEN-MODUS</h3>
+          <p>🪙 <b>200 Münzen pro Sieg</b> · Keine Pokale · Feste Charakter-Leben</p><p>🏅 Dein Rang: noch nicht vergeben</p>
           <div class="name-input-wrap">
             <label for="playerNameInput">👤 Registrierter Spieler:</label>
             <div class="name-input-row">
@@ -267,15 +254,11 @@
             </div>
           </details>
           <p id="nameErrorMsg" class="name-error" hidden>👆 Bitte gib zuerst deinen Spielernamen ein!</p>
-          <button id="playTrophyBtn" class="btn btn-trophy">🏆 MIT POKALEN (50 ❤️)</button>
+          <button id="playTrophyBtn" class="btn btn-trophy">🏅 RANGLISTE SPIELEN</button>
         </div>
         <div class="mode-card normal-card">
-          <h3>🎮 NORMAL (MIT PAUSE ⏸️)</h3>
-          <p>Stell selbst ein, wie viele Leben jede Figur hat:</p>
-          <div class="hits-row mode-hits-row">
-            <span class="hits-label">💀 Leben:</span>
-            <div id="modeHitsChoice" class="hits-choice"></div>
-          </div>
+          <h3>🎮 NORMAL</h3>
+          <p>🪙 <b>200 Münzen + 🏆 1 Pokal pro Sieg</b> · Feste Charakter-Leben</p>
           <button id="playNormalBtn" class="btn">🎮 NORMAL SPIELEN</button>
         </div>
         <button id="modeBackBtn" class="btn btn-small">⬅️ Zurück</button>

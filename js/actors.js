@@ -129,8 +129,7 @@ function moveActor(name, x, y) {
 }
 
 // Alle Figuren zurück an ihren Startplatz und Lebenspunkte setzen!
-// Im Ranglisten-Modus (Pokale) gilt das echte Charakter-Leben (Fußballer 100, Kobold 120, etc.)
-// Im normalen Modus mit benutzerdefinierter Lebens-Einstellung zählen die eingestellten Leben!
+// Beide Modi nutzen feste Charakter-Leben aus CHAR_STATS.
 function resetActors() {
   for (const name in actors) {
     const { x, y } = actors[name].start();
@@ -139,9 +138,7 @@ function resetActors() {
     actors[name].hitsGiven = 0;
     actors[name].weaponIdx = -1;
     actors[name].lastThrow = -Infinity;
-    const maxHp = (typeof trophyMode !== 'undefined' && trophyMode)
-      ? (getCharStat(name, 'hp') || 100)
-      : GAME_CONFIG.maxHits;
+    const maxHp = getCharStat(name, 'hp') || GAME_CONFIG.defaultLives;
     actors[name].maxHp = maxHp;
     actors[name].hp = maxHp;
     actors[name].hitsTaken = 0;

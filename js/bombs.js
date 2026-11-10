@@ -84,7 +84,7 @@ function launchArc(actor, targetName, opts) {
     frictionAir: 0,
     label: 'characterBomb',
     // Trifft JEDE Figur im Weg – nur nicht die, die geworfen hat
-    collisionFilter: { category: 2, mask: 1 | everyoneExcept(actor) | MINI_BIT }, // + Mini-Kobolde fangen ab
+    collisionFilter: { group: -1, category: 2, mask: 1 | everyoneExcept(actor) | MINI_BIT }, // + Mini-Kobolde fangen ab
     customData: {
       emoji: opts.emoji,
       size: opts.size,

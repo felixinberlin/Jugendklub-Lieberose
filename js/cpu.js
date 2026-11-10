@@ -57,7 +57,7 @@ function startSoloGame(name) {
   startGame();
 }
 
-// Figur auswählen → erst prüfen ob freigeschaltet, dann fragen: Mit Pokalen (50 Leben) oder Normal?
+// Figur auswählen → freigeschaltet? Dann Normal oder Rangliste wählen.
 function chooseAndStart(name) {
   if (name === null) {
     trophyMode = false;
