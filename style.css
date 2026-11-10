@@ -1119,6 +1119,121 @@ body.in-round .hud-item {
   .mode-card { padding: 8px 12px; margin-bottom: 6px; gap: 4px; }
 }
 
+/* 🛠️ Namens-Baukasten (Adjektiv/Verb + Nomen) */
+.name-builder-details {
+  margin: 12px 0;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(255, 222, 89, 0.35);
+  border-radius: 14px;
+  overflow: hidden;
+  text-align: left;
+}
+
+.builder-summary {
+  padding: 10px 14px;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #ffde59;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.05);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.builder-summary::-webkit-details-marker { display: none; }
+.builder-summary::after {
+  content: '▼';
+  font-size: 0.75rem;
+  color: #94a3b8;
+  transition: transform 0.2s ease;
+}
+.name-builder-details[open] .builder-summary::after {
+  transform: rotate(180deg);
+}
+
+.name-builder-box {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.builder-hint {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+  margin-bottom: 2px;
+}
+
+.builder-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.builder-field label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #94a3b8;
+  margin-bottom: 3px;
+}
+
+.builder-select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #0f172a;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  outline: none;
+}
+.builder-select optgroup {
+  background: #1e293b;
+  color: #facc15;
+  font-weight: 800;
+}
+.builder-select option {
+  background: #0f172a;
+  color: #fff;
+}
+
+.builder-preview-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1.5px dashed #4ade80;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.builder-preview-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.builder-preview-text {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #4ade80;
+  letter-spacing: 0.5px;
+}
+
+.btn-builder-apply {
+  background: linear-gradient(135deg, #10b981, #059669) !important;
+  color: #fff !important;
+  border: 1px solid #34d399 !important;
+  font-weight: 900 !important;
+  width: 100%;
+  padding: 10px !important;
+  font-size: 0.95rem !important;
+}
+
 /* 🃏 Helden-Karte Popup (Startbildschirm) */
 .char-card-modal {
   position: absolute;

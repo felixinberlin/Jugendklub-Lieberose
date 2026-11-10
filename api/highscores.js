@@ -41,10 +41,31 @@ const NICKNAME_COOL_ENDINGS = [
   'Berserker', 'Waldläufer', 'Spion', 'Agent', 'Hüter', 'Beschützer', 'Verteidiger', 'Stürmer', 'Torwart', 'Dribbler',
   'Stratege', 'Phantom', 'Schattenkrieger', 'Lichtbringer', 'Sternenjäger', 'Weltenbummler', 'Abenteurer', 'Entdecker', 'Rebell', 'Rächer',
   'Komet', 'Asteroid', 'Kometenreiter', 'Blizzard', 'Taifun', 'Vulkanier', 'Zyklop', 'Gargoyle', 'Pegasus', 'Zentaur',
-  'Kraken', 'Leviathan', 'Koloss', 'Behemoth'
+  'Kraken', 'Leviathan', 'Koloss', 'Behemoth', 'Fledermaus', 'Zeus'
 ];
 
-// 3. Lustige Vorsilben (50 Wörter)
+// 3. Deutsche Adjektive (Eigenschaften)
+const NICKNAME_ADJECTIVES = [
+  'Mutiger', 'Wilder', 'Flinker', 'Schlauer', 'Starker', 'Flotter', 'Lockerer', 'Kühner',
+  'Geheimer', 'Dunkler', 'Heller', 'Leuchtender', 'Flammender', 'Glühender', 'Eisiger',
+  'Frostiger', 'Stürmischer', 'Magischer', 'Epischer', 'Legendärer', 'Mythischer', 'Kosmischer',
+  'Galaktischer', 'Frecher', 'Verrückter', 'Knuspriger', 'Zackiger', 'Goldener', 'Silberner',
+  'Riesiger', 'Lautloser', 'Kuscheliger', 'Sanfter', 'Rasender', 'Schwebender', 'Glänzender',
+  'Zauberhafter', 'Todesmutiger', 'Geschickter', 'Spritziger', 'Mächtiger', 'Wackeliger',
+  'Kichernder', 'Bunter', 'Schläfriger', 'Kühler', 'Feuriger', 'Giftiger', 'Kompakter',
+  'Glücklicher', 'Tapferer', 'Flinke', 'Wilde', 'Schlaue', 'Starke', 'Mutige', 'Freche'
+];
+
+// 4. Deutsche Verben (Aktionen & Tätigkeiten im Präsens)
+const NICKNAME_VERBS = [
+  'Kickt', 'Fliegt', 'Wirbelt', 'Dribbelt', 'Rennt', 'Hüpft', 'Lacht', 'Kichert',
+  'Zischt', 'Klettert', 'Schleicht', 'Stampft', 'Brüllt', 'Gleitet', 'Spurtet', 'Zaubert',
+  'Leuchtet', 'Schießt', 'Knallt', 'Flattert', 'Schnarcht', 'Taucht', 'Jagt', 'Springt',
+  'Kuschelt', 'Träumt', 'Zockt', 'Knabbert', 'Funkelt', 'Brennt', 'Stürmt', 'Hämmert',
+  'Kämpft', 'Siegt', 'Jubelt', 'Saust', 'Donnert', 'Blitzt', 'Dampft', 'Rollt'
+];
+
+// 5. Lustige Vorsilben (50 Wörter)
 const NICKNAME_FUNNY_PREFIXES = [
   'Keks', 'Wackel', 'Pups', 'Quatsch', 'Matsch', 'Krümel', 'Schnarch', 'Knuddel', 'Glitzer', 'Zappel',
   'Gummi', 'Waffel', 'Gurken', 'Kartoffel', 'Käse', 'Pudding', 'Nudel', 'Popcorn', 'Zucker', 'Marmeladen',
@@ -74,17 +95,20 @@ const NICKNAME_EMOJIS = [
 function generateCandidateNickname() {
   const roll = Math.random();
   let prefix, ending;
-  if (roll < 0.35) {
+  if (roll < 0.28) {
+    prefix = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)];
+    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+  } else if (roll < 0.48) {
+    prefix = NICKNAME_VERBS[Math.floor(Math.random() * NICKNAME_VERBS.length)];
+    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+  } else if (roll < 0.70) {
     prefix = NICKNAME_COOL_PREFIXES[Math.floor(Math.random() * NICKNAME_COOL_PREFIXES.length)];
     ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
-  } else if (roll < 0.65) {
-    prefix = NICKNAME_FUNNY_PREFIXES[Math.floor(Math.random() * NICKNAME_FUNNY_PREFIXES.length)];
-    ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
   } else if (roll < 0.85) {
     prefix = NICKNAME_FUNNY_PREFIXES[Math.floor(Math.random() * NICKNAME_FUNNY_PREFIXES.length)];
-    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+    ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
   } else {
-    prefix = NICKNAME_COOL_PREFIXES[Math.floor(Math.random() * NICKNAME_COOL_PREFIXES.length)];
+    prefix = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)];
     ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
   }
 
@@ -97,7 +121,12 @@ function generateCandidateNickname() {
 }
 
 // ✅ Nur Namen aus den Wortlisten sind erlaubt – kein freier Text (Datenschutz & keine Beleidigungen)
-const PREFIX_SET = new Set([...NICKNAME_COOL_PREFIXES, ...NICKNAME_FUNNY_PREFIXES]);
+const PREFIX_SET = new Set([
+  ...NICKNAME_COOL_PREFIXES,
+  ...NICKNAME_FUNNY_PREFIXES,
+  ...NICKNAME_ADJECTIVES,
+  ...NICKNAME_VERBS
+]);
 const ENDING_SET = new Set([...NICKNAME_COOL_ENDINGS, ...NICKNAME_FUNNY_ENDINGS]);
 const EMOJI_SET = new Set(NICKNAME_EMOJIS);
 function isValidNickname(name) {

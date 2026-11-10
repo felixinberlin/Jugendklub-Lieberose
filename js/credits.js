@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '2.65';
+const GAME_VERSION = '2.66';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -84,7 +84,8 @@ const WISHES = [
   { v: '2.62', text: 'Neues Zielen 🎯: gepunktete Flugbahn, Aufladen & freies Zielen (Q) – dazu Kobold-Bomben 💣, explodierendes Popcorn 🍿 & Feuer-Schaden 🔥' },
   { v: '2.63', text: 'Donnergott ZEUS ⚡ ist für alle frei wählbar – ganz ohne Pokale 🔓' },
   { v: '2.64', text: 'ZEUS ⚡ darf jetzt in JEDEM Team-Level ins Team – nicht erst in Level 7 ⚔️' },
-  { v: '2.65', text: 'Helden-Karten zum Antippen 🃏✨ mit DPS, Treff-Hitbox, Ausgleichs-Kräften & Druck-Tabelle 🖨️✏️' }
+  { v: '2.65', text: 'Helden-Karten zum Antippen 🃏✨ mit DPS, Treff-Hitbox, Ausgleichs-Kräften & Druck-Tabelle 🖨️✏️' },
+  { v: '2.66', text: 'Namens-Baukasten 🎲🛠️ mit Adjektiven & Verben (Mutiger, Flinker, Kickt, Fliegt uvm.) zum Selbst-Kombinieren ✨' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen

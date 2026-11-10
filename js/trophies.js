@@ -40,10 +40,31 @@ const NICKNAME_COOL_ENDINGS = [
   'Berserker', 'Waldläufer', 'Spion', 'Agent', 'Hüter', 'Beschützer', 'Verteidiger', 'Stürmer', 'Torwart', 'Dribbler',
   'Stratege', 'Phantom', 'Schattenkrieger', 'Lichtbringer', 'Sternenjäger', 'Weltenbummler', 'Abenteurer', 'Entdecker', 'Rebell', 'Rächer',
   'Komet', 'Asteroid', 'Kometenreiter', 'Blizzard', 'Taifun', 'Vulkanier', 'Zyklop', 'Gargoyle', 'Pegasus', 'Zentaur',
-  'Kraken', 'Leviathan', 'Koloss', 'Behemoth'
+  'Kraken', 'Leviathan', 'Koloss', 'Behemoth', 'Fledermaus', 'Zeus'
 ];
 
-// 3. Lustige Vorsilben (50 Wörter)
+// 3. Deutsche Adjektive (Eigenschaften)
+const NICKNAME_ADJECTIVES = [
+  'Mutiger', 'Wilder', 'Flinker', 'Schlauer', 'Starker', 'Flotter', 'Lockerer', 'Kühner',
+  'Geheimer', 'Dunkler', 'Heller', 'Leuchtender', 'Flammender', 'Glühender', 'Eisiger',
+  'Frostiger', 'Stürmischer', 'Magischer', 'Epischer', 'Legendärer', 'Mythischer', 'Kosmischer',
+  'Galaktischer', 'Frecher', 'Verrückter', 'Knuspriger', 'Zackiger', 'Goldener', 'Silberner',
+  'Riesiger', 'Lautloser', 'Kuscheliger', 'Sanfter', 'Rasender', 'Schwebender', 'Glänzender',
+  'Zauberhafter', 'Todesmutiger', 'Geschickter', 'Spritziger', 'Mächtiger', 'Wackeliger',
+  'Kichernder', 'Bunter', 'Schläfriger', 'Kühler', 'Feuriger', 'Giftiger', 'Kompakter',
+  'Glücklicher', 'Tapferer', 'Flinke', 'Wilde', 'Schlaue', 'Starke', 'Mutige', 'Freche'
+];
+
+// 4. Deutsche Verben (Aktionen & Tätigkeiten im Präsens)
+const NICKNAME_VERBS = [
+  'Kickt', 'Fliegt', 'Wirbelt', 'Dribbelt', 'Rennt', 'Hüpft', 'Lacht', 'Kichert',
+  'Zischt', 'Klettert', 'Schleicht', 'Stampft', 'Brüllt', 'Gleitet', 'Spurtet', 'Zaubert',
+  'Leuchtet', 'Schießt', 'Knallt', 'Flattert', 'Schnarcht', 'Taucht', 'Jagt', 'Springt',
+  'Kuschelt', 'Träumt', 'Zockt', 'Knabbert', 'Funkelt', 'Brennt', 'Stürmt', 'Hämmert',
+  'Kämpft', 'Siegt', 'Jubelt', 'Saust', 'Donnert', 'Blitzt', 'Dampft', 'Rollt'
+];
+
+// 5. Lustige Vorsilben (50 Wörter)
 const NICKNAME_FUNNY_PREFIXES = [
   'Keks', 'Wackel', 'Pups', 'Quatsch', 'Matsch', 'Krümel', 'Schnarch', 'Knuddel', 'Glitzer', 'Zappel',
   'Gummi', 'Waffel', 'Gurken', 'Kartoffel', 'Käse', 'Pudding', 'Nudel', 'Popcorn', 'Zucker', 'Marmeladen',
@@ -74,17 +95,20 @@ const NICKNAME_EMOJIS = [
 function generateRandomNickname() {
   const roll = Math.random();
   let prefix, ending;
-  if (roll < 0.35) {
+  if (roll < 0.28) {
+    prefix = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)];
+    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+  } else if (roll < 0.48) {
+    prefix = NICKNAME_VERBS[Math.floor(Math.random() * NICKNAME_VERBS.length)];
+    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+  } else if (roll < 0.70) {
     prefix = NICKNAME_COOL_PREFIXES[Math.floor(Math.random() * NICKNAME_COOL_PREFIXES.length)];
     ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
-  } else if (roll < 0.65) {
-    prefix = NICKNAME_FUNNY_PREFIXES[Math.floor(Math.random() * NICKNAME_FUNNY_PREFIXES.length)];
-    ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
   } else if (roll < 0.85) {
     prefix = NICKNAME_FUNNY_PREFIXES[Math.floor(Math.random() * NICKNAME_FUNNY_PREFIXES.length)];
-    ending = NICKNAME_COOL_ENDINGS[Math.floor(Math.random() * NICKNAME_COOL_ENDINGS.length)];
+    ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
   } else {
-    prefix = NICKNAME_COOL_PREFIXES[Math.floor(Math.random() * NICKNAME_COOL_PREFIXES.length)];
+    prefix = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)];
     ending = NICKNAME_FUNNY_ENDINGS[Math.floor(Math.random() * NICKNAME_FUNNY_ENDINGS.length)];
   }
 
@@ -97,7 +121,12 @@ function generateRandomNickname() {
 }
 
 // ✅ Ist das ein Name aus unseren Wortlisten? (Gleiche Prüfung wie in api/highscores.js)
-const NICK_PREFIX_SET = new Set([...NICKNAME_COOL_PREFIXES, ...NICKNAME_FUNNY_PREFIXES]);
+const NICK_PREFIX_SET = new Set([
+  ...NICKNAME_COOL_PREFIXES,
+  ...NICKNAME_FUNNY_PREFIXES,
+  ...NICKNAME_ADJECTIVES,
+  ...NICKNAME_VERBS
+]);
 const NICK_ENDING_SET = new Set([...NICKNAME_COOL_ENDINGS, ...NICKNAME_FUNNY_ENDINGS]);
 const NICK_EMOJI_SET = new Set(NICKNAME_EMOJIS);
 function isValidNickname(name) {
@@ -1284,6 +1313,161 @@ if (typeof window !== 'undefined') {
   });
 }
 
+// 🛠️ Namens-Baukasten: Adjektive, Verben und Nomen selbst kombinieren
+function setupNameBuilder(prefixSelectId, endingSelectId, emojiSelectId, previewId, applyBtnId, targetInputId, chipsContainerId) {
+  const prefixSelect = document.getElementById(prefixSelectId);
+  const endingSelect = document.getElementById(endingSelectId);
+  const emojiSelect = document.getElementById(emojiSelectId);
+  const preview = document.getElementById(previewId);
+  const applyBtn = document.getElementById(applyBtnId);
+  const targetInput = document.getElementById(targetInputId);
+
+  if (!prefixSelect || !endingSelect || !emojiSelect || !preview) return;
+
+  // Emojis befüllen
+  emojiSelect.innerHTML = '';
+  for (const emoji of NICKNAME_EMOJIS) {
+    const opt = document.createElement('option');
+    opt.value = emoji;
+    opt.textContent = `${emoji} ${emoji}`;
+    emojiSelect.appendChild(opt);
+  }
+
+  // Wort 1: Adjektive, Verben, Coole Vorsilben, Lustige Vorsilben
+  prefixSelect.innerHTML = '';
+
+  const gAdj = document.createElement('optgroup');
+  gAdj.label = '🎨 Adjektive (Eigenschaften)';
+  for (const word of NICKNAME_ADJECTIVES) {
+    const opt = document.createElement('option');
+    opt.value = word;
+    opt.textContent = word;
+    gAdj.appendChild(opt);
+  }
+  prefixSelect.appendChild(gAdj);
+
+  const gVerb = document.createElement('optgroup');
+  gVerb.label = '⚡ Verben (Aktionen & Tätigkeiten)';
+  for (const word of NICKNAME_VERBS) {
+    const opt = document.createElement('option');
+    opt.value = word;
+    opt.textContent = word;
+    gVerb.appendChild(opt);
+  }
+  prefixSelect.appendChild(gVerb);
+
+  const gCoolPre = document.createElement('optgroup');
+  gCoolPre.label = '💥 Kraftvolle Vorsilben';
+  for (const word of NICKNAME_COOL_PREFIXES) {
+    const opt = document.createElement('option');
+    opt.value = word;
+    opt.textContent = word;
+    gCoolPre.appendChild(opt);
+  }
+  prefixSelect.appendChild(gCoolPre);
+
+  const gFunPre = document.createElement('optgroup');
+  gFunPre.label = '🤪 Lustige Vorsilben';
+  for (const word of NICKNAME_FUNNY_PREFIXES) {
+    const opt = document.createElement('option');
+    opt.value = word;
+    opt.textContent = word;
+    gFunPre.appendChild(opt);
+  }
+  prefixSelect.appendChild(gFunPre);
+
+  // Wort 2: Helden & Nomen, Kämpfer & Legenden, Lustiges & Snacks
+  endingSelect.innerHTML = '';
+
+  const gHeroes = document.createElement('optgroup');
+  gHeroes.label = '🎮 Figuren, Tiere & Helden (Nomen)';
+  const heroWords = ['Drache', 'Kobold', 'Mais', 'Katze', 'Maus', 'Goblin', 'Musiala', 'Yamal', 'GOAT', 'Fledermaus', 'Zeus', 'Wolf', 'Fuchs', 'Falke', 'Tiger', 'Panther', 'Löwe', 'Adler', 'Bär', 'Panda', 'Dino', 'T-Rex', 'Hai'];
+  for (const word of heroWords) {
+    if (NICK_ENDING_SET.has(word)) {
+      const opt = document.createElement('option');
+      opt.value = word;
+      opt.textContent = word;
+      gHeroes.appendChild(opt);
+    }
+  }
+  endingSelect.appendChild(gHeroes);
+
+  const gCoolEnd = document.createElement('optgroup');
+  gCoolEnd.label = '⚔️ Kämpfer, Legenden & Kosmos';
+  for (const word of NICKNAME_COOL_ENDINGS) {
+    if (!heroWords.includes(word)) {
+      const opt = document.createElement('option');
+      opt.value = word;
+      opt.textContent = word;
+      gCoolEnd.appendChild(opt);
+    }
+  }
+  endingSelect.appendChild(gCoolEnd);
+
+  const gFunEnd = document.createElement('optgroup');
+  gFunEnd.label = '🍕 Snacks, Lustiges & Essen';
+  for (const word of NICKNAME_FUNNY_ENDINGS) {
+    const opt = document.createElement('option');
+    opt.value = word;
+    opt.textContent = word;
+    gFunEnd.appendChild(opt);
+  }
+  endingSelect.appendChild(gFunEnd);
+
+  // Vorbelegung
+  prefixSelect.value = 'Mutiger';
+  endingSelect.value = 'Drache';
+  emojiSelect.value = '⚡';
+
+  function updatePreview() {
+    const emoji = emojiSelect.value || '⚡';
+    const pre = prefixSelect.value || 'Mutiger';
+    const end = endingSelect.value || 'Drache';
+    preview.textContent = `${emoji} ${pre}-${end}`;
+  }
+
+  emojiSelect.addEventListener('change', updatePreview);
+  prefixSelect.addEventListener('change', updatePreview);
+  endingSelect.addEventListener('change', updatePreview);
+  updatePreview();
+
+  if (applyBtn && targetInput) {
+    applyBtn.addEventListener('click', () => {
+      initAudio();
+      playSound('point');
+      const emoji = emojiSelect.value || '⚡';
+      const pre = prefixSelect.value || 'Mutiger';
+      const end = endingSelect.value || 'Drache';
+      const combined = `${emoji} ${pre}-${end}`;
+      targetInput.value = combined;
+      if (chipsContainerId) {
+        const chipsContainer = document.getElementById(chipsContainerId);
+        if (chipsContainer) {
+          for (const c of chipsContainer.querySelectorAll('.chip-btn')) {
+            c.classList.toggle('selected', c.textContent === combined);
+          }
+        }
+      }
+    });
+  }
+}
+
+function initAllNameBuilders() {
+  setupNameBuilder(
+    'welcomeBuilderPrefix', 'welcomeBuilderEnding', 'welcomeBuilderEmoji',
+    'welcomeBuilderPreview', 'welcomeBuilderApplyBtn', 'welcomeNameInput', 'welcomeNicknameChips'
+  );
+  setupNameBuilder(
+    'settingsBuilderPrefix', 'settingsBuilderEnding', 'settingsBuilderEmoji',
+    'settingsBuilderPreview', 'settingsBuilderApplyBtn', 'settingsNameInput', 'settingsNicknameChips'
+  );
+  setupNameBuilder(
+    'modeBuilderPrefix', 'modeBuilderEnding', 'modeBuilderEmoji',
+    'modeBuilderPreview', 'modeBuilderApplyBtn', 'playerNameInput', 'modeNicknameChips'
+  );
+}
+
 updateTrophyHud();
 initWelcomeRegistration();
+initAllNameBuilders();
 syncOnlineHighScores();
