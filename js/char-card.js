@@ -14,18 +14,12 @@ const CHAR_CARDS = {
     motto: 'Lässt Gegner mit flüssigen Haken ins Leere laufen!',
     color: '#facc15',
     hp: 100,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 66,
     hitboxLabel: '66 px (flink & beweglich)',
     hitboxScore: 8.0,
     weaponName: 'Fußball',
     weaponIcon: '⚽',
-    weaponDamage: 3,
-    weaponCd: 1.2,
     weaponSpeed: 'Tempo 12 (Präzise)',
-    dps: 2.50,
-    ttk: '39.6 s (34 Treffer)',
     specialName: 'GROSSER BALL',
     specialIcon: '⚽',
     specialDesc: 'Schießt einen riesigen Riesenball (10 Schaden), den du 5 Sekunden lang mit Finger oder Maus über das Feld lenkst!',
@@ -39,18 +33,12 @@ const CHAR_CARDS = {
     motto: 'Wirft seine Klinge und schützt sich mit Mini-Kobolden!',
     color: '#4ade80',
     hp: 120,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 70,
     hitboxLabel: '70 px (robuste Statur)',
     hitboxScore: 6.5,
     weaponName: 'Klinge',
     weaponIcon: '🗡️',
-    weaponDamage: 3,
-    weaponCd: 1.0,
     weaponSpeed: 'Tempo 12 (Gezackte Klinge)',
-    dps: 3.00,
-    ttk: '33.0 s (34 Treffer)',
     specialName: 'MINI-KOBOLDE',
     specialIcon: '🧌',
     specialDesc: '3 rotierende Mini-Kobolde umkreisen dich 5 Sekunden lang und fangen 100 % aller feindlichen Bomben physisch ab!',
@@ -64,43 +52,31 @@ const CHAR_CARDS = {
     motto: 'Wirft seine Lanze und zündet Popcorn als Spezialkraft!',
     color: '#fde047',
     hp: 100,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 74,
     hitboxLabel: '74 px (großes Ziel, +52% Fläche!)',
     hitboxScore: 4.5,
     weaponName: 'Mais-Lanze',
     weaponIcon: '🗡️',
-    weaponDamage: 1.5,
-    weaponCd: 0.5,
-    weaponSpeed: 'Tempo 15 (Lanze · 2 Schüsse/s)',
-    dps: 3.00,
-    ttk: '33.0 s (67 Treffer)',
+    weaponSpeed: 'Tempo 15 (Lanze)',
     specialName: 'POPCORN-SALVE',
     specialIcon: '🍿',
     specialDesc: 'Feuert 5 Popcorn-Körner gleichzeitig auf die Feinde – jedes Korn macht 4 Schaden mit Explosion (bis zu 20 Schaden!).',
-    specialEqualizer: '🔄 Levelt das Spiel: Durch die 0.5s-Kadenz lädt Mais seine 20-Schaden-Spezialkraft doppelt so schnell auf wie andere!',
+    specialEqualizer: '🔄 Levelt das Spiel: Mit gezielten Lanzen-Treffern lädt Mais seine Popcorn-Spezialkraft auf!',
     tactic: 'Dauerfeuer! Da jeder Treffer die Spezialkraft lädt, hast du deine Salve blitzschnell bereit.'
   },
   maus: {
     id: 'maus',
     name: 'Maus',
     role: '🐭 Schatten-Ninja & Flitzer',
-    motto: 'Winzige Hitbox, rasend schnell und 6 Sekunden unantastbar!',
+    motto: 'Kleine Hitbox und 6 Sekunden unantastbar!',
     color: '#93c5fd',
     hp: 105,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 60,
     hitboxLabel: '60 px (winzig · 52% schwerer zu treffen!)',
     hitboxScore: 10.0,
     weaponName: 'Mäuse-Lanze',
     weaponIcon: '🪓',
-    weaponDamage: 2,
-    weaponCd: 0.9,
     weaponSpeed: 'Tempo 14 (Sehr schnell, flache Flugbahn)',
-    dps: 2.22,
-    ttk: '44.1 s (50 Treffer)',
     specialName: 'VERSTECKEN',
     specialIcon: '🕳️',
     specialDesc: 'Taucht für volle 6 Sekunden im Mauseloch unter. Du bist 100 % unverwundbar und Bots können dich nicht anvisieren!',
@@ -114,18 +90,12 @@ const CHAR_CARDS = {
     motto: 'Trifft mit 5 Schaden wie ein Hammer und betäubt 4 Sekunden!',
     color: '#fb923c',
     hp: 110,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 70,
     hitboxLabel: '70 px (gute Balance)',
     hitboxScore: 6.5,
     weaponName: 'Stachelkeule',
     weaponIcon: '🏏',
-    weaponDamage: 5,
-    weaponCd: 1.5,
     weaponSpeed: 'Tempo 8 (Schwere Bogen-Keule)',
-    dps: 3.33,
-    ttk: '28.5 s (20 Treffer)',
     specialName: 'WIRBELSTURM',
     specialIcon: '🌪️',
     specialDesc: 'Springt auf einen Gegner, fügt 5 Schaden zu und betäubt ihn für 4 Sekunden (kann weder laufen noch werfen)!',
@@ -139,23 +109,17 @@ const CHAR_CARDS = {
     motto: 'Extrem flink und brennt Löcher mit dem glühenden Dreizack!',
     color: '#f87171',
     hp: 100,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 68,
     hitboxLabel: '68 px (kompakt & wendig)',
     hitboxScore: 7.5,
     weaponName: 'Lava-Dreizack',
     weaponIcon: '🔱',
-    weaponDamage: 4,
-    weaponCd: 1.4,
     weaponSpeed: 'Tempo 11 (Guter Stoß)',
-    dps: 2.86,
-    ttk: '33.6 s (25 Treffer)',
     specialName: 'FEUER-DREIZACK',
     specialIcon: '🔱🔥',
     specialDesc: 'Schleudert einen brennenden Dreizack mit Tempo 12: 10 Direktschaden + 6 Brand-Schaden = 16 Gesamtschaden!',
     specialEqualizer: '🔄 Levelt das Spiel: 16-Schaden-Burst schmilzt selbst die dicksten Tanks im Nu ein.',
-    tactic: 'Nutze dein 1.4-Tempo für Flankenangriffe und finishe geschwächte Gegner mit dem Feuerspeer.'
+    tactic: 'Nutze dein 1.3-Tempo für Flankenangriffe und finishe geschwächte Gegner mit dem Feuerspeer.'
   },
   zeus: {
     id: 'zeus',
@@ -164,18 +128,12 @@ const CHAR_CARDS = {
     motto: 'Laser-artige Blitze, 130 HP und ein vernichtender Gewittersturm!',
     color: '#38bdf8',
     hp: 130,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 74,
     hitboxLabel: '74 px (große göttliche Statur)',
     hitboxScore: 5.0,
     weaponName: 'Zickzack-Blitz',
     weaponIcon: '⚡',
-    weaponDamage: 2.5,
-    weaponCd: 2.3,
     weaponSpeed: 'Tempo 20 (Sofort-Treffer Laser, 0 Schwerkraft)',
-    dps: 1.09,
-    ttk: '89.7 s (40 Treffer)',
     specialName: 'BLITZ-REGEN',
     specialIcon: '🌩️',
     specialDesc: 'Beschwört eine Gewitterwolke über dem Ziel (82 px Radius): schlägt 4 Sekunden lang ein (bis zu 55 AoE-Schaden!).',
@@ -186,21 +144,15 @@ const CHAR_CARDS = {
     id: 'yamal',
     name: 'Lamine Yamal #19',
     role: '🌟 Goldenes Wunderkind & Turbo-Stürmer',
-    motto: 'Schnellster Dribbler der Welt mit verheerender Stern-Explosion!',
+    motto: 'Flinker Dribbler mit verheerender Stern-Explosion!',
     color: '#eab308',
     hp: 105,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 65,
     hitboxLabel: '65 px (schlank & flink)',
     hitboxScore: 8.5,
     weaponName: 'Fußball',
     weaponIcon: '⚽',
-    weaponDamage: 3,
-    weaponCd: 1.4,
     weaponSpeed: 'Tempo 12 (Präzise)',
-    dps: 2.14,
-    ttk: '46.2 s (34 Treffer)',
     specialName: 'STERNEN-EXPLOSION',
     specialIcon: '🌟💥',
     specialDesc: 'Fliegt ins Spielfeld-Zentrum und explodiert in einer goldenen Schockwelle – fügt einem zufälligen Gegner 12 Sofort-Schaden zu!',
@@ -214,23 +166,17 @@ const CHAR_CARDS = {
     motto: 'Wechselt Speer & Morgenstern und heilt sich mit Blutsaugen!',
     color: '#c084fc',
     hp: 100,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 68,
     hitboxLabel: '68 px (flatternde Flügel)',
     hitboxScore: 7.5,
-    weaponName: 'Speer (1.2) / Morgenstern (2.2)',
+    weaponName: 'Speer / Morgenstern',
     weaponIcon: '🗡️⛓️',
-    weaponDamage: 1.7,
-    weaponCd: 1.2,
     weaponSpeed: 'Wechselt: Tempo 16 Speer & Tempo 8.5 Morgenstern',
-    dps: 1.42,
-    ttk: '69.6 s (59 Treffer)',
     specialName: 'BLUTSAUGEN',
     specialIcon: '🩸',
     specialDesc: 'Saugt 5-mal je 3 Leben vom Gegner ab (15 Schaden) und HEILT sich selbst um +15 Leben wieder hoch!',
     specialEqualizer: '🔄 Levelt das Spiel: 30-HP-Netto-Schwung im Duell – dreht fast verlorene Runden im Alleingang!',
-    tactic: 'Überlebe den Beginn mit Tempo 1.4 und sauge dem stärksten Feind das Leben ab, um dich vollzuheilen.'
+    tactic: 'Überlebe den Beginn mit Tempo 1.1 und sauge dem stärksten Feind das Leben ab, um dich vollzuheilen.'
   },
   drache: {
     id: 'drache',
@@ -239,18 +185,12 @@ const CHAR_CARDS = {
     motto: '130 HP, unberechenbare Wellen-Feuerbälle und ein 14-Schaden-Biss!',
     color: '#ef4444',
     hp: 130,
-    speed: 'Normal (1.0)',
-    speedScore: 6.0,
     hitbox: 74,
     hitboxLabel: '74 px (riesiges Ziel, +52% Fläche!)',
     hitboxScore: 4.0,
     weaponName: 'Wellen-Feuerball',
     weaponIcon: '🔥',
-    weaponDamage: 5,
-    weaponCd: 1.6,
-    weaponSpeed: 'Tempo 10 (3 Direkt + 2 Brand = 5 Schaden)',
-    dps: 3.13,
-    ttk: '30.4 s (20 Treffer)',
+    weaponSpeed: 'Tempo 10 (zusätzlich 2 Feuerschaden)',
     specialName: 'DRACHENBISS',
     specialIcon: '🦷',
     specialDesc: 'Stürzt im Bogen herab und beißt für 14 brachialen Sofortschaden zu + 1.5 Sekunden Betäubung!',
@@ -264,7 +204,16 @@ let currentCharIndex = 0;
 
 function getCharData(name) {
   const k = (typeof kindOf === 'function' ? kindOf(name) : name) || name;
-  return CHAR_CARDS[k] || CHAR_CARDS.musiala;
+  const base = CHAR_CARDS[k] || CHAR_CARDS.musiala;
+  const damage = getCharStat(k, 'attackDamage');
+  const cooldown = getCharStat(k, 'attackCooldown');
+  const speed = getCharStat(k, 'speed');
+  const hits = Math.ceil(100 / damage);
+  return { ...base, hp: getCharStat(k, 'hp'),
+    speed: `${speed}× Tempo`, speedScore: Math.min(10, speed / 1.6 * 10),
+    weaponDamage: damage, weaponCd: cooldown, dps: damage / cooldown,
+    ttk: `${((hits - 1) * cooldown).toFixed(1)} s gegen 100 Leben (${hits} Treffer)`
+  };
 }
 
 function openCharCard(name) {
@@ -289,7 +238,7 @@ function closeCharCard() {
 
 function renderCurrentCharCard() {
   const key = CHAR_ORDER[currentCharIndex];
-  const data = CHAR_CARDS[key];
+  const data = getCharData(key);
   if (!data) return;
 
   const modal = document.getElementById('charCardModal');
@@ -333,7 +282,7 @@ function renderCurrentCharCard() {
   const dpsEl = document.getElementById('charCardDps');
   if (dpsEl) dpsEl.textContent = `${data.dps.toFixed(2)} DPS (${data.ttk})`;
   const dpsBar = document.getElementById('charCardDpsBar');
-  if (dpsBar) dpsBar.style.width = `${Math.min(100, (data.dps / 4.0) * 100)}%`;
+  if (dpsBar) dpsBar.style.width = `${Math.min(100, (data.dps / 6.0) * 100)}%`;
 
   const hitboxEl = document.getElementById('charCardHitbox');
   if (hitboxEl) hitboxEl.textContent = data.hitboxLabel;

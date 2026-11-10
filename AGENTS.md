@@ -232,6 +232,8 @@ btn.addEventListener('click', async () => {
 
 33. **Siegbelohnung seit v3.5:** Jeder Solo-Sieg gibt 200 lokale Coins (`shopWallet`); nur Normal zusätzlich 1 Pokal. Ranglisten-Modus (`trophyMode=true`) gibt keine Pokale; eigene Rangregeln folgen später. `matchRewardsAwarded` wird in `startGame` zurückgesetzt und verhindert doppelte Auszahlung; `endGame` ignoriert bereits beendete Runden. Beide Modi nutzen feste `CHAR_STATS.hp`. Team-Modus, Lebensauswahl und Spielpause sind aus der Bedienung entfernt. Alle Wurfwaffen haben `collisionFilter.group: -1`, damit normale und Spezialwaffen einander durchfliegen.
 
+34. **Charakterwerte seit v3.6:** Normaler Schaden, Wurfpausen und Lauftempo stehen in `CHAR_STATS` (`attackDamage`, `attackCooldown`, `speed`). `normalerWurf()` nutzt den Charakter-Schaden vor `waffenProfile.schaden`, auch bei gemeinsamem Ball-Profil oder wechselnden Fledermaus-Waffen. Spezialkräfte behalten eigene Werte. Helden-Karten berechnen die angezeigten Werte daraus (`getCharData`); Drucktabelle mitpflegen. `#profileScreen` enthält nur die Zufalls-Namensänderung, `#settingsScreen` die übrigen Infos. Die Namensfeld-IDs heißen intern weiter `settings…`, gehören aber zum Profil.
+
 ---
 
 ## 8b. 🗺️ Code-Map `js/` (per `grep -n "function name" js/*.js` prüfen)

@@ -1839,3 +1839,5 @@ h1.game-title .title-emoji { -webkit-text-fill-color: initial; }
 #charactersScreen .pick-emoji { font-size: 48px; }
 @media (max-width: 700px) { #charactersScreen .pick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 440px) { #charactersScreen .pick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* 👤 Im Profil gibt es nur die Namensauswahl; Einstellungen bleiben ein eigener Bildschirm. */
+#profileScreen { padding-left: max(24px, calc((100% - 560px) / 2)); padding-right: max(24px, calc((100% - 560px) / 2)); background: linear-gradient(#070a1480, #070a14b8), url('arena.jpg') 62% center / cover no-repeat; }

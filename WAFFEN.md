@@ -16,7 +16,8 @@ Die [Spielanleitung](spielanleitung.html#zielen) erklärt Techniken und Tipps.
 
 | Datei | Aufgabe |
 |---|---|
-| `js/config.js` → `waffenProfile` | Waffenwerte ändern |
+| `js/config.js` → `CHAR_STATS` | Normalen Trefferschaden, Wurfpause und Lauftempo pro Figur ändern |
+| `js/config.js` → `waffenProfile` | Flugtempo, Schwerkraft und Trefferfolgen ändern |
 | `js/geschosse.js` | Nächste Waffe, Flugplan und Flugarten |
 | `js/zielhilfe.js` | Freies Zielen, Flugpunkte und Explosionskreis |
 | `js/zielen.js` | Gegner auswählen und Schuss aufladen |
@@ -45,16 +46,17 @@ bleiben Eigenschaften der Figur und zählen bei der Balance ebenfalls.
 
 | Figur / Waffe | Tempo | Sofort-Schaden | Besonderheit |
 |---|---:|---:|---|
-| Kobold / Bombe | 8 | 4 | Explosion, Radius 46 |
-| Mais / Popcorn | 9 | 1,5 | Kleinere Explosion, Radius 32 |
-| Katze / Stachelkeule | 8 | 5 | Schwerer Bogen, dreht sich |
-| Maus / Lanze | 14 | 2 | Flacher Bogen |
-| Goblin / Dreizack | 11 | 4 | Mittlerer Bogen |
-| Drache / Feuerball | 10 | 3 | Leichte Welle; danach 4 × 0,5 Feuerschaden |
-| Zeus / Blitz | 20 | 2,5 | Ohne Schwerkraft |
-| Fußballer / Ball | 12 | 3 | Bogen und Drehung |
-| Fledermaus / Speer | 16 | 1,2 | Schnell und flach |
-| Fledermaus / Morgenstern | 8,5 | 2,2 | Langsam und schwer |
+| Kobold / Klinge | 12 | 3,4 | Normaler Klingenwurf |
+| Mais / Lanze | 15 | 2,7 | Flacher Bogen; Popcorn bleibt Spezialkraft |
+| Katze / Stachelkeule | 8 | 3 | Schwerer Bogen, dreht sich |
+| Maus / Lanze | 14 | 2,9 | Flacher Bogen |
+| Goblin / Dreizack | 11 | 4,1 | Mittlerer Bogen |
+| Drache / Feuerball | 10 | 5,1 | Leichte Welle; danach 4 × 0,5 Feuerschaden |
+| Zeus / Blitz | 20 | 6,4 | Ohne Schwerkraft |
+| Musialla / Ball | 12 | 3,4 | Bogen und Drehung |
+| Yamal / Ball | 12 | 4,2 | Bogen und Drehung |
+| Fledermaus / Speer | 16 | 3,5 | Schnell und flach |
+| Fledermaus / Morgenstern | 8,5 | 3,5 | Langsam und schwer |
 
 Das sind Startwerte für Spieltests. Explosionen können mehrere Gegner treffen;
 darum zählt neben dem Schaden pro Treffer auch die Größe des Bereichs.
@@ -69,7 +71,7 @@ darum zählt neben dem Schaden pro Treffer auch die Größe des Bereichs.
 | Wert | Bedeutung |
 |---|---|
 | `tempo` | Flugtempo; wird durch Aufladen erhöht |
-| `schaden` | Sofort-Schaden; `null` benutzt den Figuren-Grundwert |
+| `schaden` | Reservewert; normale Treffer nutzen zuerst `CHAR_STATS.<figur>.attackDamage` |
 | `schwerkraft` | Anteil der Welt-Schwerkraft: 0 = kein Fall, 1 = normal |
 | `bewegung` | `bogen` oder `welle`; neue Funktion in `FLUGARTEN` ergänzen |
 | `drehung` | Radiant pro Bild; 0 = Spitze folgt der Flugrichtung |

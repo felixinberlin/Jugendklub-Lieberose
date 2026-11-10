@@ -469,8 +469,8 @@ async function deleteNicknameOnline(name) {
   if (leaderboardScreen && leaderboardScreen.classList.contains('active')) {
     showLeaderboard();
   }
-  if (settingsScreen && settingsScreen.classList.contains('active')) {
-    openSettingsScreen();
+  if (profileScreen && profileScreen.classList.contains('active')) {
+    openProfileScreen();
   }
 }
 
@@ -562,6 +562,7 @@ const welcomeNicknameChips = document.getElementById('welcomeNicknameChips');
 const currentUserBadge = document.getElementById('currentUserBadge');
 const settingsStartBtn = document.getElementById('settingsStartBtn');
 const settingsScreen = document.getElementById('settingsScreen');
+const profileScreen = document.getElementById('profileScreen');
 const settingsCurrentName = document.getElementById('settingsCurrentName');
 const settingsNameInput = document.getElementById('settingsNameInput');
 const settingsCooldownMsg = document.getElementById('settingsCooldownMsg');
@@ -885,8 +886,8 @@ if (welcomeNameSaveBtn) {
   });
 }
 
-// ⚙️ Einstellungen im Hauptmenü öffnen
-function openSettingsScreen() {
+// 👤 Profil: Nur den Zufalls-Spitznamen ändern.
+function openProfileScreen() {
   initAudio();
   updateTrophyHud();
   if (settingsCurrentName) settingsCurrentName.textContent = currentPlayerName || 'Held 1';
@@ -913,8 +914,25 @@ function openSettingsScreen() {
     }
   }
   if (startScreen) startScreen.classList.remove('active');
-  if (settingsScreen) settingsScreen.classList.add('active');
+  settingsScreen.classList.remove('active');
+  profileScreen.classList.add('active');
+  profileScreen.scrollTop = 0;
 }
+
+// ⚙️ Einstellungen enthalten die übrigen Spielinformationen, keine Namensfelder.
+function openSettingsScreen() {
+  initAudio();
+  updateTrophyHud();
+  profileScreen.classList.remove('active');
+  startScreen.classList.remove('active');
+  settingsScreen.classList.add('active');
+  settingsScreen.scrollTop = 0;
+}
+document.getElementById('profileBackBtn').addEventListener('click', () => {
+  profileScreen.classList.remove('active');
+  startScreen.classList.add('active');
+  document.getElementById('mainProfileBtn').focus();
+});
 
 if (settingsStartBtn) settingsStartBtn.addEventListener('click', openSettingsScreen);
 if (settingsBackBtn) {
@@ -966,7 +984,7 @@ if (settingsNameSaveBtn) {
 
     registerOrUpdatePlayerName(val, false);
     playSound('gem');
-    openSettingsScreen();
+    openProfileScreen();
   });
 }
 

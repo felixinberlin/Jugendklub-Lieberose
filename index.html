@@ -131,9 +131,9 @@
         <p class="shop-hint">Welche Belohnungen in den Kisten stecken, legen wir als Nächstes fest.</p>
       </div>
 
-      <!-- ⚙️ Einstellungen (☰ oben rechts im Hauptmenü): Name, Punkte, Abspann, Vollbild -->
-      <div id="settingsScreen" class="overlay-screen">
-        <h2>⚙️ EINSTELLUNGEN</h2>
+      <!-- 👤 Profil: ausschließlich den Zufalls-Spitznamen ändern. -->
+      <div id="profileScreen" class="overlay-screen" aria-labelledby="profileTitle">
+        <h2 id="profileTitle">👤 DEIN PROFIL</h2>
         <div class="mode-card trophy-card">
           <h3>👤 DEIN SPITZNAME</h3>
           <p class="privacy-note">🔒 100% Datenschutz: Wähle einen Zufalls-Spitznamen!</p>
@@ -176,8 +176,13 @@
           </details>
           <p id="settingsCooldownMsg" class="cooldown-msg"></p>
           <button id="settingsNameSaveBtn" class="btn btn-trophy" type="button">💾 DIESEN SPITZNAMEN BEHALTEN</button>
-          <button id="settingsDeleteNameBtn" class="btn btn-small btn-danger" type="button" style="margin-top: 8px;">🗑️ Spitznamen löschen & freigeben</button>
         </div>
+        <button id="profileBackBtn" class="btn btn-small" type="button">⬅️ Zurück zum Hauptmenü</button>
+      </div>
+
+      <!-- ⚙️ Einstellungen (☰): Punkte, Anleitung, Abspann und Vollbild -->
+      <div id="settingsScreen" class="overlay-screen">
+        <h2>⚙️ EINSTELLUNGEN</h2>
         <div class="mode-card normal-card">
           <h3>💾 GESPEICHERTE POKALE & PUNKTE</h3>
           <p id="settingsStatsText">🏆 0 Pokale · 🎯 0 Gesamtpunkte · 🏅 Rekord: 0</p>

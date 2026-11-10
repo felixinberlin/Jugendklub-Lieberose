@@ -136,7 +136,7 @@ const GAME_CONFIG = {
     vorhalteHilfe: 0.75 // Zielbindung hilft auch bei einem kurzen Tipp gegen laufende Gegner.
   },
   // ⚔️ Flugprofile: Tempo in Welt-Pixeln pro 60-Hz-Bild (× mapScale), schwerkraft = Anteil
-  // der Weltschwerkraft. Schaden bleibt bei CHAR_STATS, sofern schaden nicht gesetzt ist.
+  // der Weltschwerkraft. Normaler Trefferschaden kommt aus CHAR_STATS.
   // bewegung: 'bogen' oder 'welle'; drehung: Drehung in Radiant pro Bild.
   // Neue Waffe: Profil hier + Zeichnung in waffen.js + <figur>Weapons ergänzen.
   waffenProfile: {
@@ -204,7 +204,7 @@ const GAME_CONFIG = {
 /**
  * 📊 CHAR_STATS – Individuelle Werte für jeden Charakter!
  * - hp: Basis-Leben im Ranglisten-/Pokal-Modus
- * - attackDamage: Reserve-Grundwert; die aktuelle Waffe nutzt waffenProfile.schaden
+ * - attackDamage: Schaden pro normalem Treffer (auch bei wechselnden Waffen)
  * - attackCooldown: Angriffs-Pause in Sekunden (auf Schieß-Knopf angezeigt!)
  * - abilityDamage: Schaden der Spezialfähigkeit
  * - speed: Bewegungs-Tempo
@@ -213,94 +213,87 @@ const CHAR_STATS = {
   musiala: { // Fußballer / GOAT
     name: 'Fußballer',
     hp: 100,
-    attackDamage: 4,
+    attackDamage: 3.4,
     attackCooldown: 1.2,
     abilityDamage: 10,   // Großerball: 10 Schaden
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.1
   },
   kobold: {
     name: 'Kobold',
     hp: 120,
-    attackDamage: 3,
-    attackCooldown: 1.0,
+    attackDamage: 3.4,
+    attackCooldown: 1.3,
     abilityDamage: 8,    // 3 Mini-Kobolde
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.1
   },
   corn: {
     name: 'Mais',
     hp: 100,
-    attackDamage: 2,
-    attackCooldown: 0.5,
+    attackDamage: 2.7,
+    attackCooldown: 1,
     abilityDamage: 20,   // 5 Popcorn je 4 Schaden
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1
   },
   maus: {
     name: 'Maus',
     hp: 105,
-    attackDamage: 3,
-    attackCooldown: 0.9,
+    attackDamage: 2.9,
+    attackCooldown: 1.2,
     abilityDamage: 0,    // 6s im Loch
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1
   },
   katze: {
     name: 'Katze',
     hp: 110,
-    attackDamage: 5,
-    attackCooldown: 1.5,
+    attackDamage: 3,
+    attackCooldown: 1.3,
     abilityDamage: 5,    // Wirbelsturm: 5 Schaden + 4s Stun
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1
   },
   goblin: {
     name: 'Goblin',
     hp: 100,
-    attackDamage: 4,
-    attackCooldown: 1.4,
+    attackDamage: 4.1,
+    attackCooldown: 1.2,
     abilityDamage: 10,   // Dreizack: 10 Schaden
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.3
   },
   zeus: {
     name: 'Zeus',
     hp: 130,
-    attackDamage: 7,
-    attackCooldown: 2.3,
+    attackDamage: 6.4,
+    attackCooldown: 1.1,
     abilityDamage: 25,   // Blitzregen: pro Blitz 5 Schaden
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.6
   },
   yamal: {
     name: 'Lamine Yamal',
     hp: 105,
-    attackDamage: 4,
-    attackCooldown: 1.4,
+    attackDamage: 4.2,
+    attackCooldown: 1.3,
     abilityDamage: 12,   // Sternen-Explosion in der Mitte: 12 Schaden
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.3
   },
   fledermaus: {
     name: 'Fledermaus',
     hp: 100,             // Pokal-Modus; im normalen Modus gilt die eingestellte Lebenszahl
-    attackDamage: 1.7,   // Reserve; die zwei Waffen haben eigene Werte
-    attackCooldown: 1.2, // Waffenwechsel bei jedem erfolgreichen Wurf
+    attackDamage: 3.5,
+    attackCooldown: 1.2,
     abilityDamage: 15,   // Blutsaugen: 5 × 3 Schaden, heilt sich um 15
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.1
   },
   drache: {
     name: 'Drache',
     hp: 130,
-    attackDamage: 6,
-    attackCooldown: 1.6,
+    attackDamage: 5.1,
+    attackCooldown: 1.2,
     abilityDamage: 14,
-    speed: 1.0 // Alle Figuren bewegen sich gleich schnell.
+    speed: 1.5
   }
 };
 
 function getCharStat(name, stat) {
   const k = (typeof kindOf === 'function' ? kindOf(name) : name) || name;
   const cfg = CHAR_STATS[k] || CHAR_STATS.musiala;
-  if (stat === 'attackDamage') {
-    const weapon = typeof naechsteWaffe === 'function' && actors[name]
-      ? naechsteWaffe(name) : (GAME_CONFIG[`${k}Weapons`] || [])[0];
-    const id = weapon || GAME_CONFIG[`${k}Projectile`] || 'default';
-    const damage = GAME_CONFIG.waffenProfile[id]?.schaden;
-    if (damage != null) return damage;
-  }
   return cfg ? cfg[stat] : undefined;
 }

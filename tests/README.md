@@ -13,6 +13,8 @@ Auch `node tests/rewards-browser.cjs` nutzt diese beiden Umgebungsvariablen. Er 
 
 Der Test öffnet `index.html` direkt; Bildschirmbilder landen im temporären Ordner.
 
+`node tests/profile-stats-browser.cjs` prüft die getrennten Profil-/Einstellungsmenüs, sichere Namensänderung und Speicherung, echte Treffer, Wurfpausen, Lauftempo sowie Karten und Drucktabelle aller zehn Figuren. Nutzt ebenfalls `PLAYWRIGHT_MODULE` und `CHROMIUM_PATH`; blockiert alle Online-Anfragen.
+
 Im Browser zusätzlich `index.html` direkt öffnen: Handy hoch/quer und Laptop.
 Zielmodus per Knopf oder Q wechseln. Maus bewegen oder auf dem Handy den Schießknopf
 ziehen; gedrückt halten lädt auf, Loslassen wirft. Tab wechselt gebundene Ziele.

@@ -22,7 +22,7 @@ document.getElementById('charactersBackBtn').addEventListener('click', () => {
   startScreen.classList.add('active');
   document.getElementById('charactersStartBtn').focus();
 });
-document.getElementById('mainProfileBtn').addEventListener('click', openSettingsScreen);
+document.getElementById('mainProfileBtn').addEventListener('click', openProfileScreen);
 document.getElementById('mainRankBtn').addEventListener('click', () => document.getElementById('leaderboardStartBtn').click());
 for (const id of ['mainCoinsBtn', 'mainJewelsBtn']) {
   document.getElementById(id).addEventListener('click', () => document.getElementById('shopStartBtn').click());

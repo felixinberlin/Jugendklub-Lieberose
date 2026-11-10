@@ -6,7 +6,7 @@
  * GAME_VERSION hochzählen (z. B. 2.22 → 2.23).
  */
 
-const GAME_VERSION = '3.5';
+const GAME_VERSION = '3.6';
 const REPO_URL = 'https://github.com/felixinberlin/Jugendklub-Lieberose';
 
 const WISHES = [
@@ -93,7 +93,8 @@ const WISHES = [
   { v: '3.2', text: 'Kisten mit 4, 8, 16 & 50 Items 📦 · God-Kiste mit 3× Glück ✨ · Preise kurz als 1.5K, 3K & 7.5K Coins 🪙' },
   { v: '3.3', text: 'Neues Hauptmenü nach eurer Bildvorlage 🎮 · Querformat ohne Scrollen, Arena-Hintergrund & Figuren per Knopfdruck 👆' },
   { v: '3.4', text: 'Charaktere nach Seltenheit sortiert 👆 · Divine glänzt ✨ · alle laufen gleich schnell · Mais wirft seine Lanze & Kobold seine Klinge 🗡️' },
-  { v: '3.5', text: '200 Münzen pro Sieg 🪙 · Normal zusätzlich 1 Pokal 🏆 · ohne Team-Modus, Pause & Lebensauswahl · Waffen fliegen durcheinander ⚔️' }
+  { v: '3.5', text: '200 Münzen pro Sieg 🪙 · Normal zusätzlich 1 Pokal 🏆 · ohne Team-Modus, Pause & Lebensauswahl · Waffen fliegen durcheinander ⚔️' },
+  { v: '3.6', text: 'Profil nur für deinen Spitznamen 👤 · Einstellungen extra ⚙️ · neue Werte für Schaden, Wurfpausen & Tempo aller zehn Charaktere ⚔️' }
 ];
 
 // Abspann-Inhalt einmal beim Laden bauen
