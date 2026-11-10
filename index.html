@@ -97,6 +97,11 @@
           <p id="settingsStatsText">🏆 0 Pokale · 🎯 0 Gesamtpunkte · 🏅 Rekord: 0</p>
         </div>
         <div class="mode-card normal-card">
+          <h3>📖 SPIELANLEITUNG</h3>
+          <p>Zielen lernen, Waffen verstehen und Tipps ausprobieren:</p>
+          <a class="btn" href="spielanleitung.html" target="_blank" rel="noopener">🎯 ZIELEN & SPIELTIPPS</a>
+        </div>
+        <div class="mode-card normal-card">
           <h3>🎬 ABSPANN</h3>
           <p>Alle Wünsche aus dem Jugendklub – wie im Kino:</p>
           <button id="creditsStartBtn" class="btn" type="button">🎬 ABSPANN ANSEHEN</button>
@@ -114,6 +119,7 @@
         <h2>⏸️ PAUSE</h2>
         <p class="team-hint">Nur im normalen Modus verfügbar (im Ranglisten-Modus läuft das Match ohne Pause durch!)</p>
         <button id="resumeGameBtn" class="btn" type="button">▶️ WEITERSPIELEN</button>
+        <a class="btn btn-small" href="spielanleitung.html#zielen" target="_blank" rel="noopener">📖 WIE ZIELE ICH?</a>
         <button id="pauseRestartBtn" class="btn btn-small" type="button">🔄 RUNDE NEU STARTEN</button>
         <button id="pauseHomeBtn" class="btn btn-small" type="button">🏠 ZUM HAUPTMENÜ</button>
       </div>
@@ -225,6 +231,8 @@
 
       <!-- 🕹️ Action-Steuerung im Spiel (controls.js): Unten links Bewegen, unten rechts Schießen (rund) + Fähigkeit (quadratisch darüber) -->
       <div id="actionHud" class="action-hud" hidden>
+        <button id="aimModeBtn" class="aim-mode-btn" type="button" aria-label="Zielmodus wechseln (Taste Q)" aria-pressed="false" aria-describedby="aimHelp">🎯 Zielbindung · Q</button>
+        <span id="aimHelp" class="aim-help">🎯/Tab: Ziel · Halten: aufladen</span>
         <div id="movePad" class="move-pad" aria-label="Bewegen (oder WASD)">
           <span class="pad-arrow up">▲</span>
           <span class="pad-arrow down">▼</span>
@@ -287,7 +295,9 @@
   <script src="js/footballer.js"></script>
   <script src="js/knockout.js"></script>
   <script src="js/actors.js"></script>
+  <script src="js/geschosse.js"></script>
   <script src="js/bombs.js"></script>
+  <script src="js/trefferfolgen.js"></script>
   <script src="js/physics.js"></script>
   <script src="js/trophies.js"></script>
   <script src="js/cpu.js"></script>
@@ -302,6 +312,7 @@
   <script src="js/specials.js"></script>
   <script src="js/special-ui.js"></script>
   <script src="js/controls.js"></script>
+  <script src="js/zielhilfe.js"></script>
   <script src="js/zielen.js"></script>
   <script src="js/credits.js"></script>
   <script src="js/game.js"></script>

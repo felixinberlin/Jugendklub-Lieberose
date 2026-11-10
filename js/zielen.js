@@ -14,7 +14,6 @@
 
 let aimTarget = null;    // Dein gewählter Gegner (bleibt, bis er raus ist oder du wechselst)
 let aim = null;          // Läuft gerade ein Drücken? { start, pointerId, fullPlayed }
-let aimShowUntil = 0;    // Fadenkreuz kurz zeigen (nach dem Wechseln)
 let aimQueueTimer = null; // Losgelassen, aber Wurf-Pause noch nicht vorbei → gleich nachholen
 const targetBtn = document.getElementById('targetBtn');
 const targetBtnChar = document.getElementById('targetBtnChar');
@@ -41,12 +40,11 @@ function currentAimTarget() {
 
 // 🔄 Nächsten Gegner anvisieren (TAB / 🎯-Knopf)
 function cycleAimTarget() {
-  if (!isPlaying || isPaused) return;
+  if (!isPlaying || isPaused || zielModus === 'frei') return;
   const list = aimCandidates();
   if (!list.length) return;
   const i = list.indexOf(currentAimTarget());
   aimTarget = list[(i + 1) % list.length];
-  aimShowUntil = performance.now() + 1500;
   initAudio();
   playSound('point');
   updateTargetBtn();
@@ -55,12 +53,13 @@ function cycleAimTarget() {
 // Mit der Maus in die Nähe eines Gegners geklickt? Dann wird er dein Ziel.
 function pickAimTargetAt(x, y) {
   let best = null;
-  let bestD = 120;
+  let bestD = GAME_CONFIG.aim.zielRadius / viewZoom();
   for (const n of aimCandidates()) {
     const d = Math.hypot(actors[n].body.position.x - x, actors[n].body.position.y - y);
     if (d < bestD) { bestD = d; best = n; }
   }
   if (best) aimTarget = best;
+  return best;
 }
 
 // Wie weit aufgeladen? 0 = gerade gedrückt, 1 = voll
@@ -72,10 +71,11 @@ function isAiming(now) {
 }
 
 // 👇 Drücken beginnt (Schieß-Knopf oder linke Maustaste)
-function startAim(pointerId) {
+function startAim(pointerId, eingabe = {}) {
   if (!isPlaying || isPaused) return;
+  if (aim) return; // Ein zweiter Finger übernimmt keinen laufenden Schuss.
   initAudio();
-  aim = { start: performance.now(), pointerId, fullPlayed: false };
+  aim = { start: performance.now(), pointerId, fullPlayed: false, eingabe, freierStart: freierZielpunkt() };
 }
 
 // 👆 Loslassen: kurz = normaler Schuss, lang = gezielter Schuss
@@ -88,7 +88,10 @@ function releaseAim(pointerId) {
   if (held < GAME_CONFIG.aim.holdMs) {
     triggerPlayerShoot();
   } else {
-    triggerPlayerShoot(undefined, undefined, { target: currentAimTarget(), charge });
+    triggerPlayerShoot(undefined, undefined, {
+      target: zielModus === 'gebunden' ? currentAimTarget() : null,
+      aimPoint: zielModus === 'frei' ? freierZielpunkt() : null, charge
+    });
   }
 }
 
@@ -101,8 +104,11 @@ function cancelAim() {
 function resetAim() {
   cancelAim();
   aimTarget = null;
-  aimShowUntil = 0;
-  for (const n in actors) actors[n].vel = { x: 0, y: 0 };
+  freiesZiel = null;
+  for (const n in actors) {
+    actors[n].vel = { x: 0, y: 0 };
+    actors[n].aimPrev = null;
+  }
   updateTargetBtn();
 }
 
@@ -135,32 +141,32 @@ function leadPosition(targetName, frames, lead) {
   };
 }
 
-// 🎯 Fadenkreuz um den Ziel-Gegner malen
+// 🎯 Flugbahn und Fadenkreuz um den Ziel-Gegner malen
 function drawAim(now) {
-  if (!isPlaying) return;
+  if (!isPlaying || isPaused) return;
   const aiming = isAiming(now);
-  if (!aiming && now > aimShowUntil) return;
-  const t = currentAimTarget();
-  if (!t) return;
+  const t = zielModus === 'gebunden' ? currentAimTarget() : null;
+  if (!t && zielModus === 'gebunden') return;
   const charge = aiming ? aimCharge(now) : 0;
   const full = charge >= 1;
-  const p = actors[t].body.position;
-  const r = 70 - charge * 40; // zieht sich zusammen
+  const p = zielModus === 'frei' ? freierZielpunkt() : actors[t].body.position;
+  const r = (aiming ? 30 - charge * 8 : 24) / viewZoom();
   const color = full ? '#22c55e' : '#facc15';
   ctx.save();
-  // Gestrichelte Linie von dir zum Ziel
-  const lead = myControlledActors()[0];
-  if (aiming && lead && actors[lead]) {
-    const s = actors[lead].body.position;
-    ctx.globalAlpha = 0.55;
-    ctx.setLineDash([8, 8]);
+  for (const name of myControlledActors()) {
+    zeichneFlugvorschau(name, t, charge, color);
+  }
+  if (zielModus === 'frei') {
+    ctx.globalAlpha = 0.9;
     ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = 2 / viewZoom();
+    const size = 8 / viewZoom();
     ctx.beginPath();
-    ctx.moveTo(s.x, s.y);
-    ctx.lineTo(p.x, p.y);
+    ctx.moveTo(p.x - size, p.y); ctx.lineTo(p.x + size, p.y);
+    ctx.moveTo(p.x, p.y - size); ctx.lineTo(p.x, p.y + size);
     ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.restore();
+    return;
   }
   // Kreis + 4 Striche, die sich drehen
   ctx.globalAlpha = 0.95;
@@ -170,7 +176,7 @@ function drawAim(now) {
   ctx.beginPath();
   ctx.arc(0, 0, r, 0, Math.PI * 2);
   ctx.stroke();
-  ctx.rotate(now / 400);
+  if (aiming) ctx.rotate(now / 400);
   for (let i = 0; i < 4; i++) {
     ctx.rotate(Math.PI / 2);
     ctx.beginPath();
@@ -218,3 +224,4 @@ window.addEventListener('pointercancel', (event) => {
   if (aim && aim.pointerId === event.pointerId) cancelAim();
 });
 window.addEventListener('blur', cancelAim);
+document.addEventListener('visibilitychange', () => { if (document.hidden) cancelAim(); });

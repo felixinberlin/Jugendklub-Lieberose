@@ -70,7 +70,8 @@ function popcorn(name) {
   for (let i = 0; i < cfg.count; i++) {
     launchArc(name, targets[i % targets.length], {
       emoji: '🍿', size: cfg.size, damage: cfg.damage, special: true,
-      flightFrames: 34 + Math.floor(Math.random() * 22) // Jedes Korn fliegt anders schnell
+      explosionsRadius: cfg.explosionsRadius * mapScale(),
+      flightFrames: 46 + Math.floor(Math.random() * 22) // Langsamer, mit kleinem Explosionsbereich
     });
   }
   spawnParticles(actors[name].body.position.x, actors[name].body.position.y, '#fef9c3', 25);
@@ -171,23 +172,11 @@ function drawSpear(b, now) {
 function startBurn(victim, shooter) {
   if (isHidden(victim)) return; // 🐭🕳️ Im Mauseloch brennt nichts
   const cfg = GAME_CONFIG.fireSpear;
-  const now = performance.now();
-  actors[victim].burn = { shooter, until: now + cfg.burnSeconds * 1000, next: now + cfg.burnEveryMs };
-}
-
-function updateBurns(now) {
-  const cfg = GAME_CONFIG.fireSpear;
-  for (const name in actors) {
-    const burn = actors[name].burn;
-    if (!burn) continue;
-    if (!isAlive(name) || now > burn.until) { actors[name].burn = null; continue; }
-    if (now >= burn.next) {
-      burn.next += cfg.burnEveryMs;
-      const p = actors[name].body.position;
-      spawnParticles(p.x, p.y - 20, '#f97316', 6);
-      applyHit(name, burn.shooter, cfg.burnDamage, true);
-    }
-  }
+  // Derselbe Feuer-Effekt wie beim Feuerball: erneuern statt doppelt stapeln.
+  TREFFERFOLGEN.zeitSchaden(victim, shooter, {
+    kennung: 'feuer', symbol: '🔥', farbe: '#fb923c', schaden: cfg.burnDamage,
+    dauerMs: cfg.burnSeconds * 1000, abstandMs: cfg.burnEveryMs
+  });
 }
 
 // ---------- ⚡ ZEUS: Roter Blitz-Regen (4 Sekunden im markierten Kreis) ----------

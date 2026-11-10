@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spielanleitung · The Fightzone</title>
+  <style>
+    /* Eigene, kleine Leseseite: Die Anleitung darf auch auf dem Handy scrollen. */
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px 18px 48px; background: #101827; color: #f1f5f9; font: 18px/1.6 system-ui, sans-serif; }
+    main { max-width: 780px; margin: auto; }
+    h1, h2, h3 { line-height: 1.25; color: #fde047; }
+    h1 { font-size: clamp(28px, 6vw, 42px); }
+    h2 { margin-top: 40px; font-size: 27px; }
+    h3 { font-size: 21px; }
+    a { color: #7dd3fc; }
+    nav { display: flex; flex-wrap: wrap; gap: 10px; }
+    nav a, .spiel-link { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 14px; border: 1px solid #64748b; border-radius: 12px; text-decoration: none; }
+    li { margin: 10px 0; }
+    .merksatz { border-left: 4px solid #facc15; padding: 14px 18px; background: #1e293b; border-radius: 8px; }
+    .waffen-tipps { display: grid; gap: 14px; }
+    .waffen-tipps article { background: #1e293b; padding: 4px 18px 10px; border-radius: 14px; }
+    kbd { padding: 2px 7px; border: 1px solid #94a3b8; border-radius: 5px; font: inherit; }
+  </style>
+</head>
+<body>
+<main>
+  <a class="spiel-link" href="index.html">🎮 Zum Spiel</a>
+  <h1>📖 So spielst du The Fightzone</h1>
+  <p>Wähle deine Figur, weiche aus und wirf mit ihrer eigenen Waffe. Die Punkte zeigen dir schon vor dem Wurf, wie dein Geschoss fliegt.</p>
+  <nav aria-label="Kapitel der Spielanleitung">
+    <a href="#zielen">🎯 Einfach zielen</a>
+    <a href="#frei">✛ Frei zielen</a>
+    <a href="#tipps">💡 Techniken & Tipps</a>
+    <a href="#steuerung">🎮 Steuerung</a>
+  </nav>
+
+  <section id="zielen">
+    <h2>🎯 Wie ziele ich am einfachsten?</h2>
+    <p><strong>Beginne mit „Zielbindung“.</strong> Das Spiel berechnet den Wurfbogen und hilft dir beim Vorhalten auf laufende Gegner.</p>
+    <ol>
+      <li><strong>Gegner auswählen:</strong> Klicke oder tippe in seine Nähe. Damit wählst du ihn aus und wirfst beim Loslassen. Du kannst auch den 🎯-Knopf oder <kbd>Tab</kbd> zum Wechseln benutzen.</li>
+      <li><strong>Markierung ansehen:</strong> Der gelbe Zielkreis zeigt dauerhaft, welchen Gegner du ausgewählt hast. Die gepunktete Linie zeigt den geplanten Flug.</li>
+      <li><strong>Werfen:</strong> Tippe kurz auf den runden Schießknopf. Deine Figur wirft auf den ausgewählten Gegner.</li>
+      <li><strong>Schneller werfen:</strong> Halte den Schießknopf oder die linke Maustaste gedrückt. Nach ungefähr einer Sekunde ist die Markierung grün: voll aufgeladen. Loslassen wirft!</li>
+    </ol>
+    <p class="merksatz">Zum Anfang reicht: Gegner wählen → Schießknopf halten → loslassen. Du musst den Bogen nicht selbst ausrechnen.</p>
+    <p>Die Hilfe macht keine garantierten Treffer: Gegner können nach deinem Wurf die Richtung ändern, und andere Figuren oder Mini-Kobolde können dein Geschoss abfangen.</p>
+  </section>
+
+  <section id="frei">
+    <h2>✛ Wie funktioniert freies Zielen?</h2>
+    <p>Wechsle mit dem Zielmodus-Knopf oben im Spiel oder mit <kbd>Q</kbd> zu <strong>„Frei zielen“</strong>. Jetzt wählst du einen Ort im Spielfeld. Das Spiel gleicht die Schwerkraft beim Abwurf aus.</p>
+    <h3>🖱️ Mit der Maus</h3>
+    <ol>
+      <li>Bewege die Maus im Spielfeld zum gewünschten Landungsort.</li>
+      <li>Halte die linke Maustaste, um aufzuladen. Währenddessen kannst du den Zielpunkt weiter verschieben.</li>
+      <li>Lass los, um zu werfen. Aufladen verändert Tempo und Bogen; dein gewählter Landungsort bleibt dabei gleich.</li>
+    </ol>
+    <h3>📱 Auf dem Handy</h3>
+    <ul>
+      <li><strong>Direkt im Feld:</strong> Tippe auf den gewünschten Ort. Für einen aufgeladenen Wurf gedrückt halten, den Finger zum Ziel schieben und dann loslassen.</li>
+      <li><strong>Mit dem Schießknopf:</strong> Halte ihn gedrückt und ziehe den Finger vorsichtig in die gewünschte Richtung. Beobachte das Fadenkreuz und die Flugpunkte. Loslassen wirft.</li>
+      <li><strong>Ruhig korrigieren:</strong> Kleine Fingerbewegungen reichen. Du kannst jederzeit mit dem Zielmodus-Knopf zur Zielbindung zurückwechseln.</li>
+    </ul>
+    <p class="merksatz">Das Fadenkreuz ist dein gewünschter Landungsort. Im freien Modus verfolgt der Wurf keinen Gegner. Die tatsächliche Flugbahn und ein möglicher Explosionskreis sind deine wichtigste Hilfe.</p>
+    <p>Bei sehr großen Entfernungen kann ein Geschoss seine Reichweite erreichen. Schau auf das Ende der gepunkteten Bahn. Ein Hindernis im Flugweg kann den Wurf früher stoppen.</p>
+  </section>
+
+  <section id="tipps">
+    <h2>💡 Techniken und Tipps</h2>
+    <div class="waffen-tipps">
+      <article>
+        <h3>🏃 Gegen laufende Gegner vorhalten</h3>
+        <p>Im freien Modus ziele ein Stück vor den Gegner: dorthin, wo er bei der Ankunft des Geschosses sein wird. Langsame Waffen brauchen mehr Vorlauf. Beginne mit kleinen Abständen; wechselt der Gegner die Richtung, musst du neu zielen.</p>
+        <p>Mit Zielbindung übernimmt das Spiel einen Teil davon. Aufladen verkürzt die Flugzeit und hilft gegen Ausweichen.</p>
+      </article>
+      <article>
+        <h3>💣 Explosionen zwischen Gegner setzen</h3>
+        <p>Kobold-Bomben und Mais-Popcorn müssen nicht genau die Mitte einer Figur treffen. Ihr Explosionskreis trifft jeden Gegner, dessen Körper den Bereich berührt. Ziele bei einer Gruppe zwischen zwei Gegner. Freunde und deine eigene Figur bekommen durch die Explosion keinen Schaden.</p>
+        <p>Die Bombe ist langsamer und kräftiger. Popcorn macht pro Treffer weniger Schaden, dafür kann der Mais häufiger werfen. Seine Spezialkraft wirft eine ganze Popcorn-Salve.</p>
+      </article>
+      <article>
+        <h3>⚡ Schnelle Würfe für kurze Gelegenheiten</h3>
+        <p>Speere und Blitze kommen schnell an. Nutze sie, wenn ein Gegner kurz gut erreichbar ist. Schnelle Waffen machen meistens weniger Schaden pro Treffer; schwere Würfe belohnen gutes Timing.</p>
+      </article>
+      <article>
+        <h3>🔥 Schaden über Zeit nutzen</h3>
+        <p>Feuerbälle treffen zuerst direkt und lassen den Gegner danach noch brennen. Die Flammen zeigen den Effekt. Du kannst währenddessen ausweichen oder einen anderen Gegner angreifen.</p>
+        <p>Erneutes Feuer verlängert die Wirkung; es stapelt nicht unbegrenzt. Gift funktioniert ähnlich, sobald eine Figur eine Giftwaffe bekommt. Zurzeit ist Gift noch keiner Figur zugeteilt.</p>
+      </article>
+      <article>
+        <h3>🦇 Die nächste Waffe beachten</h3>
+        <p>Die Fledermaus wirft abwechselnd einen schnellen Speer und einen langsameren Morgenstern. Die Vorschau passt sich der nächsten Waffe an. Der Schießknopf zeigt ihr Symbol und den direkten Schaden.</p>
+      </article>
+      <article>
+        <h3>🔄 Nach dem Wurf ausweichen</h3>
+        <p>Nutze die Wurfpause zum Bewegen. Auf dem Schießknopf steht, wie lange du noch warten musst. Aufladen erhöht das Tempo des Geschosses, nicht seinen Schaden.</p>
+      </article>
+    </div>
+    <h3>Eine kleine Übungsrunde</h3>
+    <ol>
+      <li>Wähle den normalen Modus und den Kobold oder Mais.</li>
+      <li>Triff mit Zielbindung ein paar Mal denselben Gegner. Vergleiche kurze und aufgeladene Würfe.</li>
+      <li>Wechsle zu freiem Zielen und wirf auf einen gut sichtbaren Punkt. Beobachte Landungsort und Explosionskreis.</li>
+      <li>Versuche anschließend, zwei Gegner mit einer Explosion zu erwischen.</li>
+    </ol>
+  </section>
+
+  <section id="steuerung">
+    <h2>🎮 Die übrige Steuerung</h2>
+    <ul>
+      <li><strong>Bewegen:</strong> Joystick links unten oder <kbd>W</kbd>, <kbd>A</kbd>, <kbd>S</kbd>, <kbd>D</kbd> beziehungsweise Pfeiltasten. Die eigene Figur lässt sich auch ziehen.</li>
+      <li><strong>Teamfigur wechseln:</strong> Tippe auf eine andere lebende Figur aus deinem Team. Sie bringt ihre eigene Waffe mit.</li>
+      <li><strong>Spezialkraft:</strong> Nach genügend normalen Treffern leuchtet der Fähigkeitsknopf. Antippen oder <kbd>F</kbd> löst sie aus. Spezialkräfte haben eigene Abläufe.</li>
+      <li><strong>Pause:</strong> Im normalen Modus den Pauseknopf, <kbd>P</kbd> oder <kbd>Esc</kbd> drücken. Im Ranglistenmodus gibt es keine Pause.</li>
+    </ul>
+    <p>Zum Lesen während einer normalen Runde kannst du die Anleitung im Pausemenü öffnen. Schließe danach den Anleitungs-Tab und spiele im ursprünglichen Tab weiter.</p>
+  </section>
+</main>
+</body>
+</html>

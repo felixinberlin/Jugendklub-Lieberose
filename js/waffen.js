@@ -15,6 +15,9 @@
 const SPINNING_WEAPONS = ['flail', 'club'];
 
 function drawWeapon(kind, size) {
+  if (kind === 'bomb') { drawEmoji('💣', 0, 0, size); return; }
+  if (kind === 'popcorn') { drawEmoji('🍿', 0, 0, size); return; }
+  if (kind === 'venom') { drawEmoji('🧪', 0, 0, size); return; }
   if (kind === 'spear' || kind === 'flail') { drawBatWeapon(kind, size); return; }
   const L = size * 1.6;
   ctx.save();

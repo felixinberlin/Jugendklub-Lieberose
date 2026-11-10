@@ -123,7 +123,6 @@ function updateSpecials(now) {
   updateSpears();
   updateMinis(now);
   updateJumps(now);
-  updateBurns(now);
   updateHiding(now);
   updateStorms(now);
   if (typeof updateYamalStars === 'function') updateYamalStars(now);
@@ -146,13 +145,6 @@ function drawSpecials(now) {
     if (koboldPic) drawActorImage(koboldPic, 30); // 😠 Mini-Wut-Kobolde
     else drawEmoji(actorEmoji('kobold'), 0, 0, 30); // 🖼️ sprites.js
     ctx.restore();
-  }
-  for (const name in actors) {
-    if (!isAlive(name) || !actors[name].burn) continue;
-    const p = actors[name].body.position;
-    const flame = 22 + Math.sin(now / 60) * 4; // 🔥 flackert
-    drawEmoji('🔥', p.x - 18, p.y - 30 + Math.sin(now / 90) * 3, flame);
-    drawEmoji('🔥', p.x + 18, p.y - 26 + Math.cos(now / 80) * 3, flame);
   }
   for (const name in actors) {
     if (!isAlive(name) || !isStunned(name)) continue;
@@ -183,7 +175,6 @@ function resetSpecials(keepCharge = false) {
     if (!keepCharge || !mine) actors[name].specialCharge = 0;
     actors[name].stunnedUntil = 0;
     actors[name].jump = null;
-    actors[name].burn = null;
     actors[name].hiddenUntil = 0;
     actors[name].body.collisionFilter.mask = 0xFFFFFFFF;
   }

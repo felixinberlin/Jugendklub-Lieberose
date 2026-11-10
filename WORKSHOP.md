@@ -11,7 +11,7 @@
 
 | Wunsch | Einstieg | Dabei beachten |
 |---|---|---|
-| Andere Wurfsache, Stärke, Tempo | `js/config.js` | Kleine Änderung zuerst; Werte hier bündeln. |
+| Andere Wurfsache, Stärke, Tempo | `js/config.js` → `waffenProfile` | Neue Waffen: [WAFFEN.md](WAFFEN.md). Flugplan in `geschosse.js`, Explosionen/Feuer/Gift in `trefferfolgen.js`. |
 | Neue Spezialkraft | `SPECIALS` in `js/specials.js` | `name`, `icon`, `use(name)`, `desc()`; Knopf und Computer nutzen die Liste. Aktuell eine Kraft pro Figur. Mehrere auswählbare Kräfte brauchen eine Erweiterung. |
 | Fliegende Spezialwaffe | `js/special-weapons.js`, normales Vorbild: `launchArc` in `js/bombs.js` | `targetOf`, `everyoneExcept` und `MINI_BIT` nutzen; Schaden über `applyHit`. `special: true` verhindert Aufladen durch die Spezialattacke selbst. |
 | Schutz, Verwandlung, Bewegung | `js/special-moves.js` | Effekt aktualisieren; Zustand bei Neustart und K.o. aufräumen. |
@@ -34,6 +34,9 @@
 ## Kurzer Prüfablauf pro Wunsch
 
 `for f in js/*.js; do node -c "$f" || break; done` und `git diff --check`.
+
+Bei Waffen zusätzlich `node tests/geschosse.cjs`. Werte und Erweiterungsbeispiele:
+[WAFFEN.md](WAFFEN.md); Browser-Prüfung: [tests/README.md](tests/README.md).
 
 Dann im Browser: 390×760, 844×390 und 1440×900; Konsole prüfen, neue Funktion direkt auslösen, Team-Kopie mitprüfen, Neustart prüfen. Bei Kräften zusätzlich Aufladen und Weiter ins nächste Level prüfen.
 

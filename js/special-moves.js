@@ -227,7 +227,10 @@ function hideMouse(name) {
   const actor = actors[name];
   actor.hiddenUntil = performance.now() + GAME_CONFIG.hideSeconds * 1000;
   actor.body.collisionFilter.mask = 0; // Kollidiert mit gar nichts mehr – alles fliegt durch
-  actor.burn = null;                   // Im Loch geht das Feuer aus
+  // Im Loch gehen Feuer & Gift aus (trefferfolgen.js)
+  for (const [schluessel, folge] of aktiveTrefferfolgen) {
+    if (folge.ziel === name) aktiveTrefferfolgen.delete(schluessel);
+  }
   spawnParticles(actor.body.position.x, actor.body.position.y, '#a8a29e', 20);
   playSound('hide');
 }

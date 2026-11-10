@@ -51,6 +51,7 @@ function canPauseGame() {
 
 function pauseGame() {
   if (!canPauseGame() || isPaused) return;
+  cancelAim();
   isPaused = true;
   pausedAtTime = performance.now();
   keysDown.up = keysDown.down = keysDown.left = keysDown.right = false;
@@ -72,8 +73,11 @@ function resumeGame() {
     const a = actors[n];
     if (a.stunnedUntil > 0) a.stunnedUntil += pausedDuration;
     if (a.hiddenUntil > 0) a.hiddenUntil += pausedDuration;
-    if (a.burn) { a.burn.until += pausedDuration; a.burn.next += pausedDuration; }
   }
+  // Flugpläne und Zeit-Schaden stehen ohnehin still. Auch die Aufräum-Uhr pausiert,
+  // damit Geschosse nach einer langen Pause nicht sofort verschwinden.
+  for (const geschoss of fallingBodies) geschoss.customData.born += pausedDuration;
+  for (const welle of explosionsWellen) welle.startZeit += pausedDuration;
   if (typeof zeusStorms !== 'undefined') {
     for (const s of zeusStorms) { s.until += pausedDuration; s.nextStrike += pausedDuration; }
   }
@@ -175,9 +179,13 @@ function triggerPlayerShoot(aimX, aimY, shot) {
   // Mit der Maus in die Nähe eines Gegners geklickt? Dann wird er dein Ziel (zielen.js)
   if (typeof aimX === 'number' && typeof aimY === 'number') pickAimTargetAt(aimX, aimY);
   const aimedEnemy = (shot && shot.target) || currentAimTarget();
+  const freiesWurfziel = shot ? shot.aimPoint : (zielModus === 'frei' ? freierZielpunkt() : null);
 
   for (const name of mine) {
-    shootBomb(name, aimedEnemy, shot ? { charge: shot.charge } : null);
+    shootBomb(name, aimedEnemy, {
+      charge: shot?.charge || 0, aimPoint: freiesWurfziel,
+      vorhalten: Math.max(GAME_CONFIG.aim.vorhalteHilfe, shot?.charge || 0)
+    });
   }
   shootBtn.classList.add('pressed');
   setTimeout(() => shootBtn.classList.remove('pressed'), 110);
@@ -224,13 +232,17 @@ function updateControlHud() {
 
   // 1. 🎯 Runder Schieß-Knopf mit individuellem Cooldown & Schaden
   if (actors[lead]) {
-    const bombEmoji = actorCfg(lead, 'Bomb') || GAME_CONFIG.bombEmoji;
+    const wurf = normalerWurf(lead);
+    const bombEmoji = wurf.waffenProfil.symbol || actorCfg(lead, 'Bomb') || GAME_CONFIG.bombEmoji;
     if (shootIconEl.textContent !== bombEmoji) shootIconEl.textContent = bombEmoji;
     const cdSec = getCharStat(lead, 'attackCooldown') || 1.2;
     const cdMs = cdSec * 1000;
-    const elapsed = now - (actors[lead].lastThrow || 0);
+    const elapsed = now - (actors[lead].lastThrow ?? -Infinity);
     const remaining = Math.max(0, (cdMs - elapsed) / 1000);
-    const dmg = getCharStat(lead, 'attackDamage') || 4;
+    const dmg = wurf.damage;
+    const waffenName = wurf.waffenProfil.name || 'Waffe';
+    const wurfBeschreibung = `${waffenName} werfen: ${dmg} Schaden${wurf.explosionsRadius ? ', mit Explosion' : ''}${wurf.trefferfolgen.length ? ', mit Zeit-Schaden' : ''}`;
+    if (shootBtn.getAttribute('aria-label') !== wurfBeschreibung) shootBtn.setAttribute('aria-label', wurfBeschreibung);
 
     if (remaining > 0.05) {
       if (!shootBtn.classList.contains('cooling')) shootBtn.classList.add('cooling');
@@ -393,7 +405,7 @@ shootBtn.addEventListener('pointerdown', (event) => {
   tryLockLandscape();
   // 🎯 Kurz tippen = Schuss, gedrückt halten = Ziel-Modus (zielen.js). Geschossen wird beim Loslassen.
   if (shootBtn.hasPointerCapture && !shootBtn.hasPointerCapture(event.pointerId)) shootBtn.setPointerCapture(event.pointerId);
-  startAim(event.pointerId);
+  startAim(event.pointerId, { quelle: 'knopf', clientX: event.clientX, clientY: event.clientY });
 });
 
 abilityBtn.addEventListener('pointerdown', (event) => {
@@ -449,10 +461,17 @@ canvas.addEventListener('pointerdown', (event) => {
     }
   }
 
-  if (event.pointerType === 'mouse' && event.button === 0) {
+  if (event.button === 0) {
     // 🖱️ In die Nähe eines Gegners klicken = er wird dein Ziel; gedrückt halten = zielen (zielen.js)
-    pickAimTargetAt(x, y);
-    startAim(event.pointerId);
+    if (zielModus === 'frei') setzeFreiesZiel(x, y);
+    else {
+      const gewaehlt = pickAimTargetAt(x, y);
+      // Ein Tipp auf einen Gegner wählt und wirft. Freie Stellen bleiben auf dem
+      // Handy für bestehende Wald-/Spezialgesten verfügbar.
+      if (event.pointerType !== 'mouse' && !gewaehlt) return;
+    }
+    canvas.setPointerCapture(event.pointerId);
+    startAim(event.pointerId, { quelle: 'feld' });
   }
 });
 

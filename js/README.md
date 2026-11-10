@@ -1,6 +1,8 @@
 # 🎮 So funktioniert unser Spiel
 
 Hallo! 👋 Schön, dass du in den Code schaust.
+Die neuen Waffen und ihre Werte erklärt [WAFFEN.md](../WAFFEN.md).
+
 Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Dateien**, und jede kümmert sich nur um **eine Sache**. Such dir die aus, die dich interessiert.
 
 ---
@@ -28,6 +30,10 @@ Du musst nicht alles auf einmal verstehen. Das Spiel besteht aus **kleinen Datei
 | 🌧️ [`weather.js`](weather.js) | **Regen** aus den Wolken, unten **wachsen Bäume** – und was passiert, wenn du den Himmel antippst | ⭐⭐ |
 | 🎮 [`game.js`](game.js) | Das **Herz**: Start und Spielschleife | ⭐⭐ |
 | 💣 [`bombs.js`](bombs.js) | Bomben **werfen** und **explodieren** lassen | ⭐⭐⭐ |
+| ⚔️ [`geschosse.js`](geschosse.js) | **Waffen-Flugpläne**: Tempo, Schwerkraft, Bewegung und nächste Waffe. Punkte und echte Schüsse nutzen dieselbe Rechnung. | ⭐⭐⭐ |
+| 💥 [`trefferfolgen.js`](trefferfolgen.js) | **Explosionen, Feuer und Gift**: alle Gegner im Kreis treffen oder Schaden über Zeit machen. | ⭐⭐⭐ |
+| 🎯 [`zielhilfe.js`](zielhilfe.js) | **Freies Zielen**, Flugpunkte und Explosionskreis. | ⭐⭐ |
+| 🎯 [`zielen.js`](zielen.js) | **Gepunktete Flugbahn** mit Zielbindung oder freiem Zielen. Gedrückt halten lädt den Wurf auf. | ⭐⭐⭐ |
 | 🧌🌽🐱🐭👺⚽🐉 [`actors.js`](actors.js) | Die Figuren **Kobold**, **Mais**, **Katze**, **Maus**, **Goblin**, **Musiala** und **Drache** | ⭐⭐⭐ |
 | 🌲 [`forest.js`](forest.js) | Der **Zauberwald** im Hintergrund | ⭐⭐⭐ |
 | 🧪 [`physics.js`](physics.js) | Die **Physik-Welt**: Wände und Zusammenstöße | ⭐⭐⭐ |

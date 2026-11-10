@@ -28,6 +28,7 @@ function isCpu(name) {
 function switchActiveTeamActor(name) {
   if (!teamMode || !isPlaying || !chosenTeam.includes(name) || !isAlive(name)) return false;
   if (playerActor === name) return false;
+  cancelAim(); // Beim Figurenwechsel keinen alten aufgeladenen Schuss übernehmen.
   playerActor = name;
   const pos = actors[name].body.position;
   spawnParticles(pos.x, pos.y, '#38bdf8', 18);

@@ -137,6 +137,8 @@ function resetActors() {
     moveActor(name, x, y);
     actors[name].wiggle = 0;
     actors[name].hitsGiven = 0;
+    actors[name].weaponIdx = -1;
+    actors[name].lastThrow = -Infinity;
     const maxHp = (typeof trophyMode !== 'undefined' && trophyMode)
       ? (getCharStat(name, 'hp') || 100)
       : GAME_CONFIG.maxHits;
@@ -198,7 +200,8 @@ for (const name in actors) {
       if (typeof switchActiveTeamActor === 'function') switchActiveTeamActor(name);
       return;
     }
-    shootBomb(name);
+    if (myControlledActors().includes(name)) triggerPlayerShoot();
+    else shootBomb(name);
   });
 }
 

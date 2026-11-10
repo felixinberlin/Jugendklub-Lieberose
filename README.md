@@ -7,9 +7,12 @@
 **The Fightzone** – ein mobiles HTML5-Webspiel, das gemeinsam mit den Kindern im **Jugendklub Lieberose** live auf der Bühne per „Vibecoding“ entwickelt wird – ohne Login, ohne Installation, ohne Datensammeln!
 
 ## 📱 Auf dem Smartphone oder Laptop spielen
+
+**[📖 Spielanleitung: Zielen, Techniken und Tipps](spielanleitung.html)** – auch im Spiel unter Einstellungen und im Pausemenü erreichbar.
+
 1. [jugendklub.vercel.app](https://jugendklub.vercel.app/) öffnen oder den QR-Code scannen (läuft direkt in jedem Browser).
-2. Figur für die **5 Solo-Level** wählen, im **⚔️ Team-Modus** (8 Level) antreten oder **👥 Alle zusammen** an einem Bildschirm spielen.
-3. **👆 Antippen** = werfen · **↔️ Ziehen** = ausweichen · **⚡ Spezialkraft** nach 20 Treffern auslösen · **☁️ Wolke / ☀️ Sonne** antippen = Regen & Tag/Nacht wechseln!
+2. Figur für ein Solo-Match wählen oder im **⚔️ Team-Modus** antreten.
+3. **🎯 Zielbindung** zum Einstieg nutzen. Gegner auswählen, Schießknopf halten, loslassen! **Q** oder der Zielmodus-Knopf wechselt zum freien Zielen auf einen Landungsort.
 
 ## 📖 Für Kinder & Eltern: So ist das Spiel gebaut
 Eine kindgerechte Erklärung aller Dateien mit Schaubildern und Experimenten zum Ausprobieren steht in **[`js/README.md`](js/README.md)**.

@@ -31,57 +31,54 @@ function shootBomb(actor, forcedTarget, shotOpts) {
   const cdSec = getCharStat(actor, 'attackCooldown') || 1.2;
   const cooldownMs = cdSec * 1000;
   if (now - (actors[actor].lastThrow ?? -Infinity) < cooldownMs) return;
-  actors[actor].lastThrow = now;
   const targetName = (forcedTarget && isAlive(forcedTarget) && forcedTarget !== actor)
     ? forcedTarget
     : targetOf(actor); // Ist das Ziel raus, geht's an die Nächste im Kreis (knockout.js)
-  if (!targetName) return;
-  const isScratch = Boolean(actorCfg(actor, 'Scratch'));
-  const isBolt = Boolean(actorCfg(actor, 'Bolt'));
-  const scale = mapScale();
-  const dmg = getCharStat(actor, 'attackDamage') || 4;
-  // 🗡️⛓️ Mehrere Waffen (z. B. Fledermaus)? Dann immer reihum abwechselnd
+  if (!targetName && !shotOpts?.aimPoint) return;
+  const opts = normalerWurf(actor, shotOpts?.charge || 0);
+  opts.vorhalten = shotOpts?.vorhalten ?? opts.lead;
+  if (shotOpts?.aimPoint) opts.aimPoint = { ...shotOpts.aimPoint };
+  launchArc(actor, targetName, opts);
+  actors[actor].lastThrow = now;
+  // Erst nach dem echten Wurf weiterschalten, nie beim Zeichnen der Vorschau.
   const weapons = actorCfg(actor, 'Weapons');
-  let weapon = null;
   if (weapons && weapons.length) {
     actors[actor].weaponIdx = ((actors[actor].weaponIdx ?? -1) + 1) % weapons.length;
-    weapon = weapons[actors[actor].weaponIdx];
   }
-  launchArc(actor, targetName, {
-    weapon,
-    emoji: actorCfg(actor, 'Bomb') || GAME_CONFIG.bombEmoji,
-    size: Math.round((actorCfg(actor, 'BombSize') || GAME_CONFIG.bombSize) * scale),
-    trail: actorCfg(actor, 'Trail'), // z. B. 🪙 Goldmünzen aus dem Goldsack
-    scratch: isScratch,
-    bolt: isBolt,
-    damage: dmg,
-    // 🎯 Gezielt: je voller aufgeladen, desto schneller (weniger Bilder Flug) und mit Vorhalten
-    flightFrames: shotOpts && shotOpts.charge
-      ? Math.round(42 - shotOpts.charge * (42 - GAME_CONFIG.aim.fastFrames)) : undefined,
-    lead: shotOpts ? shotOpts.charge : 0
-  });
   actors[actor].wiggle = 1;
   playAttackSound(actor);
 }
 
 // 🎯 Ein Geschoss im Bogen von `actor` zu `targetName` werfen.
 // opts: emoji, size, damage (Standard 1), special (Spezialattacke?), flightFrames (Standard 42)
-function launchArc(actor, targetName, opts) {
-  const source = actors[actor].body;
-  const flightFrames = opts.flightFrames || 42;
+// Vorschau und echter Wurf benutzen dieselbe Startposition und Geschwindigkeit.
+function berechneWurfbogen(figur, zielFigur, wurf) {
+  if (wurf.waffenProfil) return berechneFlugplan(figur, zielFigur, wurf);
+  const startKoerper = actors[figur].body;
+  const flugBilder = wurf.flightFrames || 42;
   // 🧌 Hat das Ziel Mini-Kobolde? Dann fliegt die Bombe zum Lockvogel (specials.js)
-  // 🎯 Gezielter Schuss (opts.lead > 0): dorthin werfen, wo der Gegner gleich sein wird (zielen.js)
-  const target = decoyFor(targetName, source.position, flightFrames)
-    || (opts.lead > 0 ? { position: leadPosition(targetName, flightFrames, opts.lead) } : actors[targetName].body);
-  const dx = target.position.x - source.position.x;
-  const dy = target.position.y - source.position.y;
-  const distance = Math.hypot(dx, dy);
-  const direction = distance ? dx / distance : 1;
-  const radius = opts.size * 0.42;
-  const actorR = 34 * (mapScale());
-  const x = source.position.x + direction * (actorR + radius + 4);
-  const y = source.position.y + (distance ? dy / distance : 0) * (actorR + radius + 4);
-  const gravityPerFrame = engine.gravity.y * engine.gravity.scale * (1000 / 60) ** 2;
+  // 🎯 Gezielter Schuss (wurf.lead > 0): dorthin werfen, wo der Gegner gleich sein wird (zielen.js)
+  const zielKoerper = decoyFor(zielFigur, startKoerper.position, flugBilder)
+    || (wurf.lead > 0 ? { position: leadPosition(zielFigur, flugBilder, wurf.lead) } : actors[zielFigur].body);
+  const wegX = zielKoerper.position.x - startKoerper.position.x;
+  const wegY = zielKoerper.position.y - startKoerper.position.y;
+  const entfernung = Math.hypot(wegX, wegY);
+  const richtung = entfernung ? wegX / entfernung : 1;
+  const radius = wurf.size * 0.42;
+  const figurenRadius = 34 * (mapScale());
+  const x = startKoerper.position.x + richtung * (figurenRadius + radius + 4);
+  const y = startKoerper.position.y + (entfernung ? wegY / entfernung : 0) * (figurenRadius + radius + 4);
+  const schwerkraftProBild = engine.gravity.y * engine.gravity.scale * (1000 / 60) ** 2;
+  return {
+    x, y, radius, richtung, flugBilder,
+    vx: (zielKoerper.position.x - x) / flugBilder,
+    vy: (zielKoerper.position.y - y) / flugBilder - schwerkraftProBild * (flugBilder + 1) / 2
+  };
+}
+
+function launchArc(actor, targetName, opts) {
+  const flugplan = berechneWurfbogen(actor, targetName, opts);
+  const { x, y, radius, richtung, vx, vy } = flugplan;
   const body = Bodies.circle(x, y, radius, {
     restitution: 0,
     frictionAir: 0,
@@ -91,7 +88,7 @@ function launchArc(actor, targetName, opts) {
     customData: {
       emoji: opts.emoji,
       size: opts.size,
-      damage: opts.damage || 1,
+      damage: opts.damage ?? 1,
       special: Boolean(opts.special),
       trail: opts.trail,
       scratch: Boolean(opts.scratch),
@@ -100,20 +97,31 @@ function launchArc(actor, targetName, opts) {
       isPlayerBomb: true,
       shooter: actor,
       target: targetName,
+      lifeMs: opts.lifeMs,
+      flugplan: opts.waffenProfil ? flugplan : null,
+      flugAlter: 0,
+      explosionsRadius: opts.explosionsRadius || 0,
+      trefferfolgen: opts.trefferfolgen || [],
+      zuendBild: opts.explosionsRadius > 0
+        ? Math.min(opts.waffenProfil && flugplan.frei ? flugplan.vorschauBilder : flugplan.flugBilder,
+          (opts.lifeMs || 4000) * 60 / 1000) : null,
       born: performance.now()
     }
   });
   Body.setVelocity(body, {
-    x: (target.position.x - x) / flightFrames,
-    y: (target.position.y - y) / flightFrames - gravityPerFrame * (flightFrames + 1) / 2
+    x: vx,
+    y: vy
   });
-  Body.setAngularVelocity(body, direction * 0.2);
+  if (opts.waffenProfil) Body.setAngle(body, Math.atan2(vy, vx));
+  Body.setAngularVelocity(body, richtung * (opts.waffenProfil ? opts.waffenProfil.drehung : 0.2));
   Composite.add(engine.world, body);
   fallingBodies.push(body);
 }
 
 function explodeBomb(bomb) {
+  if (bomb.exploded) return;
   bomb.exploded = true;
+  if (bomb.customData?.explosionsRadius > 0) explosionsTreffer(bomb);
   const { x, y } = bomb.position;
   if (bomb.customData && bomb.customData.scratch) {
     scratchMarks.push({ x, y, angle: Math.atan2(bomb.velocity.y, bomb.velocity.x), born: performance.now() });
@@ -225,7 +233,8 @@ function updateBombs(now) {
     }
 
     // Bombe nach 4 s ohne Treffer: leise verpuffen
-    if (data.isPlayerBomb && now - data.born > (data.lifeMs || 4000)) {
+    const flugDauerMs = data.flugplan || data.zuendBild ? data.flugAlter * 1000 / 60 : now - data.born;
+    if (data.isPlayerBomb && flugDauerMs > (data.lifeMs || 4000)) {
       spawnParticles(pos.x, pos.y, '#9ca3af', 8);
       Composite.remove(engine.world, b);
       fallingBodies.splice(i, 1);
@@ -251,7 +260,8 @@ function updateBombs(now) {
       if (data.weapon === 'fireball' && Math.random() < 0.5) spawnParticles(pos.x, pos.y, '#f97316', 1);
       ctx.save();
       ctx.translate(pos.x, pos.y);
-      ctx.rotate(SPINNING_WEAPONS.includes(data.weapon) ? angle * 2 : Math.atan2(b.velocity.y, b.velocity.x));
+      const drehtSich = data.flugplan ? data.flugplan.waffenProfil.drehung !== 0 : SPINNING_WEAPONS.includes(data.weapon);
+      ctx.rotate(drehtSich ? angle : Math.atan2(b.velocity.y, b.velocity.x));
       drawWeapon(data.weapon, (data.size || 32) * (GAME_CONFIG.weaponScale || 1)); // ⚔️ größer = besser sichtbar
       ctx.restore();
       continue;

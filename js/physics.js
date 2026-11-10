@@ -10,6 +10,8 @@ let leftWall, rightWall;
 function initPhysics() {
   engine = Engine.create({ enableSleeping: false });
   engine.gravity.y = GAME_CONFIG.gravityY;
+  Events.on(engine, 'beforeUpdate', bewegeGeschosse);
+  Events.on(engine, 'afterUpdate', zuendeGeschosse);
 
   // Seitenwände
   const wallThickness = 60;
@@ -35,6 +37,12 @@ function initPhysics() {
         : bodyB.customData?.isPlayerBomb ? bodyB : null;
       if (!bomb || bomb.exploded) continue;
       const other = bomb === bodyA ? bodyB : bodyA;
+      // Profil-Waffen enden an der Wand; der Flugplan darf sie nicht hindurchziehen.
+      if ((bomb.customData.flugplan || bomb.customData.explosionsRadius > 0)
+          && (other === leftWall || other === rightWall)) {
+        explodeBomb(bomb);
+        continue;
+      }
       // 🧌 Mini-Kobold fängt die Bombe ab (specials.js)
       if (other.label === 'miniKobold') { blockByMini(bomb, other); continue; }
       const data = bomb.customData;
@@ -46,10 +54,10 @@ function initPhysics() {
         if (bomb.hitSet.has(victim)) continue;
         bomb.hitSet.add(victim);
         if (data.burn) startBurn(victim, data.shooter);
-        applyHit(victim, data.shooter, data.damage || 1, data.special);
+        treffeMitGeschoss(victim, data);
         continue;
       }
-      applyHit(victim, data.shooter, data.damage || 1, data.special);
+      if (!(data.explosionsRadius > 0)) treffeMitGeschoss(victim, data);
       explodeBomb(bomb);
     }
   });

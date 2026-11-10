@@ -29,13 +29,14 @@ function startGame(keepCharge = false) {
 
   removeClones(); // Alte Gegner-Kopien weg (teams.js)
   resetSpecials(keepCharge);
-  resetAim(); // 🎯 Ziel-Auswahl vergessen (zielen.js) // ⚡ Mini-Kobolde weg, Wirbel aus (specials.js)
   clearAllBodies();
+  loescheTrefferfolgen();
   particles = [];
   resetActors();
   setupTeams();   // ⚔️ Team-Modus aufstellen (teams.js)
   startLevel();   // 🏅 Level-Schild & Anzeige (levels.js)
   setupPlayers(); // Wer spielt wen? (cpu.js)
+  resetAim(); // Erst nach dem Wiederbeleben zielen, sonst könnte die alte Auswahl die neue Figur ersetzen.
   setupSpecialBar(); // ⚡ Knöpfe aktualisieren (specials.js)
   tryLockLandscape(); // 🔄 Querformat + Vollbild auf dem Handy (controls.js)
   updateControlHud(); // 🕹️ Joystick + Schuss- & Fähigkeits-Knopf einblenden (controls.js)
@@ -95,6 +96,7 @@ function gameLoop(now) {
   drawActors(now);
   drawSpecials(now); // 🧌🌪️ Mini-Kobolde & Wirbelwolken (specials.js)
   drawAim(now); // 🎯 Fadenkreuz (zielen.js)
+  zeichneTrefferfolgen(now);
 
   if (battleRunning() && !isPaused) {
     // 2. Matter.js Physik-Schritt
@@ -107,6 +109,7 @@ function gameLoop(now) {
     updateAim(now); // 🎯 Tempo messen & Ziel-Modus (zielen.js)
     updateSpecials(now); // ⚡ Riesenball lenken, Minis, Katzensprung (specials.js)
     updateBombs(now);
+    aktualisiereTrefferfolgen(dt);
     if (typeof updateControlHud === 'function') updateControlHud(); // ⏱️ Schuss-Cooldown & Fähigkeiten auffrischen
   }
 
