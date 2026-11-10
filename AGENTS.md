@@ -228,7 +228,7 @@ btn.addEventListener('click', async () => {
 29. **Kommazahlen-Schaden (z. B. Fledermaus 1,7):** `applyHit` rundet `hp`, `hitsTaken`, `hitsGiven` und `score` auf 1 Kommastelle (`r1`), sonst stehen Zahlen wie 3,4000000001 im Spiel.
 30. **Handy-Zoom (`phoneZoom`, `viewZoom()` in `js/actors.js`):** Auf Handys (`min(innerWidth, innerHeight) < 500`) ist die Welt (`width`/`height`) um 1/Zoom größer als der Bildschirm; `resizeCanvas` skaliert `ctx` mit `dpr * zoom`. Bildschirm → Welt: `(clientX - rect.left) / viewZoom()`. Welt → DOM (Figuren-Knöpfe): `x * viewZoom()`. Neue Finger-/Maus-Eingaben auf dem Spielfeld IMMER so umrechnen!
 31. **`lastThrow` am Anfang:** `now - (lastThrow || 0)` blockierte den ersten Wurf, solange `performance.now()` < Cooldown war (kurz nach dem Laden). Richtig: `lastThrow ?? -Infinity`.
-32. **Hauptmenü immer hochkant:** Menü-Bildschirme (`#startScreen`, `#settingsScreen`, `#leaderboardScreen`, `#welcomeNameScreen`) füllen den ganzen Bildschirm, Inhalt als ≤480px-Spalte (Padding). Handy quer: `updateMenuRotation()` (`js/controls.js`) setzt `body.menu-rot-left/right` je nach `screen.orientation.angle` → Menü per CSS um ∓90° gedreht, bleibt also hochkant. Regeln für `.rotate-overlay` immer per ID (`#rotateOverlay`). Bot-Figuren (Solo & Team) per `shuffled()` (`js/actors.js`) ausgelost; Solo-Bots wählen Ziele gewichtet nach Leben (`hp`) – du bist nicht öfter dran.
+32. **Hauptmenü im Querformat (seit v3.3):** `#startScreen` nutzt die ganze Bildschirmfläche ohne Scrollen, nach der Bildvorlage mit dem bisherigen Arena-Hintergrund. Profil, Pokale, Spielgeld und Einstellungen oben; Shop und Figuren links; Rangliste, Team und Spielen rechts. Figuren stehen jetzt in `#charactersScreen`, geöffnet über „Figuren“. `js/main-menu.js` verbindet die Knöpfe und aktualisiert Figur/Guthaben. Hochkant zeigt das Hauptmenü einen Hinweis zum Drehen. Keine erzwungene Hochkant-Drehung mehr (`menu-rot-left/right` werden entfernt). Nebenmenüs dürfen scrollen. Bot-Figuren (Solo & Team) per `shuffled()` (`js/actors.js`) ausgelost; Solo-Bots wählen Ziele gewichtet nach Leben (`hp`) – du bist nicht öfter dran.
 
 ---
 
@@ -238,6 +238,7 @@ Ladereihenfolge in `index.html` = Reihenfolge der Tabelle.
 
 | Datei | Was |
 |---|---|
+| `js/main-menu.js` | Querformat-Hauptmenü ohne Scrollen: `refreshMainMenu()`, `openCharactersMenu()`, Knöpfe für Profil, Shop, Figuren, Rangliste und Spielstart. Lädt vor `js/game.js`. |
 | `js/config.js` | `GAME_CONFIG` (Emojis, Größen, Physik, Bombe, `dragThreshold`, Wald) |
 | `js/state.js` | Matter-Alias, DOM-Referenzen (`canvas`, `ctx`, `container`, `scoreEl`, …), `width`, `height`, `isPlaying`, `score`, `highScore`, `engine` |
 | `js/sprites.js` | `renderDpr`, `spriteCache`, `getSprite(key, w, h, paint)`, `drawEmoji(emoji, x, y, size, bottom?)`, `drawLabel(text, x, y, { size, weight, fill, stroke, lineWidth })` – malt Emojis/Texte EINMAL in ein Mini-Canvas und kopiert es danach nur noch. **Im Spiel nie `ctx.fillText` mit Emojis direkt** (teuer!) |

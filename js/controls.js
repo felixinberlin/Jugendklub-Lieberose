@@ -133,7 +133,7 @@ function myControlledActors() {
   return first ? [first] : [];
 }
 
-// 🔄 In der Runde ins Querformat + Vollbild wechseln; auf der Startseite wieder Hochformat erlauben
+// 🔄 Hauptmenü und Runde im Querformat öffnen, wenn der Browser es erlaubt.
 function tryLockLandscape() {
   if (typeof requestGameFullscreen === 'function') requestGameFullscreen();
   try {
@@ -220,10 +220,7 @@ function updateControlHud() {
     const shouldHidePause = !isPlaying || trophyMode;
     if (pauseBtn.hidden !== shouldHidePause) pauseBtn.hidden = shouldHidePause;
   }
-  if (!isPlaying) {
-    tryUnlockOrientation();
-    return;
-  }
+  if (!isPlaying) return;
   const mine = myControlledActors();
   if (!mine.length) return;
 
@@ -504,22 +501,9 @@ function updatePlayerControls() {
   }
 }
 
-// ---------- 📱↕️ Hauptmenü bleibt IMMER hochkant (style.css: body.menu-rot-left / menu-rot-right) ----------
-// Hält man das Handy quer, dreht sich das Menü einfach mit – es bleibt also im Hochformat.
-// (Nur Menü-Bildschirme; im Kampf sind die versteckt, da bleibt das Querformat.)
+// 📱 Das Menü folgt jetzt dem Querformat; keine erzwungene Hochkant-Drehung mehr.
 function updateMenuRotation() {
-  const touch = window.matchMedia('(pointer: coarse)').matches;
-  const landscape = window.innerWidth > window.innerHeight;
-  let dir = null;
-  if (touch && landscape) {
-    const angle = (screen.orientation && typeof screen.orientation.angle === 'number')
-      ? screen.orientation.angle
-      : Number(window.orientation) || 0; // iOS
-    // 90° = Handy nach links gekippt → Menü zurückdrehen (-90°); 270° / -90° = nach rechts gekippt
-    dir = (angle === 270 || angle === -90) ? 'right' : 'left';
-  }
-  document.body.classList.toggle('menu-rot-left', dir === 'left');
-  document.body.classList.toggle('menu-rot-right', dir === 'right');
+  document.body.classList.remove('menu-rot-left', 'menu-rot-right');
 }
 window.addEventListener('resize', updateMenuRotation);
 window.addEventListener('orientationchange', updateMenuRotation);

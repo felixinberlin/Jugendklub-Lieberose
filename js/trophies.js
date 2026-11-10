@@ -773,8 +773,9 @@ function updateTrophyHud() {
   if (highScoreEl) highScoreEl.textContent = bestRecord;
   if (trophyHudEl) trophyHudEl.classList.toggle('active-trophy', trophyMode);
   if (playTrophyBtn) playTrophyBtn.textContent = `🏆 MIT POKALEN (${GAME_CONFIG.trophyLives} ❤️)`;
-  if (leaderboardStartBtn) leaderboardStartBtn.textContent = `🏆 HIGHSCORES (${bestRecord} 🎯 · ${count} 🏆)`;
+  if (leaderboardStartBtn) leaderboardStartBtn.textContent = `🏆 ${count}`;
   if (currentUserBadge) currentUserBadge.textContent = currentPlayerName || 'Held 1';
+  if (typeof refreshMainMenu === 'function') refreshMainMenu();
   const summaryText = `🏆 ${count} Pokale · 🎯 ${totalPts} Gesamtpunkte · 🏅 Rekord: ${bestRecord}`;
   if (savedStatsBadge) savedStatsBadge.textContent = summaryText;
   if (settingsStatsText) settingsStatsText.textContent = summaryText;
@@ -1023,6 +1024,7 @@ if (modeRandomBtn) {
 function openModeChoice(choice) {
   initAudio();
   requestGameFullscreen();
+  document.getElementById('charactersScreen').classList.remove('active');
   pendingMode = choice;
   setNormalLives(normalLives);
   if (nameErrorMsg) nameErrorMsg.hidden = true;

@@ -1686,31 +1686,10 @@ body.in-round .hud-item {
   text-align: center;
 }
 
-/* 📱↕️ Hauptmenü IMMER im Hochformat und über den GANZEN Bildschirm:
-   - Breite Bildschirme (PC, Tablet quer): ganzer Bildschirm, Inhalt als Hochformat-Spalte in der Mitte.
-   - Handy quer: Das Menü dreht sich mit (body.menu-rot-left/right, gesetzt in controls.js),
-     es bleibt also hochkant – man kann es nicht ins Querformat drehen. Im Kampf nie. */
-#startScreen, #settingsScreen, #leaderboardScreen, #welcomeNameScreen {
-  padding-left: max(24px, calc((100% - 480px) / 2));
-  padding-right: max(24px, calc((100% - 480px) / 2));
-}
-body.menu-rot-left #startScreen, body.menu-rot-left #settingsScreen,
-body.menu-rot-left #leaderboardScreen, body.menu-rot-left #welcomeNameScreen,
-body.menu-rot-right #startScreen, body.menu-rot-right #settingsScreen,
-body.menu-rot-right #leaderboardScreen, body.menu-rot-right #welcomeNameScreen {
-  width: 100vh;
-  height: 100vw;
-  padding: 72px 24px 30px;
-  transform-origin: top left;
-  z-index: 40;
-}
-body.menu-rot-left #startScreen, body.menu-rot-left #settingsScreen,
-body.menu-rot-left #leaderboardScreen, body.menu-rot-left #welcomeNameScreen {
-  top: 100%; left: 0; transform: rotate(-90deg);
-}
-body.menu-rot-right #startScreen, body.menu-rot-right #settingsScreen,
-body.menu-rot-right #leaderboardScreen, body.menu-rot-right #welcomeNameScreen {
-  top: 0; left: 100%; transform: rotate(90deg);
+/* Nebenmenüs bleiben lesbare Spalten, das Hauptmenü nutzt die ganze Breite. */
+#settingsScreen, #leaderboardScreen, #welcomeNameScreen, #charactersScreen {
+  padding-left: max(24px, calc((100% - 560px) / 2));
+  padding-right: max(24px, calc((100% - 560px) / 2));
 }
 
 /* 🥊 Spielname „The Fightzone“ groß und knallig */
@@ -1781,3 +1760,69 @@ h1.game-title .title-emoji { -webkit-text-fill-color: initial; }
 .shop-exchange p { font-size: 16px; }
 .shop-exchange .btn { margin: 0; font-size: 18px; }
 .shop-message { min-height: 24px; max-width: 780px; font-size: 18px; color: #a7f3d0; }
+
+/* 🎮 Hauptmenü nach der Bildvorlage – Querformat, feste Bildschirmhöhe, kein Scrollen. */
+#startScreen { padding: max(14px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left)); overflow: hidden; justify-content: flex-start; gap: 12px; background: linear-gradient(#070a1426, #070a1455), url('arena.jpg') 62% center / cover no-repeat; }
+#startScreen.active { display: flex; }
+.main-topbar { display: flex; align-items: stretch; gap: clamp(8px, 1.5vw, 24px); width: 100%; height: clamp(52px, 11vh, 94px); flex-shrink: 0; }
+.arcade-button { position: relative; border: 3px solid #211429; border-radius: 22px; background: linear-gradient(#b27cfa 0%, #743bdd 55%, #4b279d); box-shadow: inset 0 3px 0 #ffffff80, inset 0 -7px 0 #0003, 0 5px 0 #160d20, 0 8px 18px #0005; color: #fff; font: 900 clamp(18px, 2.6vw, 38px)/1.1 system-ui, sans-serif; text-shadow: 0 2px 2px #000, 1px 0 #000, -1px 0 #000; cursor: pointer; min-width: 44px; min-height: 44px; padding: 10px 18px; }
+.arcade-button:active { transform: translateY(3px); box-shadow: inset 0 2px 0 #fff6, inset 0 -3px 0 #0003, 0 2px 0 #160d20; }
+.arcade-button:focus-visible, .main-money:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.main-profile { background: linear-gradient(#53c7ff, #1688e5 60%, #0866b0); display: flex; align-items: center; gap: 12px; text-align: left; min-width: 170px; }
+.main-profile > span:first-child { font-size: 1.35em; }
+.main-profile small { display: block; max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; margin-top: 4px; color: #eff6ff; text-shadow: none; }
+.main-trophies { min-width: 80px; white-space: nowrap; font-size: clamp(20px, 3vw, 36px); }
+.main-top-spacer { flex: 1; }
+.main-money { display: flex; align-items: center; justify-content: center; gap: 12px; min-width: 110px; padding: 8px 18px; border: 3px solid #080a0e; border-radius: 20px; background: linear-gradient(#303034, #111115 60%); box-shadow: inset 0 3px 0 #ffffff42, 0 4px 0 #0008; color: #fff; font: 900 clamp(18px, 2.6vw, 36px)/1 system-ui; cursor: pointer; }
+.main-money span { font-size: 1.3em; }
+.main-settings { background: linear-gradient(#b9b8b9, #66656b); font-size: 36px; width: 78px; }
+.main-stage { display: grid; grid-template-columns: minmax(130px, 21%) minmax(0, 1fr) minmax(190px, 32%); align-items: stretch; gap: 20px; width: 100%; flex: 1; min-height: 0; }
+.main-left { display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 18px 0; min-height: 0; }
+.main-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 40%; max-height: 210px; }
+.main-tile > span { font-size: clamp(30px, 6.5vh, 74px); line-height: 1.2; }
+.main-hero { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 0; min-height: 0; padding: 8px 0; }
+.main-hero h1 { font: 900 clamp(18px, 2.3vw, 36px)/1.1 system-ui; color: #ffe9b0; text-shadow: 0 3px 0 #43101b, 0 0 20px #e75b2b; letter-spacing: 0.05em; margin: 0 0 8px; background: none; -webkit-text-fill-color: initial; }
+.main-hero-portrait { flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 0 24px #ffbd5b66) drop-shadow(0 12px 12px #0008); }
+.main-hero-portrait .pick-img { width: 100%; height: 100%; max-height: 52vh; object-fit: contain; }
+.main-gift { font-size: clamp(60px, 18vh, 170px); }
+.main-hero-caption { padding: 6px 20px; border-radius: 16px; background: #070a14b8; box-shadow: 0 3px 14px #0005; font-size: clamp(16px, 2vw, 25px); }
+.main-hero-caption .rarity { margin: 3px 0 0; }
+.main-right { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-end; gap: 20px; padding: 18px 0; }
+.main-rank { display: flex; align-items: center; justify-content: center; gap: 12px; background: linear-gradient(#ffdf53, #f8a809 65%, #d88700); min-height: 22%; color: #fff; }
+.main-rank span { font-size: 1.45em; }
+.main-team { font-size: clamp(16px, 2vw, 28px); padding: 10px; align-self: flex-end; width: 90%; }
+.main-play { display: flex; align-items: center; justify-content: center; gap: 20px; min-height: 31%; background: linear-gradient(#fff574, #ffd000 60%, #f5a400); border-color: #513100; font-size: clamp(28px, 5vw, 72px); }
+.main-play span { color: #fff5cb; font-size: 0.9em; }
+.main-footer { flex-shrink: 0; font-size: 13px; color: #e2e8f0; text-shadow: 0 1px 4px #000; align-self: center; }
+.main-landscape-hint { display: none; }
+#charactersScreen { background: linear-gradient(#070a14bb, #070a14dd), url('arena.jpg') 62% center / cover no-repeat; justify-content: flex-start; gap: 12px; }
+#charactersScreen .pick-grid { flex-shrink: 0; }
+#charactersBackBtn { margin-top: 0; }
+@media (max-height: 520px) {
+  #startScreen { padding-top: max(8px, env(safe-area-inset-top)); gap: 8px; }
+  .main-topbar { height: 52px; gap: 8px; }
+  .arcade-button { border-radius: 14px; padding: 6px 12px; }
+  .main-profile { min-width: 135px; gap: 6px; font-size: 20px; }
+  .main-profile small { max-width: 150px; font-size: 11px; }
+  .main-money { min-width: 90px; padding: 6px 12px; border-radius: 14px; }
+  .main-settings { width: 56px; font-size: 30px; }
+  .main-stage { gap: 16px; grid-template-columns: 20% minmax(0, 1fr) 32%; }
+  .main-left, .main-right { padding: 6px 0; gap: 12px; }
+  .main-tile { height: 43%; }
+  .main-tile > span { font-size: 32px; }
+  .main-hero h1 { font-size: 18px; margin-bottom: 3px; }
+  .main-hero-caption { font-size: 16px; padding: 4px 12px; }
+  .main-hero-caption .rarity { font-size: 14px; padding: 0 6px; }
+  .main-right { gap: 12px; }
+  .main-rank { min-height: 25%; }
+  .main-team { min-height: 44px; }
+  .main-footer { font-size: 11px; }
+}
+@media (orientation: portrait) {
+  #startScreen > :not(.main-landscape-hint) { display: none; }
+  .main-landscape-hint { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 24px; background: #070a14b8; }
+  .main-landscape-hint > span { font-size: 70px; }
+  .main-landscape-hint h2 { font-size: 26px; }
+  .main-landscape-hint p { font-size: 18px; }
+  .main-landscape-hint button { font-size: 20px; }
+}

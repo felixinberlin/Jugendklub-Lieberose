@@ -70,24 +70,40 @@
         </div>
       </div>
 
-      <!-- Start Screen -->
+      <!-- 🎮 Hauptmenü nach eurer Vorlage: Querformat, alles auf einen Blick. -->
       <div id="startScreen" class="overlay-screen active">
-        <!-- ☰ Menü-Knopf oben rechts: öffnet die Einstellungen (mit Punkten & Abspann) -->
-        <button id="settingsStartBtn" class="menu-btn" type="button" aria-label="Menü: Einstellungen, Punkte und Abspann">☰</button>
-        <div class="badge">🏰 Jugendklub Lieberose <span id="version" class="version"></span> · 👤 <span id="currentUserBadge">Gast</span></div>
-        <h1 class="game-title"><span class="title-emoji">🥊</span> THE FIGHTZONE <span class="title-emoji">⚡</span></h1>
-        <button id="shopStartBtn" class="btn btn-shop" type="button">🛍️ SHOP</button>
-        <div class="instructions">
-          <p>📱 <b>Startseite im Hochformat · Runde im Querformat (Vollbild)!</b><br>🕹️ Links bewegen (<b>WASD</b>) · 🔴 Rechts schießen (<b>Linksklick</b>) · 🟦⚡ Fähigkeit / Kombo (<b>F</b>)<br>🤝 <b>19 Team-Combos</b> · 💾 <b>Pokale & Punkte bleiben im Browser gespeichert!</b></p>
+        <header class="main-topbar">
+          <button id="mainProfileBtn" class="arcade-button main-profile" type="button"><span>👤</span><span>Profil<small id="currentUserBadge">Gast</small></span></button>
+          <button id="leaderboardStartBtn" class="arcade-button main-trophies" type="button" aria-label="Pokale und Rangliste">🏆 0</button>
+          <div class="main-top-spacer"></div>
+          <button id="mainCoinsBtn" class="main-money" type="button" aria-label="Coins im Shop"><span>🪙</span><b id="mainCoins">0</b></button>
+          <button id="mainJewelsBtn" class="main-money" type="button" aria-label="Juwelen im Shop"><b id="mainJewels">0</b><span>💎</span></button>
+          <button id="settingsStartBtn" class="arcade-button main-settings" type="button" aria-label="Einstellungen">☰</button>
+        </header>
+        <div class="main-stage">
+          <nav class="main-left" aria-label="Shop und Figuren">
+            <button id="shopStartBtn" class="arcade-button main-tile" type="button"><span>🏪</span>Shop</button>
+            <button id="charactersStartBtn" class="arcade-button main-tile" type="button"><span>🧌🐱</span>Figuren</button>
+          </nav>
+          <div class="main-hero">
+            <h1>THE FIGHTZONE</h1>
+            <div id="mainHeroPortrait" class="main-hero-portrait" aria-hidden="true"></div>
+            <div class="main-hero-caption"><strong id="mainHeroName">DEINE STARTFIGUR</strong><div id="mainHeroRarity"></div></div>
+          </div>
+          <div class="main-right">
+            <button id="mainRankBtn" class="arcade-button main-rank" type="button"><span>🏆</span>Rangliste</button>
+            <button id="teamModeBtn" class="arcade-button main-team" type="button">⚔️ Team-Modus</button>
+            <button id="mainPlayBtn" class="arcade-button main-play" type="button"><span>▶</span>Spielen</button>
+          </div>
         </div>
-        <details class="specials-info">
-          <summary>⚡ Spezialkräfte & Kombos – antippen zum Lesen</summary>
-          <div id="specialsList"></div>
-        </details>
-        <div class="hits-row">
-          <span class="hits-label">💀 Leben:</span>
-          <div id="hitsChoice" class="hits-choice"></div>
-        </div>
+        <footer class="main-footer">🏰 Jugendklub Lieberose <span id="version" class="version"></span></footer>
+        <div class="main-landscape-hint"><span>📱 ↪️</span><h2>Bitte das Handy quer halten</h2><p>Dann seht ihr das ganze Hauptmenü!</p><button id="mainLandscapeBtn" class="arcade-button" type="button">⛶ Querformat öffnen</button></div>
+      </div>
+
+      <!-- 👥 Die Figuren erscheinen erst beim Tippen auf „Figuren“. -->
+      <div id="charactersScreen" class="overlay-screen" aria-labelledby="charactersTitle">
+        <h2 id="charactersTitle">DEINE FIGUREN</h2>
+        <button id="charactersBackBtn" class="btn btn-small" type="button">⬅️ Zum Hauptmenü</button>
         <section id="starterChoice" class="starter-choice" aria-labelledby="starterTitle">
           <h2 id="starterTitle">DEINE ERSTE FIGUR 🎁</h2>
           <p>Wähle genau eine: Mais, Katze oder Maus! Deine Wahl bleibt auf diesem Gerät gespeichert.</p>
@@ -96,13 +112,6 @@
         <p id="collectionHint" class="team-hint" aria-live="polite"></p>
         <p class="pick-title">Deine Sammlung 👇 (Antippen für Helden-Karte & Werte!)</p>
         <div id="pickGrid" class="pick-grid"></div>
-        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;">
-          <a class="btn btn-small btn-print-link" href="druckansicht.html" target="_blank" rel="noopener">🖨️ WERTE-TABELLE (DRUCKVERSION) ✏️</a>
-        </div>
-        <button id="teamModeBtn" class="btn">⚔️ TEAM-MODUS</button>
-        <button id="leaderboardStartBtn" class="btn btn-trophy">🏆 RANGLISTE</button>
-        <p class="parents-link">👨‍👩‍👧 Für Eltern: So ist das Spiel gebaut –
-          <a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">den ganzen Code ansehen ↗</a></p>
       </div>
 
       <!-- 🛍️ Kisten und Juwelen-Tausch: alles bleibt auf diesem Gerät. -->
@@ -194,6 +203,13 @@
           <h3>⛶ ANZEIGE & VOLLBILD</h3>
           <p>Versteckt die Adressleiste oben für maximale Übersicht:</p>
           <button id="settingsFullscreenBtn" class="btn" type="button">⛶ VOLLBILD AN / AUS</button>
+        </div>
+        <div class="mode-card normal-card">
+          <h3>🎮 STEUERUNG & LEBEN</h3>
+          <p>🕹️ Links bewegen (WASD) · Rechts schießen (Linksklick) · Fähigkeit auf F</p>
+          <div class="hits-row"><span class="hits-label">💀 Leben:</span><div id="hitsChoice" class="hits-choice"></div></div>
+          <details class="specials-info"><summary>⚡ Spezialkräfte & Kombos</summary><div id="specialsList"></div></details>
+          <p class="parents-link"><a href="https://github.com/felixinberlin/Jugendklub-Lieberose" target="_blank" rel="noopener">👨‍👩‍👧 Für Eltern: den Code ansehen ↗</a></p>
         </div>
         <button id="settingsBackBtn" class="btn btn-small" type="button">⬅️ Zurück zum Hauptmenü</button>
       </div>
@@ -518,6 +534,7 @@
   <script src="js/zielen.js"></script>
   <script src="js/credits.js"></script>
   <script src="js/shop.js"></script>
+  <script src="js/main-menu.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

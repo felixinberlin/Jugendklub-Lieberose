@@ -74,7 +74,7 @@ function chooseAndStart(name) {
   if (!isActorUnlocked(name)) {
     initAudio();
     playSound('hit');
-    const pickTitle = document.querySelector('#startScreen .pick-title');
+    const pickTitle = document.querySelector('#charactersScreen .pick-title');
     if (pickTitle) {
       pickTitle.textContent = `🔒 ${actors[name].name} ist noch nicht freigeschaltet.`;
     }
