@@ -8,7 +8,7 @@
 
 ## 📱 Auf dem Smartphone oder Laptop spielen
 
-**[📖 Spielanleitung: Zielen, Techniken und Tipps](spielanleitung.html)** – auch im Spiel unter Einstellungen und im Pausemenü erreichbar.
+**[📖 Spielanleitung: Zielen, Techniken und Tipps](spielanleitung.html)** · **[🖨️ Druckansicht & Werte-Tabelle (A4)](druckansicht.html)** · **[⚖️ Balancing-Matrix & DPS-Analyse](BALANCING.md)** – auch direkt im Spiel erreichbar.
 
 1. [jugendklub.vercel.app](https://jugendklub.vercel.app/) öffnen oder den QR-Code scannen (läuft direkt in jedem Browser).
 2. Figur für ein Solo-Match wählen oder im **⚔️ Team-Modus** antreten.

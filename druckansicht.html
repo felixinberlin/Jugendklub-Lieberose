@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE FIGHTZONE 🥊⚡ – Helden-Werte & Balancing-Werkstatt (Druckansicht)</title>
+  <style>
+    /* 🖨️ Druck- und Ansichts-Styles für den Jugendklub Lieberose */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 24px;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 28px 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e2e8f0;
+    }
+
+    .no-print {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #3b82f6;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: background 0.15s ease;
+    }
+
+    .btn:hover { background: #2563eb; }
+    .btn-secondary { background: #475569; }
+    .btn-secondary:hover { background: #334155; }
+    .btn-print { background: #10b981; }
+    .btn-print:hover { background: #059669; }
+
+    header {
+      border-bottom: 3px solid #0f172a;
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 1.7rem;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #64748b;
+      margin-top: 4px;
+    }
+
+    .badge-club {
+      background: #fef08a;
+      color: #854d0e;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      border: 1px solid #facc15;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      background: #f1f5f9;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .info-card h3 {
+      font-size: 0.92rem;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .info-card p {
+      font-size: 0.83rem;
+      color: #475569;
+    }
+
+    /* 📊 Tabelle */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+      margin-bottom: 24px;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 10px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #0f172a;
+      color: #fff;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: 0.74rem;
+      letter-spacing: 0.5px;
+    }
+
+    th.handwriting-head {
+      background: #047857;
+      color: #ecfdf5;
+    }
+
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    .hero-cell {
+      font-weight: 800;
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+
+    .hero-emoji {
+      font-size: 1.3rem;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    .role-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    .stat-number {
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .dps-val {
+      font-weight: 800;
+      color: #b91c1c;
+    }
+
+    .hitbox-badge {
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: #0369a1;
+    }
+
+    /* Handschriftliche Spalten */
+    .write-col {
+      background: #f0fdf4 !important;
+      border-left: 2px dashed #059669;
+      width: 120px;
+    }
+
+    .write-box {
+      min-height: 38px;
+      border-bottom: 1px dotted #94a3b8;
+    }
+
+    .notes-box {
+      border: 2px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+      margin-top: 20px;
+    }
+
+    .notes-box h3 {
+      font-size: 1rem;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+
+    .blank-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .blank-line {
+      height: 22px;
+      border-bottom: 1px dotted #94a3b8;
+      width: 100%;
+    }
+
+    footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 14px;
+    }
+
+    /* 🖨️ Druck-Optimierung auf DIN A4 Querformat */
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+        font-size: 10.5pt;
+      }
+
+      .container {
+        box-shadow: none;
+        border: none;
+        padding: 0;
+        max-width: 100%;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      @page {
+        size: A4 landscape;
+        margin: 0.8cm;
+      }
+
+      table {
+        font-size: 8pt;
+        page-break-inside: auto;
+      }
+
+      tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+      }
+
+      th {
+        background: #e2e8f0 !important;
+        color: #000 !important;
+        border-color: #94a3b8 !important;
+      }
+
+      th.handwriting-head {
+        background: #d1fae5 !important;
+        color: #065f46 !important;
+      }
+
+      .write-col {
+        background: #fff !important;
+      }
+
+      .info-grid {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Leiste oben (wird beim Drucken ausgeblendet) -->
+    <div class="no-print">
+      <div>
+        <strong>🖨️ Druckansicht für den Workshop:</strong> Tabelle ausdrucken und mit Stift neue Werte ausprobieren!
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <a href="index.html" class="btn btn-secondary">⬅️ Zurück zum Spiel</a>
+        <button onclick="window.print()" class="btn btn-print">🖨️ Jetzt Ausdrucken (A4)</button>
+      </div>
+    </div>
+
+    <header>
+      <div>
+        <h1>🥊 THE FIGHTZONE ⚡ – Helden-Werte & Balancing-Werkstatt</h1>
+        <p class="subtitle">Jugendklub Lieberose · Spielversion 2.65 · Druck- und Testvorlage</p>
+      </div>
+      <div class="badge-club">🏰 Jugendklub Lieberose</div>
+    </header>
+
+    <!-- Erklär-Boxen für die Kinder -->
+    <div class="info-grid">
+      <div class="info-card">
+        <h3>💥 Was ist DPS?</h3>
+        <p>DPS = <i>Damage per Second</i>. Zeigt, wie viel Schaden die Figur pro Sekunde austeilt: <b>Schaden × (1 ÷ Cooldown)</b>.</p>
+      </div>
+      <div class="info-card">
+        <h3>🎯 Hitbox & Größe: Kleine Ziele!</h3>
+        <p>Die <b>Maus (60 px)</b> ist über <b>52% kleiner</b> als der <b>Drache (74 px)</b>. Sie ist im Laufen (Tempo 1.5) viel schwerer zu treffen!</p>
+      </div>
+      <div class="info-card">
+        <h3>⚡ Spezialkräfte als Ausgleich!</h3>
+        <p><b>Mais</b> lädt dank 0.5s Cooldown seine Spezialkraft 3x schneller auf als Zeus! <b>Fledermaus</b> heilt sich um +15 HP, <b>Maus</b> wird für 6s unverwundbar!</p>
+      </div>
+      <div class="info-card">
+        <h3>✏️ Deine Ideen live testen!</h3>
+        <p>Trage rechts deine Wunsch-Werte mit Bleistift ein. Wir tragen sie live in <code>js/config.js</code> ein und testen sie direkt auf der Leinwand!</p>
+      </div>
+    </div>
+
+    <!-- Große Balancing-Tabelle -->
+    <table>
+      <thead>
+        <tr>
+          <th>Held & Rolle</th>
+          <th>HP ❤️</th>
+          <th>Tempo 🏃</th>
+          <th>Hitbox 🎯</th>
+          <th>Waffe & Schaden</th>
+          <th>Nachladen ⏱️</th>
+          <th>DPS 💥</th>
+          <th>Spezialkraft ⚡ (Levelt das Spiel!)</th>
+          <th class="handwriting-head write-col">✏️ Dein Wunsch-Schaden</th>
+          <th class="handwriting-head write-col">✏️ Dein Wunsch-Leben</th>
+          <th class="handwriting-head write-col">✏️ Deine Neue Kraft</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- 1. Musiala -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">⚽</span><b>Musiala</b><br>
+            <span class="role-badge">Dribbler & Spielmacher</span>
+          </td>
+          <td><span class="stat-number">100</span></td>
+          <td>1.0 <small>(+2.2 Dribbel)</small></td>
+          <td><span class="hitbox-badge">66 px</span> (flink)</td>
+          <td>Fußball (<b>3</b> Dmg, Tempo 12)</td>
+          <td>1.2 s</td>
+          <td class="dps-val">2.50</td>
+          <td>⚽ <b>Großer Ball</b> (10 Dmg, mit Finger lenkbar!)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 2. Kobold -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🧌</span><b>Kobold</b><br>
+            <span class="role-badge">Belagerungs-Tank</span>
+          </td>
+          <td><span class="stat-number">120</span></td>
+          <td>1.0</td>
+          <td><span class="hitbox-badge">70 px</span></td>
+          <td>Bombe (<b>4</b> Dmg, 46px Radius)</td>
+          <td>1.0 s</td>
+          <td class="dps-val">4.00</td>
+          <td>🧌 <b>Mini-Kobolde</b> (3 Schild-Kobolde fangen 5s lang 100% aller Bomben ab!)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 3. Mais -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🌽</span><b>Mais</b><br>
+            <span class="role-badge">Rapid-Fire Gatling</span>
+          </td>
+          <td><span class="stat-number">100</span></td>
+          <td>1.2</td>
+          <td><span class="hitbox-badge">74 px</span> (groß)</td>
+          <td>Popcorn (<b>1.5</b> Dmg, 32px Radius)</td>
+          <td><b>0.5 s</b> ⚡</td>
+          <td class="dps-val">3.00</td>
+          <td>🍿 <b>Popcorn-Salve</b> (5 Körner × 4 = 20 Dmg · lädt in Rekordzeit auf!)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 4. Maus -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🐭</span><b>Maus</b><br>
+            <span class="role-badge">Schatten-Ninja</span>
+          </td>
+          <td><span class="stat-number">105</span></td>
+          <td><b>1.5</b> ⚡</td>
+          <td><span class="hitbox-badge" style="color:#16a34a; font-weight:800;">60 px</span> (winzig!)</td>
+          <td>Lanze (<b>2</b> Dmg, Tempo 14)</td>
+          <td>0.9 s</td>
+          <td class="dps-val">2.22</td>
+          <td>🕳️ <b>Verstecken</b> (6s im Loch = 100% unverwundbar! Weicht Specials aus)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 5. Katze -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🐱</span><b>Katze</b><br>
+            <span class="role-badge">Heavy Bruiser</span>
+          </td>
+          <td><span class="stat-number">110</span></td>
+          <td>1.2</td>
+          <td><span class="hitbox-badge">70 px</span></td>
+          <td>Stachelkeule (<b>5</b> Dmg, Tempo 8)</td>
+          <td>1.5 s</td>
+          <td class="dps-val">3.33</td>
+          <td>🌪️ <b>Wirbelsturm</b> (5 Dmg + <b>4s Stun</b>! Lahmt den stärksten Boss)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 6. Goblin -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">👺</span><b>Goblin</b><br>
+            <span class="role-badge">Pyro-Skirmisher</span>
+          </td>
+          <td><span class="stat-number">100</span></td>
+          <td>1.4</td>
+          <td><span class="hitbox-badge">68 px</span></td>
+          <td>Lava-Dreizack (<b>4</b> Dmg, Tempo 11)</td>
+          <td>1.4 s</td>
+          <td class="dps-val">2.86</td>
+          <td>🔱 <b>Feuer-Dreizack</b> (10 Dmg + 6 Brand = 16 Dmg schmilzt Tanks)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 7. Zeus -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🧔🏼‍♂️</span><b>Zeus</b><br>
+            <span class="role-badge">Donnergott / Sniper</span>
+          </td>
+          <td><span class="stat-number">130</span></td>
+          <td><b>1.5</b></td>
+          <td><span class="hitbox-badge">74 px</span> (groß)</td>
+          <td>Blitz (<b>2.5</b> Dmg, Tempo 20 Laser!)</td>
+          <td>2.3 s</td>
+          <td class="dps-val">1.09</td>
+          <td>🌩️ <b>Blitz-Regen</b> (Gewittersturm bis zu 55 AoE Dmg löscht Gruppen)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 8. Lamine Yamal -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🌟</span><b>Yamal</b><br>
+            <span class="role-badge">Turbo-Stürmer</span>
+          </td>
+          <td><span class="stat-number">105</span></td>
+          <td>1.3 <small>(+2.35 Turbo)</small></td>
+          <td><span class="hitbox-badge">65 px</span> (wendig)</td>
+          <td>Fußball (<b>3</b> Dmg, Tempo 12)</td>
+          <td>1.4 s</td>
+          <td class="dps-val">2.14</td>
+          <td>🌟 <b>Stern-Explosion</b> (12 Sofort-Dmg · Mega-Kombo mit Musiala!)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 9. Fledermaus -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🦇</span><b>Fledermaus</b><br>
+            <span class="role-badge">Vampir-Duellantin</span>
+          </td>
+          <td><span class="stat-number">100</span></td>
+          <td>1.4</td>
+          <td><span class="hitbox-badge">68 px</span></td>
+          <td>Speer (1.2) / Morgenstern (2.2)</td>
+          <td>1.2 s</td>
+          <td class="dps-val">1.42</td>
+          <td>🩸 <b>Blutsaugen</b> (15 Dmg + 15 Heal ❤️ = 30-HP-Schwung für Comebacks!)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+
+        <!-- 10. Drache -->
+        <tr>
+          <td class="hero-cell">
+            <span class="hero-emoji">🐉</span><b>Drache</b><br>
+            <span class="role-badge">Urzeit-Koloss / Boss</span>
+          </td>
+          <td><span class="stat-number">130</span></td>
+          <td>0.85</td>
+          <td><span class="hitbox-badge">74 px</span> (groß)</td>
+          <td>Feuerball (<b>3</b> Dmg + 2 Brand = <b>5</b>)</td>
+          <td>1.6 s</td>
+          <td class="dps-val">3.13</td>
+          <td>🦷 <b>Drachenbiss</b> (14 Dmg Finisher + 1.5s Stun)</td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+          <td class="write-col"><div class="write-box"></div></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Notizbereich für Handschriftliche Ideen -->
+    <div class="notes-box">
+      <h3>📝 Deine Ideen, Wünsche & Vorschläge für die nächste Spielrunde:</h3>
+      <div class="blank-lines">
+        <div class="blank-line"></div>
+        <div class="blank-line"></div>
+        <div class="blank-line"></div>
+        <div class="blank-line"></div>
+      </div>
+    </div>
+
+    <footer>
+      THE FIGHTZONE 🥊⚡ · Jugendklub Lieberose · Entwickelt per Vibecoding mit Kindern & KI · Open Source auf GitHub
+    </footer>
+  </div>
+
+</body>
+</html>

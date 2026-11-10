@@ -62,8 +62,11 @@
           <span class="hits-label">💀 Leben:</span>
           <div id="hitsChoice" class="hits-choice"></div>
         </div>
-        <p class="pick-title">Wen spielst DU? 👇 (Solo-Match)</p>
+        <p class="pick-title">Wen spielst DU? 👇 (Antippen für Helden-Karte & Werte!)</p>
         <div id="pickGrid" class="pick-grid"></div>
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;">
+          <a class="btn btn-small btn-print-link" href="druckansicht.html" target="_blank" rel="noopener">🖨️ WERTE-TABELLE (DRUCKVERSION) ✏️</a>
+        </div>
         <button id="teamModeBtn" class="btn">⚔️ TEAM-MODUS</button>
         <button id="leaderboardStartBtn" class="btn btn-trophy">🏆 RANGLISTE</button>
         <p class="parents-link">👨‍👩‍👧 Für Eltern: So ist das Spiel gebaut –
@@ -100,6 +103,11 @@
           <h3>📖 SPIELANLEITUNG</h3>
           <p>Zielen lernen, Waffen verstehen und Tipps ausprobieren:</p>
           <a class="btn" href="spielanleitung.html" target="_blank" rel="noopener">🎯 ZIELEN & SPIELTIPPS</a>
+        </div>
+        <div class="mode-card normal-card">
+          <h3>📊 BALANCING & DRUCK-TABELLE</h3>
+          <p>Alle 10 Heldenwerte, DPS, Hitbox-Größen & Druckvorlage für den Club:</p>
+          <a class="btn" href="druckansicht.html" target="_blank" rel="noopener">🖨️ DRUCK-TABELLE ÖFFNEN ✏️</a>
         </div>
         <div class="mode-card normal-card">
           <h3>🎬 ABSPANN</h3>
@@ -274,6 +282,97 @@
         </div>
       </div>
 
+      <!-- 🃏 Helden-Karte Popup (öffnet beim Antippen einer Figur auf dem Startbildschirm) -->
+      <div id="charCardModal" class="char-card-modal" hidden aria-modal="true" role="dialog" aria-label="Helden-Karte">
+        <div class="char-card-backdrop" id="charCardBackdrop"></div>
+        <div class="char-card-dialog">
+          <button id="charCardCloseBtn" class="char-card-close" type="button" aria-label="Schließen">✕</button>
+          
+          <div class="char-card-nav">
+            <button id="charCardPrevBtn" class="char-nav-btn" type="button" aria-label="Vorherige Figur">◀</button>
+            <span class="char-card-counter" id="charCardCounter">1 / 10</span>
+            <button id="charCardNextBtn" class="char-nav-btn" type="button" aria-label="Nächste Figur">▶</button>
+          </div>
+
+          <div class="char-card-header">
+            <div class="char-card-portrait" id="charCardPortrait"></div>
+            <div class="char-card-title-group">
+              <span class="char-card-role-badge" id="charCardRole"></span>
+              <h2 class="char-card-name" id="charCardName"></h2>
+              <p class="char-card-motto" id="charCardMotto"></p>
+            </div>
+          </div>
+
+          <!-- Quick Stat Bar Grid -->
+          <div class="char-stats-grid">
+            <div class="char-stat-box stat-hp">
+              <div class="stat-top">
+                <span class="stat-label">❤️ LEBEN (HP)</span>
+                <span class="stat-val" id="charCardHp"></span>
+              </div>
+              <div class="stat-mini-bar"><div id="charCardHpBar" class="stat-bar-fill"></div></div>
+            </div>
+            <div class="char-stat-box stat-speed">
+              <div class="stat-top">
+                <span class="stat-label">🏃 TEMPO & FLUCHT</span>
+                <span class="stat-val" id="charCardSpeed"></span>
+              </div>
+              <div class="stat-mini-bar"><div id="charCardSpeedBar" class="stat-bar-fill"></div></div>
+            </div>
+            <div class="char-stat-box stat-dps">
+              <div class="stat-top">
+                <span class="stat-label">💥 SCHADEN / SEK (DPS)</span>
+                <span class="stat-val" id="charCardDps"></span>
+              </div>
+              <div class="stat-mini-bar"><div id="charCardDpsBar" class="stat-bar-fill"></div></div>
+            </div>
+            <div class="char-stat-box stat-hitbox">
+              <div class="stat-top">
+                <span class="stat-label">🎯 ZIEL-GRÖSSE & HITBOX</span>
+                <span class="stat-val" id="charCardHitbox"></span>
+              </div>
+              <div class="stat-mini-bar"><div id="charCardHitboxBar" class="stat-bar-fill"></div></div>
+            </div>
+          </div>
+
+          <!-- Weapon & Attack Details -->
+          <div class="char-card-section">
+            <div class="section-badge">⚔️ HAUPTWAFFE</div>
+            <div class="weapon-row">
+              <span class="weapon-sym" id="charCardWeaponIcon"></span>
+              <div class="weapon-info">
+                <div class="weapon-name-line"><b id="charCardWeaponName"></b> · <span id="charCardWeaponDetails"></span></div>
+                <div class="weapon-specs" id="charCardWeaponSpecs"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Special Ability (The Game Equalizer) -->
+          <div class="char-card-section special-highlight-section">
+            <div class="section-badge">⚡ SPEZIALKRAFT (GAME-CHANGER)</div>
+            <div class="special-row">
+              <span class="special-big-icon" id="charCardSpecialIcon"></span>
+              <div class="special-info">
+                <div class="special-title-line"><b id="charCardSpecialName"></b> <span class="charge-tag">⚡ 15 Treffer</span></div>
+                <p class="special-desc" id="charCardSpecialDesc"></p>
+                <div class="special-equalizer" id="charCardSpecialEqualizer"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tactic Pro-Tip -->
+          <div class="char-tactic-box">
+            <span class="tactic-bulb">💡</span>
+            <span id="charCardTactic"></span>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="char-card-actions">
+            <button id="charCardPlayBtn" class="btn btn-action-fight" type="button">⚔️ MIT DIESEM HELDEN KÄMPFEN! 🥊</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ⛶ Vollbild-Knopf (versteckt die Adressleiste oben) & 🔊 Ton-Knopf -->
       <button id="fullscreenBtn" class="fullscreen-btn" type="button" aria-label="Vollbild ohne Adressleiste">⛶</button>
       <button id="soundToggle" class="sound-btn" aria-label="Ton an/aus">🔊</button>
@@ -311,6 +410,7 @@
   <script src="js/combos.js"></script>
   <script src="js/specials.js"></script>
   <script src="js/special-ui.js"></script>
+  <script src="js/char-card.js"></script>
   <script src="js/controls.js"></script>
   <script src="js/zielhilfe.js"></script>
   <script src="js/zielen.js"></script>
