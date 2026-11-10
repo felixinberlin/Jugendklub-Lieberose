@@ -74,11 +74,9 @@ function chooseAndStart(name) {
   if (!isActorUnlocked(name)) {
     initAudio();
     playSound('hit');
-    const need = requiredTrophiesFor(name);
-    const have = Math.max(trophiesData.total || 0, activePlayerTrophies());
     const pickTitle = document.querySelector('#startScreen .pick-title');
     if (pickTitle) {
-      pickTitle.textContent = `🔒 Für ${actors[name].name} brauchst du ${need} Pokale! (Du hast ${have} 🏆)`;
+      pickTitle.textContent = `🔒 ${actors[name].name} ist noch nicht freigeschaltet.`;
     }
     return;
   }

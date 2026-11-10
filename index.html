@@ -87,7 +87,13 @@
           <span class="hits-label">💀 Leben:</span>
           <div id="hitsChoice" class="hits-choice"></div>
         </div>
-        <p class="pick-title">Wen spielst DU? 👇 (Antippen für Helden-Karte & Werte!)</p>
+        <section id="starterChoice" class="starter-choice" aria-labelledby="starterTitle">
+          <h2 id="starterTitle">DEINE ERSTE FIGUR 🎁</h2>
+          <p>Wähle genau eine: Mais, Katze oder Maus! Deine Wahl bleibt auf diesem Gerät gespeichert.</p>
+          <div id="starterGrid" class="starter-grid"></div>
+        </section>
+        <p id="collectionHint" class="team-hint" aria-live="polite"></p>
+        <p class="pick-title">Deine Sammlung 👇 (Antippen für Helden-Karte & Werte!)</p>
         <div id="pickGrid" class="pick-grid"></div>
         <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:10px;">
           <a class="btn btn-small btn-print-link" href="druckansicht.html" target="_blank" rel="noopener">🖨️ WERTE-TABELLE (DRUCKVERSION) ✏️</a>
@@ -273,7 +279,7 @@
       <div id="teamScreen" class="overlay-screen">
         <h2 id="teamScreenHeading">⚔️ TEAM-MODUS</h2>
         <p id="teamPickTitle" class="pick-title">Level 1: Wähle deine 1. Figur! 👇</p>
-        <p id="teamHintText" class="team-hint">🔵 In jedem Level wählst du 1 Figur dazu – mit YAMAL & GOAT im Team habt ihr die 15-Treffer-Kombo! 🤝⚽</p>
+        <p id="teamHintText" class="team-hint">🔵 In jedem Level wählst du 1 Figur dazu – mit YAMAL & MUSIALLA im Team habt ihr die 15-Treffer-Kombo! 🤝⚽</p>
         <div id="teamGrid" class="pick-grid"></div>
         <button id="teamGoBtn" class="btn" disabled>Wähle deine Figur 👆</button>
         <button id="teamBackBtn" class="btn btn-small">⬅️ Zurück</button>
@@ -306,7 +312,7 @@
       <button id="katzeBtn" class="actor-btn" type="button" aria-label="Katze steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
       <button id="mausBtn" class="actor-btn" type="button" aria-label="Maus steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
       <button id="goblinBtn" class="actor-btn" type="button" aria-label="Goblin steuern: Antippen zum Werfen, Ziehen zum Bewegen"></button>
-      <button id="musialaBtn" class="actor-btn" type="button" aria-label="GOAT steuern: Antippen zum Schießen, Ziehen zum Bewegen"></button>
+      <button id="musialaBtn" class="actor-btn" type="button" aria-label="MUSIALLA steuern: Antippen zum Schießen, Ziehen zum Bewegen"></button>
       <button id="yamalBtn" class="actor-btn" type="button" aria-label="Lamine Yamal steuern: Antippen zum Schießen, Ziehen zum Bewegen"></button>
       <button id="dracheBtn" class="actor-btn" type="button" aria-label="Drache steuern: Antippen zum Kratzen, Ziehen zum Bewegen"></button>
       <button id="zeusBtn" class="actor-btn" type="button" aria-label="Zeus steuern: Antippen für Blitz, Ziehen zum Bewegen"></button>
@@ -469,6 +475,7 @@
   <script src="js/footballer.js"></script>
   <script src="js/knockout.js"></script>
   <script src="js/actors.js"></script>
+  <script src="js/collection.js"></script>
   <script src="js/geschosse.js"></script>
   <script src="js/bombs.js"></script>
   <script src="js/trefferfolgen.js"></script>

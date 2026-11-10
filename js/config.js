@@ -6,6 +6,12 @@
  * Wer nur etwas ausprobieren will, muss nur diese eine Datei ändern.
  */
 const GAME_CONFIG = {
+  starterActors: ['corn', 'katze', 'maus'],
+  actorRarities: {
+    corn: 'rare', katze: 'rare', maus: 'rare',
+    kobold: 'epic', fledermaus: 'epic', musiala: 'epic',
+    goblin: 'mythic', yamal: 'mythic', drache: 'secret', zeus: 'divine'
+  },
   // 🙂 Normale Figuren-Ansicht überall in jedem Modus (wie am Anfang!)
   proSkins: false,
   scarySkins: false,

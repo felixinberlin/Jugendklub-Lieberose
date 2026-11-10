@@ -9,7 +9,7 @@
 const CHAR_CARDS = {
   musiala: {
     id: 'musiala',
-    name: 'Musiala (GOAT #10)',
+    name: 'Musialla #10',
     role: '⚽ Dribbler & Spielmacher',
     motto: 'Lässt Gegner mit flüssigen Haken ins Leere laufen!',
     color: '#facc15',
@@ -204,7 +204,7 @@ const CHAR_CARDS = {
     specialName: 'STERNEN-EXPLOSION',
     specialIcon: '🌟💥',
     specialDesc: 'Fliegt ins Spielfeld-Zentrum und explodiert in einer goldenen Schockwelle – fügt einem zufälligen Gegner 12 Sofort-Schaden zu!',
-    specialEqualizer: '🔄 Levelt das Spiel: Trifft verlässlich auch schwer erreichbare Feinde und bietet die 42-Schaden-Combo mit Musiala!',
+    specialEqualizer: '🔄 Levelt das Spiel: Trifft verlässlich auch schwer erreichbare Feinde und bietet die 42-Schaden-Combo mit Musialla!',
     tactic: 'Nutze dein extremes Lauf-Tempo, um Gegnern davonzulaufen, und feuere Bälle im Vorbeilaufen ab.'
   },
   fledermaus: {
@@ -302,6 +302,8 @@ function renderCurrentCharCard() {
     portraitEl.style.borderColor = data.color;
   }
 
+  renderCardRarity(key);
+
   // Titles
   const roleEl = document.getElementById('charCardRole');
   if (roleEl) roleEl.textContent = data.role;
@@ -365,7 +367,8 @@ function renderCurrentCharCard() {
   // Play Button
   const playBtn = document.getElementById('charCardPlayBtn');
   if (playBtn) {
-    playBtn.textContent = `⚔️ MIT ${data.name.toUpperCase()} KÄMPFEN! 🥊`;
+    playBtn.disabled = !isActorUnlocked(key);
+    playBtn.textContent = isActorUnlocked(key) ? `⚔️ MIT ${data.name.toUpperCase()} KÄMPFEN! 🥊` : '🔒 NOCH NICHT FREIGESCHALTET';
   }
 }
 

@@ -740,32 +740,25 @@ function activePlayerTrophies() {
   return Number(trophiesData.total) || 0;
 }
 
-// 🔒 Prüft, ob eine Figur schon freigeschaltet ist (Zahl in GAME_CONFIG.zeusUnlockTrophies)
-function requiredTrophiesFor(name) {
-  return kindOf(name) === 'zeus' ? (GAME_CONFIG.zeusUnlockTrophies ?? 40) : 0;
-}
-
+// 🎁 Zunächst gehört dir genau die gewählte Startfigur.
 function isActorUnlocked(name) {
-  const req = requiredTrophiesFor(name);
-  if (req <= 0) return true;
-  const best = Math.max(trophiesData.total || 0, activePlayerTrophies());
-  return best >= req;
+  return kindOf(name) === starterActor;
 }
 
 function refreshUnlockTiles() {
   for (const btn of document.querySelectorAll('.pick-btn[data-name]')) {
     const n = btn.dataset.name;
-    const req = requiredTrophiesFor(n);
+    renderTileRarity(btn, n);
     const unlocked = isActorUnlocked(n);
     btn.classList.toggle('locked', !unlocked);
     let badge = btn.querySelector('.pick-lock-badge');
-    if (!unlocked && req > 0) {
+    if (!unlocked) {
       if (!badge) {
         badge = document.createElement('span');
         badge.className = 'pick-lock-badge';
         btn.appendChild(badge);
       }
-      badge.textContent = `🔒 ${req} 🏆`;
+      badge.textContent = '🔒';
     } else if (badge) {
       badge.remove();
     }

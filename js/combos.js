@@ -25,8 +25,8 @@ const COMBO_PAIRS = [
   {
     a: 'musiala', b: 'yamal',
     name: 'DOPPELPASS-GEWITTER', icon: '⚽🌟',
-    desc: 'GOAT & Yamal passen sich den Goldball zu und feuern 14 Traumtor-Schüsse auf alle Gegner!',
-    trigger: (a, b) => triggerVolleyCombo(a, b, '⚽', '🌟', 14, 3, '🤝 YAMAL × GOAT KOMBO! ⚽🌟')
+    desc: 'MUSIALLA & Yamal passen sich den Goldball zu und feuern 14 Traumtor-Schüsse auf alle Gegner!',
+    trigger: (a, b) => triggerVolleyCombo(a, b, '⚽', '🌟', 14, 3, '🤝 YAMAL × MUSIALLA KOMBO! ⚽🌟')
   },
   {
     a: 'kobold', b: 'corn',
@@ -85,13 +85,13 @@ const COMBO_PAIRS = [
   {
     a: 'zeus', b: 'musiala',
     name: 'DONNER-SCHUSS #10', icon: '⚡⚽',
-    desc: 'Zeus lädt GOATs Riesenball mit Blitzen auf + Gewittersturm auf die Gegner!',
+    desc: 'Zeus lädt Musiallas Riesenball mit Blitzen auf + Gewittersturm auf die Gegner!',
     trigger: (a, b) => {
       const z = kindOf(a) === 'zeus' ? a : b;
       const m = kindOf(a) === 'musiala' ? a : b;
       zeusStorm(z);
       bigBall(m);
-      return triggerVolleyCombo(a, b, '⚡', '⚽', 8, 3, '⚡⚽ DONNER-GOAT #10 KOMBO!');
+      return triggerVolleyCombo(a, b, '⚡', '⚽', 8, 3, '⚡⚽ DONNER-MUSIALLA #10 KOMBO!');
     }
   },
   {
@@ -122,13 +122,13 @@ const COMBO_PAIRS = [
   {
     a: 'musiala', b: 'drache',
     name: 'DRACHEN-FEUERSCHUSS', icon: '⚽🐉',
-    desc: 'GOAT schießt brennende Drachen-Fußbälle, während der Drache zubeißt!',
+    desc: 'MUSIALLA schießt brennende Drachen-Fußbälle, während der Drache zubeißt!',
     trigger: (a, b) => {
       const d = kindOf(a) === 'drache' ? a : b;
       const m = kindOf(a) === 'musiala' ? a : b;
       dragonBite(d);
       bigBall(m);
-      return triggerBurnVolleyCombo(a, b, '⚽', '🐉', 8, 3, '⚽🐉 DRACHEN-GOAT KOMBO!');
+      return triggerBurnVolleyCombo(a, b, '⚽', '🐉', 8, 3, '⚽🐉 DRACHEN-MUSIALLA KOMBO!');
     }
   },
   {
@@ -292,7 +292,7 @@ function addComboBanner(a, b, label) {
   playSound('combo');
 }
 
-// 🎯 Salven-Combo (z. B. Yamal + GOAT, Käse-Popcorn usw.)
+// 🎯 Salven-Combo (z. B. Yamal + MUSIALLA, Käse-Popcorn usw.)
 function triggerVolleyCombo(a, b, emojiA, emojiB, count, damage, title) {
   const targets = popcornTargets(a);
   if (!targets.length) return false;

@@ -629,11 +629,11 @@ h2 {
   color: #bbf7d0;
 }
 
-/* 🔒 Gesperrte Figur (ZEUS ab 40 Pokalen) */
+/* 🔒 Noch nicht freigeschaltete Figuren bleiben anschaubar. */
 .pick-btn.locked {
   background: rgba(15, 23, 42, 0.75);
   border-color: rgba(248, 113, 113, 0.55);
-  opacity: 0.78;
+  opacity: 1;
 }
 .pick-btn.locked .pick-emoji {
   filter: grayscale(0.6) brightness(0.8);
@@ -1729,3 +1729,19 @@ h1.game-title .title-emoji { -webkit-text-fill-color: initial; }
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
+
+/* 🎁 Startfigur & Seltenheiten: Schrift bleibt auch auf dunklem Grund lesbar. */
+.starter-choice { width: 100%; max-width: 480px; padding: 18px; margin: 16px 0; border: 2px solid #60a5fa; border-radius: 22px; background: #0f172a; }
+.starter-choice[hidden] { display: none; }
+.starter-choice h2 { font-size: 22px; }
+.starter-choice p { font-size: 16px; line-height: 1.5; margin: 12px 0; }
+.starter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.starter-grid .pick-btn { min-height: 110px; }
+.rarity { display: inline-block; font-size: 16px; font-weight: 900; line-height: 1.4; margin: 5px 0; padding: 2px 8px; border-radius: 6px; }
+.rarity-rare { color: #60a5fa; background: #0f172a; }
+.rarity-epic { color: #c084fc; background: #0f172a; }
+.rarity-mythic { color: #ff606a; background: #0f172a; }
+.rarity-secret { color: #000; background: #e2e8f0; }
+.rarity-divine { color: #ffe365; background: #302300; text-shadow: 0 0 6px #facc15, 0 0 15px #eab308; }
+.char-card-title-group .rarity { margin-bottom: 8px; }
+#charCardPlayBtn:disabled { opacity: 0.65; cursor: default; }

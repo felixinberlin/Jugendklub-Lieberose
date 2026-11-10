@@ -173,9 +173,7 @@ for (const name in actors) {
     if (!isActorUnlocked(name)) {
       initAudio();
       playSound('hit');
-      const need = requiredTrophiesFor(name);
-      const have = Math.max(trophiesData.total || 0, activePlayerTrophies());
-      teamHintText.textContent = `🔒 Für ${actors[name].name} brauchst du ${need} Pokale! (Du hast ${have} 🏆)`;
+      teamHintText.textContent = `🔒 ${actors[name].name} ist noch nicht freigeschaltet.`;
       return;
     }
     pendingTeamPick = name;
@@ -208,6 +206,12 @@ function refreshTeamGrid() {
 
 // Öffnet die Figuren-Auswahl vor einem Team-Level
 function openTeamPickForLevel(keepCharge = false) {
+  // Solange keine weitere Figur frei ist, geht es mit dem vorhandenen Team weiter.
+  if (chosenTeam.length && !Object.keys(actors).some(n => !actors[n].kind && isActorUnlocked(n) && !chosenTeam.includes(n))) {
+    playerTeam = chosenTeam.slice();
+    startGame(keepCharge);
+    return;
+  }
   removeClones();
   pendingTeamKeepCharge = keepCharge;
   pendingTeamPick = null;
@@ -219,7 +223,7 @@ function openTeamPickForLevel(keepCharge = false) {
   teamScreenHeading.textContent = `⚔️ TEAM · LEVEL ${lvNr} · ${modeBadge}`;
   if (currentLevel === 0) {
     teamPickTitle.textContent = 'Level 1: Wähle deine 1. Figur! 👇';
-    teamHintText.textContent = `Level 1–7: Jedes Level 1 Figur dazu – auch ZEUS ⚡ · ${comboNote}`;
+    teamHintText.textContent = `Wähle deine freigeschaltete Figur. Weitere Figuren kommen später dazu. · ${comboNote}`;
   } else {
     teamPickTitle.textContent = `Level ${lvNr}: Wähle deine ${chosenTeam.length + 1}. Figur dazu! 👇`;
     teamHintText.textContent = `Im Team (${chosenTeam.length}): ${chosenTeam.map(n => actorEmoji(n)).join(' ')} · ${comboNote}`;

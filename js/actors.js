@@ -34,7 +34,7 @@ const actors = {
     start: () => ({ x: width * 0.24, y: height * 0.24 })
   },
   musiala: {
-    name: 'GOAT', color: '#facc15', category: 128, target: 'yamal',
+    name: 'MUSIALLA', color: '#facc15', category: 128, target: 'yamal',
     sway: 220, body: null, wiggle: 0, hitsGiven: 0, hitsTaken: 0,
     start: () => ({ x: width * 0.76, y: height * 0.24 })
   },

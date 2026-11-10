@@ -54,7 +54,7 @@ function finishLevel(won) {
     nextLevel = currentLevel;
   } else if (!last) {
     winnerMsgEl.textContent = `🎉 LEVEL ${nr} GESCHAFFT! 🎉`;
-    if (teamMode && chosenTeam.length < baseActorNames().length) {
+    if (teamMode && baseActorNames().some(n => isActorUnlocked(n) && !chosenTeam.includes(n))) {
       restartBtn.textContent = `FIGUR FÜR LEVEL ${nr + 1} WÄHLEN ➡️`;
     } else {
       restartBtn.textContent = `WEITER ZU LEVEL ${nr + 1} ➡️`;
